@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+import "youtube-clone/database/pbs/helper.proto";
+
+package playlist;
+option go_package="youtube-clone/database/pbs/playlist";
+
+
+message PlaylistShortData{
+    string  Name=1                  [json_name="name"];
+    string  Url=2                   [json_name="url"];
+    string  CreatorUsername=3       [json_name="creator_username"];
+    int64   CreatedAt=4             [json_name="created_at_unix"];
+    string  Thumbnail=5             [json_name="thumbnail"];
+    // extra
+    int64   MediaCount=6            [json_name="media_count"];
+    string  CreatorProfile=7        [json_name="creator_profile"];
+    int64   MediasTotalViews=8      [json_name="total_views"];
+}
+
+message Media{
+    string  MediaTitle=1                [json_name="media_title"];
+    string  MediaUrl=2                  [json_name="media_url"];
+    // string  Username=3;
+    string  MediaCreatorUsername=3      [json_name="media_creator_username"];
+    string  MediaCreatorProfile=4       [json_name="media_creator_profile"];
+    string  Note=5                      [json_name="note"];
+    int32   Order=6                     [json_name="order"];
+    int64   CreatedAt=7                 [json_name="created_at_unix"];
+    int64   MediaCreatedAt=8            [json_name="media_created_at_unix"];
+    string  MediaType=9                 [json_name="media_type"];
+    string  MediaThumbnail=10           [json_name="media_thumbnail"];
+    int64   MediaViews=11               [json_name="media_total_views"];
+}
+
+message PlaylistData{
+    string  Name=1                      [json_name="name"];
+    string  Url=2                       [json_name="url"];
+    string  CreatorUsername=3           [json_name="creator_username"];
+    string  CreatorProfile=4            [json_name="creator_profile"];
+    int64   CreatedAt=5                 [json_name="created_at_unix"];
+    int64   UpdatedAt=6                 [json_name="updated_at_unix"];
+    string  Text=7                      [json_name="text"];
+    string  MediaType=8                 [json_name="media_type"];
+    // helper.MediaType    MediaTypeId=9   [json_name="media_type"];
+    string  Thumbnail=9                 [json_name="media_thumbnail"];
+    // extra
+    int64   MediaCount =10              [json_name="medias_count"];
+    int64   MediasTotalViews=13         [json_name="medias_total_views"];
+    // repeated Video PlaylistMedias=8;
+}
+
+message EditPlaylistData{
+    string  Name=1;
+    string  Url=2;
+    string  Text=3;
+    int64   CurrentUserId=4;
+    helper.MediaType   MediaTypeId=5;
+}
+
+
+message PlaylistsData{
+    repeated PlaylistShortData Playlists=1      [json_name="playlists"];
+    helper.PagesInfo PagesInfo=2                [json_name="pages_info"];
+}
+
+message PlaylistReq{
+    string  PlaylistUrl = 1;
+    helper.Paging Page=2;
+    int64   UserId = 3;
+    string  Username = 4;
+    helper.SortType Sort=5;
+    string SearchTerm = 6;
+}
+
+message PlaylistMediasData{
+    repeated Media PlaylistMedias= 1    [json_name="playlist_medias"];
+    helper.PagesInfo PagesInfo=2        [json_name="pages_info"];
+}
+
+message PlaylistMediaReq{
+    string  PlaylistUrl = 1;
+    helper.Paging Page=2;
+    int64 UserId = 3;
+    string MediaUrl = 4;
+    int64   Order=5;
+    string Note=6;
+}
+
+
+
+message Response{
+    oneof Res{
+        PlaylistData Playlist = 1;
+        helper.HttpError Err = 2;
+        helper.Empty empty = 3;
+        PlaylistsData Playlists = 4;
+        PlaylistMediasData Medias = 5;
+    }
+}
+
+
+service PlaylistService{
+    rpc GetPlaylist(PlaylistReq) returns (Response){};
+    
+    rpc GetPlaylists(PlaylistReq) returns (Response){};
+    rpc SearchPlaylists(PlaylistReq) returns (Response){};
+    // rpc GetUserPlaylists(PlaylistReq) returns (Response){};
+
+    rpc CreatePlaylist(EditPlaylistData) returns (Response){};
+    rpc EditPlaylist(EditPlaylistData) returns (Response){};
+    rpc DeletePlaylist(EditPlaylistData) returns (Response){};
+
+
+    //// playlist medias
+    rpc GetPlaylistMedias(PlaylistReq) returns(Response){};
+    rpc AddMediaToPlaylist(PlaylistMediaReq) returns (Response){};  
+    rpc EditMediaFromPlaylist(PlaylistMediaReq) returns (Response){};
+    rpc RemoveMediaFromPlaylist(PlaylistMediaReq) returns (Response){};    
+}
+

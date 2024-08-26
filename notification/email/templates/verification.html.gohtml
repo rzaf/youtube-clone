@@ -1,0 +1,15 @@
+{{define "body"}}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Email verification</title>
+    </head>
+    
+    <body>
+        <h3>Hello {{.username}} !</h3>
+        <p>verify your email by openning <a href="{{.link}}">this</a></p>
+    </body>
+</html>
+{{end}}

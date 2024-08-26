@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package emailPb;
+option go_package="youtube-clone/notification/pbs/emailPb";
+
+message Empty{}
+
+message HttpError{
+    string Message = 1;
+    int32 StatusCode = 2;
+}
+
+message NotificationData{
+    string Username=1;
+    string UserEmail=2;
+    string Title=3;
+    string Message=4;
+}
+
+message UserVerifyReq{
+    string Username=1;
+    string UserEmail=2;
+    string Link=3;
+}
+
+message Response{
+    oneof Res{
+        HttpError Err = 1;
+        Empty empty = 2;
+    }
+}
+
+
+
+service EmailService{
+    rpc SendVerifcation(UserVerifyReq) returns (Response){};
+    rpc SendNotification(NotificationData) returns (Response){};
+}
+

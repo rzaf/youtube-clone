@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+import "youtube-clone/database/pbs/helper.proto";
+
+package media;
+option go_package="youtube-clone/database/pbs/media";
+
+
+message EidtMediaData{
+    string  Title=1;
+    string  Text=2;        
+    string  Url=3;
+    int64   CurrentUserId=4;
+    helper.MediaType TypeId=5; //0:video 1:music 2:photo
+    // string  NewThumbnail=9;
+}
+
+message MediaData{
+    string  Title=1                     [json_name="title"];
+    string  Text=2                      [json_name="description"];
+    string  Url=3                       [json_name="url"];
+    string  Type=4                      [json_name="type"];
+    int64   CreatedAt=5                 [json_name="created_at_unix"];
+    int64   UpdatedAt=6                 [json_name="updated_at_unix"];
+    string  Thumbnail=7                 [json_name="thumbnail"];
+    string  CreatorUsername=8           [json_name="creator_username"];
+    string  CreatorProfile=9            [json_name="creator_profile"];
+    string  ChannelName=10              [json_name="creator_channel_name"];
+    string  Tags=11                     [json_name="tags"];
+    int64   UserSubscribesCount=12      [json_name="creator_subscribers_count"];
+    int64   ViewsCount=13               [json_name="views_count"];
+    int64   LikesCount=14               [json_name="likes_count"];
+    int64   DislikesCount=15            [json_name="dislikes_count"];
+    int64   CommentsCount=16            [json_name="comments_count"];
+    string  UserLike=17                 [json_name="current_user_like"];
+    bool    IsUserSubbed=18             [json_name="is_curretn_user_subbed"];
+}
+
+message MediaShortData{
+    string  Title=1                     [json_name="title"];
+    string  Url=2                       [json_name="url"];
+    string  CreatorUsername=3           [json_name="creator_username"];
+    string  ChannelName=4               [json_name="creator_channel_name"];
+    int64   ViewsCount=5                [json_name="views_count"];
+    int64   CreatedAt=6                 [json_name="created_at_unix"];
+    string  UserLike=7                  [json_name="current_user_like"];
+    string  MediaType=8                 [json_name="type"];
+    string  Thumbnail=9                 [json_name="thumbnail"];
+    string  CreatorProfile=10           [json_name="creator_profile"];
+}
+
+message MediasData{
+    repeated MediaShortData Medias=1    [json_name="medias"];
+    helper.PagesInfo PagesInfo=2        [json_name="pages_info"];
+}
+
+message MediaUrl{
+    string  MediaUrl=1;
+    int64   CurrentUserId=2;
+}
+
+message TagMedia{
+    string  TagName = 1;
+    string  MediaUrl = 2;
+    int64   CurrentUserId = 3;
+}
+
+message MediaReq{
+    helper.MediaType Type = 1;
+    helper.Paging Page=2;
+    // int32 PerPage = 2; // limit
+    // int32 PageNumber = 3; // offset
+    string UserName = 3;
+    helper.SortType Sort=4;
+    string SearchTerm = 5;
+    // bool isAllTypes = 6;
+}
+
+message Response{
+    oneof Res{
+        MediaData Media = 1;
+        helper.HttpError Err = 2;
+        helper.Empty empty = 3;
+        MediasData Medias = 4;
+        // UserApikey UserApi=2;
+    }
+}
+
+
+service MediaService{
+    rpc GetMediaByUrl(MediaUrl) returns (Response){};
+    
+    rpc SearchMedias(MediaReq) returns (Response){};
+    rpc GetMedias(MediaReq) returns (Response){};
+
+    rpc CreateMedia(EidtMediaData) returns (Response){};
+    rpc EditMedia(EidtMediaData) returns (Response){};
+    rpc SetMediaThumbnail(EidtMediaData) returns (Response){};
+    rpc DeleteMedia(EidtMediaData) returns (Response){};
+
+    rpc AddTagToMedia(TagMedia) returns (Response){};    
+    rpc RemoveTagFromMedia(TagMedia) returns (Response){};
+
+    rpc CreateLikeMedia(helper.LikeReq) returns (Response){};    
+    rpc DeleteLikeMedia(helper.LikeReq) returns (Response){};    
+}
+

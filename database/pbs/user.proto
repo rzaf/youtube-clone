@@ -1,0 +1,176 @@
+syntax = "proto3";
+
+import "youtube-clone/database/pbs/helper.proto";
+
+package user_pb;
+option go_package="youtube-clone/database/pbs/user-pb";
+
+message UserId{
+    int64 id = 1;
+}
+message Username{
+    string Username = 1;
+}
+
+message UsernameAndId{
+    string  Username = 1;
+    int64   CurrentUserId=2;
+}
+
+message UsernameAndPassword{
+    string UserName = 1;
+    string Password = 2;
+}
+message UserApikey{
+    string Apikey=1;
+}
+message EmailCode{
+    string Code=1;
+    string Username=2;
+}
+
+// message UserFullData{
+//     int64   Id=1;
+//     string  Username=2;
+//     string  Email=3;        
+//     string  ChannelName=4;        
+//     string  AboutMe=5;        
+//     string  hashedPassword=6;
+//     string  ApiKey=7;
+//     bool    IsVerified=8;
+//     int64   CreatedAt=9;
+//     int64   UpdatedAt=10;
+//     string  ProfilePhoto=11;
+//     string  ChannelPhoto=12;
+//     // extra
+//     int64   TotalViewCount = 13;
+//     int64   SubscribersCount = 14;
+//     int64   SubscringsCount = 15;
+//     int64   UploadCount = 16;
+//     bool    IsCurrentUserSubbed=17;
+// }
+
+message UserData{
+    string  Username=1              [json_name="username"];
+    string  Email=2                 [json_name="email"];
+    string  ChannelName=3           [json_name="channel_name"];
+    string  AboutMe=4               [json_name="about_me"];
+    int64   CreatedAt=5             [json_name="created_at_unix"];
+    int64   UpdatedAt=6             [json_name="updated_at_unix"];
+    string  ProfilePhoto=7          [json_name="profile_photo"];
+    string  ChannelPhoto=8          [json_name="channel_photo"];
+    int64   TotalViewCount=9        [json_name="total_views"];
+    int64   SubscribersCount=10     [json_name="subscribers_count"];
+    int64   SubscringsCount=11      [json_name="subscribings_count"];
+    int64   UploadCount=12          [json_name="upload_count"];
+    bool    IsCurrentUserSubbed=13  [json_name="is_current_user_subbed"];
+}
+
+message SignInUserData{
+    string  Username=1          [json_name="username"];           
+    string  Email=2             [json_name="email"];                 
+    string  ChannelName=3       [json_name="channel_name"];           
+    string  AboutMe=4           [json_name="about_me"];               
+    bool    IsVerified=5        [json_name="is_verified"];            
+    string  ApiKey=6            [json_name="api_key"];            
+    string  ProfilePhoto=7      [json_name="profile_photo"];          
+    string  ChannelPhoto=8      [json_name="channel_photo"];          
+}
+
+message CurrentUserData{
+    int64   Id=1;                    
+    string  Username=2;              
+    string  Email=3;                 
+    string  ChannelName=4;           
+    string  AboutMe=5;               
+    bool    IsVerified=6;            
+    string  HashedPassword=7;        
+    string  ProfilePhoto=8;          
+    string  ChannelPhoto=9;          
+}
+
+message EditUserData{
+    int64   Id=1;
+    string  Username=2;
+    string  Email=3;
+    string  ChannelName=4;
+    string  HashedPassword=5;
+    string  AboutMe=6;
+}
+message UsernameAndEmail{
+    string  Username=1;
+    string  Email=2;
+}
+
+message UserShortData {
+    string  Username=1                  [json_name="username"];
+    string  ChannelName=2               [json_name="channel_name"];       
+    int64   CreatedAt=3                 [json_name="created_at_unix"];
+    // int64   UpdatedAt=4                 [json_name="updated_at_unix"];
+    string  ProfilePhoto=4              [json_name="profile_photo"];
+    int64   TotalViewCount = 5          [json_name="total_views"];
+    int64   SubscribersCount = 6        [json_name="subscribers_count"];
+    bool    IsCurrentUserSubbed=7       [json_name="is_current_user_subbed"];
+}
+
+message UserPhoto{
+    int64   Id=1;
+    string  ProfilePhoto=2;
+    string  ChannelPhoto=3;
+}
+
+message FollowData{
+    int64 followerId =1;
+    string followingUsername =2;
+}
+
+message UserReq{
+    helper.Paging Page=1;
+    int64 CurrentUserId=2;
+    helper.SortType Sort=3;
+    string SearchTerm = 4;
+    // bool isAllTypes = 6;
+}
+
+message UsersData{
+    repeated UserShortData Users=1      [json_name="users"];
+    helper.PagesInfo PagesInfo=2        [json_name="pages_info"];
+}
+
+message Response{
+    oneof Res{
+        UserData User = 1;
+        CurrentUserData AuthUser = 2;
+        UserApikey UserApi=3;
+        helper.HttpError Err = 4;
+        helper.Empty empty = 5;
+        UsersData Users = 6;
+        SignInUserData SignedInUser=7;
+    }
+}
+
+
+
+service UserService{
+    // rpc GetUserById(UserId) returns (Response){};
+    rpc GetUserByUsername(UsernameAndId) returns (Response){};
+    rpc GetUserByNameAndPassword(UsernameAndPassword) returns (Response){};
+    rpc GetUserByApikey(UserApikey) returns (Response){};    
+
+    rpc GetUsers(UserReq) returns (Response){};
+    rpc SearchUsers(UserReq) returns (Response){};
+    
+    rpc EditUser(EditUserData) returns (Response){};
+    rpc VerifyUserEmail(EmailCode) returns (Response){};
+    rpc ResendEmailVerification(UsernameAndEmail) returns (Response){};
+    rpc SetUserPhoto(UserPhoto) returns (Response){};
+    rpc EditUserApiKey(UserId) returns (Response){};
+
+    rpc DeleteUser(UserId) returns (Response){};
+    
+    rpc CreateUser(EditUserData) returns (Response){};
+
+    rpc CreateFollow(FollowData) returns (Response){};
+    rpc DeleteFollow(FollowData) returns (Response){};
+}
+

@@ -1,0 +1,147 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:16.3-alpine3.20
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: youtube_clone
+    volumes:
+      - ./.app-data/postgresql/:/var/lib/postgresql/data/
+  
+  mongo:
+    image: mongo:4.2.24-bionic
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      # MONGO_INITDB_DATABASE: 
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./.app-data/mongo/:/data/db/
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    user: root
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    command: ["-storage=maildir", "-maildir-path=/maildir"]
+    volumes:
+      - ./.app-data/mailhog/:/maildir/
+    restart: unless-stopped
+
+  gateway-service:
+    build:
+      context: ./gateway/
+      dockerfile: Dockerfile
+    restart: "always"
+    ports:
+      - "6070:6070"
+    environment:
+      # servers
+      HTTP_HOST: gateway-service
+      HTTP_PORT: 6070
+      HTTP_URL: http://127.0.0.1:6070
+
+      # clients
+      DATABASE_SERVICE_HOST: database-service
+      DATABASE_SERVICE_PORT: 6060
+    deploy:
+      mode: replicated 
+      replicas: 1
+
+
+  database-service:
+    build:
+      context: ./database/
+      dockerfile: Dockerfile
+    restart: "always"
+    ports:
+      - "6060:6060"
+    environment:
+      # servers
+      GRPC_HOST: database-service
+      GRPC_PORT: 6060
+      
+      # clients
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: "youtube_clone"
+      DB_SSL_MODE: disable
+
+      FILE_SERVICE_HOST: file-service
+      FILE_SERVICE_PORT: 6061
+      
+      NOTIFICATION_SERVICE_HOST: notification-service
+      NOTIFICATION_SERVICE_PORT: 6063
+    deploy:
+      mode: replicated 
+      replicas: 1
+
+
+  notification-service:
+    build:
+      context: ./notification/
+      dockerfile: Dockerfile
+    restart: "always"
+    ports:
+      - "6063:6063"
+    environment:
+      # servers
+      GRPC_HOST: notification-service
+      GRPC_PORT: 6063
+      
+      # clients
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USERNAME: 1234
+      SMTP_SECRET: 1234
+    deploy:
+      mode: replicated 
+      replicas: 1
+
+
+  file-service:
+    build:
+      context: ./file/
+      dockerfile: Dockerfile
+    restart: "always"
+    ports:
+      - "6080:6080"
+      - "6061:6061"
+    environment:
+      # servers
+      HTTP_HOST: file-service
+      HTTP_PORT: 6080
+      HTTP_URL: http://file-service:6080
+      GRPC_HOST: file-service
+      GRPC_PORT: 6061
+      
+      # clients
+      MONGODB_ADDR: mongodb://mongo:27017/
+      MONGODB_USER: admin
+      MONGODB_PASS: 1234
+      DATABASE_SERVICE_HOST: database-service
+      DATABASE_SERVICE_PORT: 6060
+    deploy:
+      mode: replicated 
+      replicas: 1
+    volumes:
+      - ./.app-data/storage/temp/:/app/storage/temp/
+      - ./.app-data/storage/musics/:/app/storage/musics/
+      - ./.app-data/storage/photos/:/app/storage/photos/
+      - ./.app-data/storage/videos/:/app/storage/videos/

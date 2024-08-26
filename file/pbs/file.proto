@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package file;
+option go_package="youtube-clone/file/pbs/file";
+
+message Empty{}
+
+message HttpError{
+    string Message = 1;
+    int32 StatusCode = 2;
+}
+
+
+message FileUrl{
+    string Url=1;
+}
+
+message UserId{
+    int64 Id=1;
+}
+
+message FileData{
+    int64   userId=1;
+    string  url=2;
+    int64   size=3;
+    int32   type=4;
+    int32   state=5;
+    int32   owner=6;
+}
+
+message FileOwner{
+    int32   owner=1;
+    string  url=2;
+}
+
+message Response{
+    oneof Res{
+        FileData File = 1;
+        HttpError Err = 2;
+        Empty empty = 3;
+    }
+}
+
+
+
+service FileService{
+    rpc GetFileByUrl(FileUrl) returns (Response){};
+    rpc SetFileOwner(FileOwner) returns (Response){};
+
+    rpc DeleteFile(FileUrl) returns (Response){};
+    rpc DeleteUserFiles(UserId) returns (Response){};
+}
+

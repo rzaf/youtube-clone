@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package helper;
+option go_package="youtube-clone/database/pbs/helper";
+
+message Empty{}
+
+message HttpError{
+    string Message = 1;
+    int32 StatusCode = 2;
+}
+
+message Paging{
+    int32 PerPage=1;   ///limit
+    int32 pageNumber=2;  ///offset
+}
+
+message PagesInfo{
+    int32 CurrentPage=1;   
+    int32 TotalPages=2;
+}
+
+message LikeReq{
+    bool isLike=1;
+    int64 UserId=2; 
+    string url=3; 
+}
+
+enum SortType {
+    MostViewed=0;
+    LeastViewed=1;
+    Newest=3;
+    Oldest=4;
+    MostLiked=5;
+    LeastLiked=6;
+    MostDisiked=7;
+    LeastDisliked=8;
+    MostSubscribers=9;
+    LeastSubscribers=10;
+    MostReplied=11;
+    LeastReplied=12;
+} 
+
+enum MediaType {
+    VIDEO = 0 ;  
+    MUSIC = 1 ;
+    PHOTO = 2 ;
+    ALL = 3   ;
+}
+
+// enum LikeState {
+//     Dislike=0;
+//     Like=1;
+//     None=2;
+// }

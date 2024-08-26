@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+import "youtube-clone/database/pbs/helper.proto";
+
+package comment;
+option go_package="youtube-clone/database/pbs/comment";
+
+message EditCommentData{
+    string  Text=1;
+    string  Url=2;
+    string  MediaUrl=3;
+    string  ReplyUrl=4;
+    int64   CurrentUserId=5;
+}
+
+message FullCommentData{
+    string  Text=1                  [json_name="text"];
+    string  Url=2                   [json_name="url"];
+    int64   CreatedAt=3             [json_name="created_at_unix"];
+    int64   UpdatedAt=4             [json_name="updated_at_unix"];
+    // extra
+    string  Username=5              [json_name="creator_username"];
+    string  UserProfile=6           [json_name="creator_profile"];
+    int64   RepliesCount=7          [json_name="replies_count"];
+    int64   LikesCount=8            [json_name="likes_count"];
+    int64   DislikesCount=9         [json_name="dislikes_count"];
+    string  ReplyUrl=10             [json_name="reply_url"];
+    string  ReplyUserName=11        [json_name="reply_username"];
+    string  ReplyText=12            [json_name="reply_text"];
+    string  ReplyUserProfile=13     [json_name="reply_creator_profile"];
+    string  UserLike=14             [json_name="current_user_like"];
+    string  MediaUrl=15             [json_name="media_url"];
+    string  MediaTitle=16           [json_name="media_title"];
+    string  MediaType=17            [json_name="media_type"];
+    int64   MediaCreatedAt=18       [json_name="media_created_at_unix"];
+    string  MediaThumbnail=19       [json_name="media_thumbnail"];
+    string  MediaCreator=20         [json_name="media_creator_username"];
+    string  MediaCraetorProfile=21  [json_name="media_creator_profile"];
+}
+
+message CommentData{
+    string  Text=1                  [json_name="text"];      
+    string  Url=2                   [json_name="url"];
+    int64   CreatedAt=6             [json_name="created_at_unix"];
+    int64   UpdatedAt=7             [json_name="updated_at_unix"];
+    string  CreatorUsername=8       [json_name="creator_username"];
+    string  CreatorUserProfile=9    [json_name="creator_profile"];
+    int64   RepliesCount=10         [json_name="replies_count"];   
+    int64   LikesCount=11           [json_name="likes_count"];
+    int64   DislikesCount=12        [json_name="dislikes_count"];
+    string  ReplyUrl=13             [json_name="reply_url"];
+    string  ReplyUserName=14        [json_name="reply_username"];
+    string  MediaUrl=15             [json_name="media_url"];
+    string  UserLike=16             [json_name="current_user_like"];
+}
+
+message CommentsData{
+    repeated CommentData Comments=1     [json_name="comments"];
+    helper.PagesInfo PagesInfo=2        [json_name="pages_info"];
+}
+
+message CommentUrl{
+    string Url=1;
+    int64 UserName=2;
+    int64 UserId=3;
+    string MediaUrl=4;
+}
+
+
+message CommentReq{
+    string MediaUrl = 1;
+    helper.Paging Page=2;
+    // int32 PerPage = 2; // limit
+    // int32 PageNumber = 3; // offset
+    int64 UserId = 3;
+    string CommentUrl = 4;
+    helper.SortType Sort=5;
+}
+
+message Response{
+    oneof Res{
+        CommentData Comment = 1;
+        helper.HttpError Err = 2;
+        helper.Empty empty = 3;
+        CommentsData Comments = 4;
+        FullCommentData FullComment=5;
+    }
+}
+
+
+service CommentService{
+    rpc GetCommentByUrl(CommentUrl) returns (Response){};
+    rpc GetCommentsOfMedia(CommentReq) returns (Response){};
+    rpc GetRepliesOfComment(CommentReq) returns (Response){};
+    rpc GetCommentsOfUserInMedia(CommentReq) returns (Response){};
+    rpc GetAllCommentsOfUser(CommentReq) returns (Response){};
+
+    rpc CreateComment(EditCommentData) returns (Response){};
+    rpc EditComment(EditCommentData) returns (Response){};
+    rpc DeleteComment(EditCommentData) returns (Response){};
+
+    rpc CreateLikeComment(helper.LikeReq) returns (Response){};    
+    rpc DeleteLikeComment(helper.LikeReq) returns (Response){};    
+}
+
