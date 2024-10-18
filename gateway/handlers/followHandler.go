@@ -21,14 +21,14 @@ func AddFollowing(w http.ResponseWriter, r *http.Request) {
 		FollowingUsername: username,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Following created.", 201)
 		return
 	}
-	panic("CreateFollow should return empty or httpError!!!")
+	helpers.LogPanic("CreateFollow should return empty or httpError!!!")
 }
 
 func DeleteFollowing(w http.ResponseWriter, r *http.Request) {
@@ -40,12 +40,12 @@ func DeleteFollowing(w http.ResponseWriter, r *http.Request) {
 		FollowingUsername: username,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Following deleted.", 200)
 		return
 	}
-	panic("DeleteFollow should return empty or httpError!!!")
+	helpers.LogPanic("DeleteFollow should return empty or httpError!!!")
 }

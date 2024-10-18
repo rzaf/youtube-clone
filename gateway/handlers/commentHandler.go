@@ -25,7 +25,7 @@ func GetComment(w http.ResponseWriter, r *http.Request) {
 		UserId: userId,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	helpers.WriteProtoJson(w, res.GetFullComment(), true, 200)
@@ -55,7 +55,7 @@ func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
 		Sort:     sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
@@ -90,7 +90,7 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 		Sort:   sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
@@ -117,7 +117,7 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 // 		Page:     toPage(perpage, page),
 // 	})
 // 	if err != nil {
-// 		panic(err)
+// 		helpers.LogPanic(err)
 // 	}
 // 	PanicIfIsError(res.GetErr())
 // 	if res.GetEmpty() != nil {
@@ -147,7 +147,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if c := res.GetComment(); c != nil {
@@ -157,7 +157,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		}, 201)
 		return
 	}
-	panic("CreateComment should return empty or CommentData!!!")
+	helpers.LogPanic("CreateComment should return empty or CommentData!!!")
 }
 
 func EditComment(w http.ResponseWriter, r *http.Request) {
@@ -175,14 +175,14 @@ func EditComment(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Comment Edited.", 200)
 		return
 	}
-	panic("EditComment should return empty or httpError!!!")
+	helpers.LogPanic("EditComment should return empty or httpError!!!")
 }
 
 func DeleteComment(w http.ResponseWriter, r *http.Request) {
@@ -203,12 +203,12 @@ func DeleteComment(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Comment Deleted.", 200)
 		return
 	}
-	panic("DeleteComment should return empty or httpError!!!")
+	helpers.LogPanic("DeleteComment should return empty or httpError!!!")
 }

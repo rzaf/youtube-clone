@@ -33,7 +33,7 @@ func SearchPlaylists(w http.ResponseWriter, r *http.Request) {
 		SearchTerm: term,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetPlaylists())
@@ -62,7 +62,7 @@ func GetPlaylists(w http.ResponseWriter, r *http.Request) {
 		Sort:     sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetPlaylists())
@@ -80,7 +80,7 @@ func GetPlaylist(w http.ResponseWriter, r *http.Request) {
 		PlaylistUrl: url,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetPlaylists())
@@ -105,13 +105,13 @@ func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetPlaylist())
 	p := res.GetPlaylist()
 	if p == nil {
-		panic("CreatePlaylist should return error or playlistData")
+		helpers.LogPanic("CreatePlaylist should return error or playlistData")
 	}
 	helpers.WriteJson(w, map[string]string{
 		"message": "Playlist created",
@@ -137,14 +137,14 @@ func EditPlaylist(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "playlist Edited.", 200)
 		return
 	}
-	panic("EditPlaylist should return empty or httpError!!!")
+	helpers.LogPanic("EditPlaylist should return empty or httpError!!!")
 
 }
 
@@ -158,12 +158,12 @@ func DeletePlaylist(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "playlist Deleted.", 200)
 		return
 	}
-	panic("DeletePlaylist should return empty or httpError!!!")
+	helpers.LogPanic("DeletePlaylist should return empty or httpError!!!")
 }

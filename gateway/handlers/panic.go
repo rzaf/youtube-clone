@@ -21,7 +21,7 @@ func PanicIfIsError(a any) {
 	switch a2 := a.(type) {
 	case *helper.HttpError:
 		if a2 != nil {
-			fmt.Printf("PanicIfIsError got *helper.HttpError\n")
+			// fmt.Printf("PanicIfIsError got *helper.HttpError\n")
 			panic(a2)
 		}
 	case error:

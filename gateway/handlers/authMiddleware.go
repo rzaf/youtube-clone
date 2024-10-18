@@ -19,10 +19,10 @@ func getUserFromHeader(r *http.Request) *user_pb.CurrentUserData {
 	}
 	res, err := client.UserService.GetUserByApikey(context.Background(), &user_pb.UserApikey{Apikey: apiKey})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	if e := res.GetErr(); e != nil {
-		panic(e)
+		helpers.LogPanic(e)
 	}
 	return res.GetAuthUser()
 }
@@ -35,15 +35,15 @@ func AuthApiKeyMiddleware(next http.Handler) http.Handler {
 		}
 		res, err := client.UserService.GetUserByApikey(context.Background(), &user_pb.UserApikey{Apikey: apiKey})
 		if err != nil {
-			panic(err)
+			helpers.LogPanic(err)
 		}
 		if e := res.GetErr(); e != nil {
-			panic(helpers.NewServerError("invalid api key", 401))
+			helpers.LogPanic(helpers.NewServerError("invalid api key", 401))
 		}
 		user := res.GetAuthUser()
 		fmt.Printf("%v\n", user)
 		if !user.IsVerified {
-			panic(helpers.NewServerError("email is not verfied!", 401))
+			helpers.LogPanic(helpers.NewServerError("email is not verfied!", 401))
 		}
 		ctx := context.WithValue(r.Context(), authUser("user"), user)
 		next.ServeHTTP(w, r.WithContext(ctx))

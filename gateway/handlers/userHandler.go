@@ -15,7 +15,7 @@ import (
 func HashPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	return string(bytes)
 }
@@ -37,7 +37,7 @@ func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUserId,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	helpers.WriteProtoJson(w, res.GetUser(), true, 200)
@@ -64,13 +64,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:          sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetUsers())
 	if res.GetEmpty() != nil {
 		helpers.WriteEmpty(w)
-		// helpers.WriteJsonMessage(w, "No user found!", 404)
 		return
 	}
 	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
@@ -100,13 +99,12 @@ func SearchUsers(w http.ResponseWriter, r *http.Request) {
 		Sort:          sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetUsers())
 	if res.GetEmpty() != nil {
 		helpers.WriteEmpty(w)
-		// 	helpers.WriteJsonMessage(w, "No user found!", 404)
 		return
 	}
 	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
@@ -133,7 +131,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 	fmt.Printf("error type:%T,error:%v \n", err, err)
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	createdUser := res.GetUserApi()
@@ -157,7 +155,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		Password: password,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	helpers.WriteProtoJson(w, res.GetSignedInUser(), true, 200)
@@ -166,7 +164,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 func ResendEmailVerfication(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	if currentUser == nil {
-		panic(helpers.NewServerError("header X-API-KEY required", 401))
+		helpers.LogPanic(helpers.NewServerError("header X-API-KEY required", 401))
 	}
 	fmt.Printf("%v\n", currentUser)
 	if currentUser.IsVerified {
@@ -178,14 +176,14 @@ func ResendEmailVerfication(w http.ResponseWriter, r *http.Request) {
 		Email:    currentUser.Email,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "verification email resent succesfully.", 200)
 		return
 	}
-	panic("ResendEmailVerification should return empty or httpError!!!")
+	helpers.LogPanic("ResendEmailVerification should return empty or httpError!!!")
 }
 
 func VerifyEmail(w http.ResponseWriter, r *http.Request) {
@@ -198,14 +196,14 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 		Code:     verficationCode,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "user email verfied successfully.", 200)
 		return
 	}
-	panic("VerifyUserEmail should return empty or httpError!!!")
+	helpers.LogPanic("VerifyUserEmail should return empty or httpError!!!")
 }
 
 func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
@@ -231,14 +229,14 @@ func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
 		ProfilePhoto: photoUrl,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "user profile photo edited.", 200)
 		return
 	}
-	panic("SetUserPhoto should return empty or httpError!!!")
+	helpers.LogPanic("SetUserPhoto should return empty or httpError!!!")
 }
 
 func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
@@ -265,14 +263,14 @@ func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
 		ChannelPhoto: photoUrl,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "user channel photo edited.", 200)
 		return
 	}
-	panic("SetUserPhoto should return empty or httpError!!!")
+	helpers.LogPanic("SetUserPhoto should return empty or httpError!!!")
 }
 
 func EditUser(w http.ResponseWriter, r *http.Request) {
@@ -337,7 +335,7 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		ChannelName:    channelName,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res)
 	helpers.WriteJsonMessage(w, fmt.Sprintf("user with username:`%s` edited", currentUser.Username), 200)
@@ -384,7 +382,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := client.UserService.DeleteUser(context.Background(), &user_pb.UserId{Id: currentUser.Id})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	helpers.WriteJsonMessage(w, fmt.Sprintf("user with username:`%s` deleted", currentUser.Username), 200)

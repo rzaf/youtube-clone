@@ -33,14 +33,14 @@ func SetMediaLike(w http.ResponseWriter, r *http.Request) {
 		UserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Like or dislike created.", 201)
 		return
 	}
-	panic("LikeMedia should return empty or httpError!!!")
+	helpers.LogPanic("LikeMedia should return empty or httpError!!!")
 }
 
 func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
@@ -52,14 +52,14 @@ func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
 		UserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Like or dislike deleted.", 200)
 		return
 	}
-	panic("DislikeMedia should return empty or httpError!!!")
+	helpers.LogPanic("DislikeMedia should return empty or httpError!!!")
 }
 
 ////// comments likes
@@ -79,14 +79,14 @@ func SetCommentLike(w http.ResponseWriter, r *http.Request) {
 		UserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Like or dislike created.", 201)
 		return
 	}
-	panic("CreateLikeComment should return empty or httpError!!!")
+	helpers.LogPanic("CreateLikeComment should return empty or httpError!!!")
 }
 
 func DeleteCommentLike(w http.ResponseWriter, r *http.Request) {
@@ -98,12 +98,12 @@ func DeleteCommentLike(w http.ResponseWriter, r *http.Request) {
 		UserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Like or dislike deleted.", 200)
 		return
 	}
-	panic("DeleteLikeComment should return empty or httpError!!!")
+	helpers.LogPanic("DeleteLikeComment should return empty or httpError!!!")
 }

@@ -48,7 +48,7 @@ func GetMediaByUrl(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUserId,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	helpers.WriteProtoJson(w, res.GetMedia(), true, 200)
@@ -75,7 +75,7 @@ func SearchMedias(w http.ResponseWriter, r *http.Request) {
 		Sort:       sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetMedias())
@@ -106,7 +106,7 @@ func GetMedias(w http.ResponseWriter, r *http.Request) {
 		Sort:     sortType,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetMedias())
@@ -137,14 +137,14 @@ func CreateMedia(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Media with url:`"+url+"` created.", 201)
 		return
 	}
-	panic("CreateMedia should return empty or httpError!!!")
+	helpers.LogPanic("CreateMedia should return empty or httpError!!!")
 }
 
 func EditMedia(w http.ResponseWriter, r *http.Request) {
@@ -164,14 +164,14 @@ func EditMedia(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Media with url:`"+url+"` edited.", 200)
 		return
 	}
-	panic("EditMedia should return empty or httpError!!!")
+	helpers.LogPanic("EditMedia should return empty or httpError!!!")
 }
 
 func DeleteMedia(w http.ResponseWriter, r *http.Request) {
@@ -206,14 +206,14 @@ func AddTagToVideo(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Tag added to media.", 201)
 		return
 	}
-	panic("AddTagToMedia should return empty or httpError!!!")
+	helpers.LogPanic("AddTagToMedia should return empty or httpError!!!")
 }
 
 func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
@@ -227,14 +227,14 @@ func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
 		CurrentUserId: currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Tag removed from media.", 200)
 		return
 	}
-	panic("RemoveTagFromMedia should return empty or httpError!!!")
+	helpers.LogPanic("RemoveTagFromMedia should return empty or httpError!!!")
 }
 
 ///// videos of playlist
@@ -253,7 +253,7 @@ func GetMediasOfPlaylist(w http.ResponseWriter, r *http.Request) {
 		PlaylistUrl: playlistUrl,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	fmt.Println(res.GetPlaylists())
@@ -284,14 +284,14 @@ func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
 		UserId:      currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Media added to playlist.", 201)
 		return
 	}
-	panic("AddMediaToPlaylist should return empty or httpError!!!")
+	helpers.LogPanic("AddMediaToPlaylist should return empty or httpError!!!")
 }
 
 func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
@@ -313,14 +313,14 @@ func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 		UserId:      currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Media from playlist edited.", 200)
 		return
 	}
-	panic("EditMediaFromPlaylist should return empty or httpError!!!")
+	helpers.LogPanic("EditMediaFromPlaylist should return empty or httpError!!!")
 }
 
 func DeleteMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
@@ -334,12 +334,12 @@ func DeleteMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 		UserId:      currentUser.Id,
 	})
 	if err != nil {
-		panic(err)
+		helpers.LogPanic(err)
 	}
 	PanicIfIsError(res.GetErr())
 	if res.GetEmpty() != nil {
 		helpers.WriteJsonMessage(w, "Media from playlist deleted.", 200)
 		return
 	}
-	panic("RemoveMediaFromPlaylist should return empty or httpError!!!")
+	helpers.LogPanic("RemoveMediaFromPlaylist should return empty or httpError!!!")
 }
