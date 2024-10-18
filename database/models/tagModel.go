@@ -33,9 +33,8 @@ type Tag struct {
 // }
 
 func CreateTag(name string) error {
-	query := "INSERT INTO tags (name,created_at) VALUES ($1,$2)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, name, t)
+	query := "INSERT INTO tags (name) VALUES ($1);"
+	res, err := db.Db.Exec(query, name)
 	if err != nil {
 		return err
 	}
@@ -48,21 +47,3 @@ func CreateTag(name string) error {
 	}
 	return nil
 }
-
-//// DeleteLike
-
-// func DeleteTag(tagName int64) error {
-// 	query := "DELETE FROM tags WHERE name=$1;"
-// 	res, err := db.Db.Exec(query, tagName)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	n, err := res.RowsAffected()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if n == 0 {
-// 		return NewModelError("tag not found", 404)
-// 	}
-// 	return nil
-// }

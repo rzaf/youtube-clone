@@ -622,19 +622,16 @@ func CreateComment(text string, userId int64, mediaUrl string) (*Comment, error)
 			media_id,
 			comment_id,
 			user_id,
-			url,
-			created_at
+			url
 		) VALUES (
 		$1,
 		(SELECT id FROM medias WHERE url=$2),
 		NULL,
 		$3,
-		$4,
-		$5);
+		$4);
 	`
-	t := time.Now()
 	url := generateSecureToken(16)
-	res, err := db.Db.Exec(query, text, mediaUrl, userId, url, t)
+	res, err := db.Db.Exec(query, text, mediaUrl, userId, url)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
@@ -667,18 +664,16 @@ func CreateReply(text string, userId int64, mediaUrl string, replyUrl string) (*
 			media_id,
 			comment_id,
 			user_id,
-			url,
-			created_at
+			url
 		) VALUES (
 		$1,
 		(SELECT id FROM medias WHERE url=$2),
 		COALESCE((SELECT id FROM comments WHERE url=$3 AND media_id=(SELECT id FROM medias WHERE url=$4)),0),
 		$5,
-		$6,
-		$7);
+		$6);
 	`
 	url := generateSecureToken(16)
-	res, err := db.Db.Exec(query, text, mediaUrl, replyUrl, mediaUrl, userId, url, time.Now())
+	res, err := db.Db.Exec(query, text, mediaUrl, replyUrl, mediaUrl, userId, url)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
@@ -708,7 +703,7 @@ func CreateReply(text string, userId int64, mediaUrl string, replyUrl string) (*
 func EditComment(url string, text string, userId int64) error {
 	query := "UPDATE comments SET text=$1,updated_at=$2 WHERE url=$3 AND user_id=$4;"
 	var err error
-	r, err := db.Db.Exec(query, text, time.Now(), url, userId)
+	r, err := db.Db.Exec(query, text, time.Now().UTC(), url, userId)
 	if err != nil {
 		// if err, ok := err.(*pq.Error); ok {
 		// 	log.Printf("%v\n", err.Detail)

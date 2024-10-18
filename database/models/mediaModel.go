@@ -458,9 +458,8 @@ func AuthGetMediaByUrl(url string, userId int64) (*Media, error) {
 /// CreateMedia
 
 func CreateMedia(title string, text string, url string, userId int64, mt helper.MediaType) error {
-	query := "INSERT INTO medias (title,text,url,user_id,created_at,media_type) VALUES ($1,$2,$3,$4,$5,$6)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, title, text, url, userId, t, mt)
+	query := "INSERT INTO medias (title,text,url,user_id,media_type) VALUES ($1,$2,$3,$4,$5)"
+	res, err := db.Db.Exec(query, title, text, url, userId, mt)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			fmt.Printf("%+v\n", *err)
@@ -485,7 +484,7 @@ func CreateMedia(title string, text string, url string, userId int64, mt helper.
 
 func EditMedia(url string, title string, text string, userId int64) error {
 	query := "UPDATE medias SET title=$1,text=$2,updated_at=$3 WHERE id=(SELECT getMediaIdByUrl($4)) AND user_id=$5;"
-	res, err := db.Db.Exec(query, title, text, time.Now(), url, userId)
+	res, err := db.Db.Exec(query, title, text, time.Now().UTC(), url, userId)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)

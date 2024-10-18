@@ -4,8 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-
-	// "fmt"
 	"log"
 	"math"
 	"time"
@@ -444,12 +442,12 @@ func GetUserByUsernameAndPassword(usernameOrEmail string, password string) (*Use
 	err = rows.Scan(&u.ChannelName, &u.Email, &u.Username, &u.ApiKey, &u.HashedPassword,
 		&u.Created_at, &u.Updated_at, &u.TotalViews, &u.UploadCount, &u.Subscribers, &u.Subscribings,
 		&u.ProfilePhoto, &u.ChannelPhoto, &u.AboutMe)
+	if err != nil {
+		return nil, err
+	}
 	println(u.HashedPassword, password)
 	if err = bcrypt.CompareHashAndPassword([]byte(u.HashedPassword), []byte(password)); err != nil {
 		return nil, NewModelError("Invalid email/username or password", 400)
-	}
-	if err != nil {
-		return nil, err
 	}
 	return &u, nil
 }
@@ -457,15 +455,14 @@ func GetUserByUsernameAndPassword(usernameOrEmail string, password string) (*Use
 /// CreateUser
 
 func CreateUser(email string, channelName string, username string, password string, aboutMe string) (*User, error) {
-	query := "INSERT INTO users (email,username,hashed_password,email_verification,api_key,channel_name,about_me,created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+	query := "INSERT INTO users (email,username,hashed_password,email_verification,api_key,channel_name,about_me) VALUES ($1,$2,$3,$4,$5,$6,$7)"
 	hashedPassword, err := HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
 	apiKey := generateSecureToken(128)
 	emailVerification := generateSecureToken(32)
-	t := time.Now()
-	res, err := db.Db.Exec(query, email, username, hashedPassword, emailVerification, apiKey, channelName, aboutMe, t)
+	res, err := db.Db.Exec(query, email, username, hashedPassword, emailVerification, apiKey, channelName, aboutMe)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)
@@ -493,7 +490,7 @@ func CreateUser(email string, channelName string, username string, password stri
 
 func EditUserInfo(id int64, email string, username string, aboutMe string, channelName string, hashedPassword string) error {
 	query := "UPDATE users SET email=$1,username=$2,updated_at=$3,about_me=$4,channel_name=$5,hashed_password=$6 WHERE id=$7;"
-	res, err := db.Db.Exec(query, email, username, time.Now(), aboutMe, channelName, hashedPassword, id)
+	res, err := db.Db.Exec(query, email, username, time.Now().UTC(), aboutMe, channelName, hashedPassword, id)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)
@@ -555,7 +552,6 @@ func VerifyUserEmail(username, emailCode string) error {
 
 func SetEmailCode(email string) (string, error) {
 	emailCode := generateSecureToken(32)
-	// t := time.Now()
 	query := "UPDATE users SET email_verification=$1 WHERE email=$2;"
 	res, err := db.Db.Exec(query, emailCode, email)
 	if err != nil {
@@ -579,7 +575,7 @@ func SetEmailCode(email string) (string, error) {
 
 func SetUserProfilePhoto(id int64, photo string) error {
 	query := "UPDATE users SET profile_photo=$1,updated_at=$2 WHERE id=$3;"
-	res, err := db.Db.Exec(query, photo, time.Now(), id)
+	res, err := db.Db.Exec(query, photo, time.Now().UTC(), id)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)
@@ -602,7 +598,7 @@ func SetUserProfilePhoto(id int64, photo string) error {
 
 func SetUserChannelPhoto(id int64, photo string) error {
 	query := "UPDATE users SET channel_photo=$1,updated_at=$2 WHERE id=$3;"
-	res, err := db.Db.Exec(query, photo, time.Now(), id)
+	res, err := db.Db.Exec(query, photo, time.Now().UTC().UTC(), id)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)
@@ -626,7 +622,7 @@ func SetUserChannelPhoto(id int64, photo string) error {
 func EditUserApikey(id int64) (*User, error) {
 	query := "UPDATE users SET api_key=$1,updated_at=$2 WHERE id=$3;"
 	apikey := generateSecureToken(128)
-	res, err := db.Db.Exec(query, apikey, time.Now(), id)
+	res, err := db.Db.Exec(query, apikey, time.Now().UTC(), id)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%v\n", err.Detail)

@@ -32,7 +32,6 @@ type Playlist struct {
 
 //// GetPlaylist
 
-// /TODO:media info
 func GetPlaylist(playlistUrl string) (*Playlist, error) {
 	query := `
 	SELECT 
@@ -353,10 +352,9 @@ func GetUserPlaylists(userName string, limit int, offset int, sortType helper.So
 /// Create
 
 func CreatePlaylist(name string, text string, mt helper.MediaType, userId int64) (string, error) {
-	query := "INSERT INTO playlists (name,text,media_type,user_id,url,created_at) VALUES ($1,$2,$3,$4,$5,$6)"
-	t := time.Now()
+	query := "INSERT INTO playlists (name,text,media_type,user_id,url) VALUES ($1,$2,$3,$4,$5)"
 	url := generateSecureToken(16)
-	res, err := db.Db.Exec(query, name, text, mt, userId, url, t)
+	res, err := db.Db.Exec(query, name, text, mt, userId, url)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
@@ -380,7 +378,7 @@ func CreatePlaylist(name string, text string, mt helper.MediaType, userId int64)
 
 func EditPlaylist(name string, text string, playlistUrl string, userId int64) error {
 	query := "UPDATE playlists SET name=$1,text=$2,updated_at=$3 WHERE user_id=$4 AND id=getPlaylistIdByUrl($5) ;"
-	res, err := db.Db.Exec(query, name, text, time.Now(), userId, playlistUrl)
+	res, err := db.Db.Exec(query, name, text, time.Now().UTC(), userId, playlistUrl)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)

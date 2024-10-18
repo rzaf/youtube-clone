@@ -170,7 +170,7 @@ func EditMediaFromPlaylist(newText string, newCustomOrder int64, playlistUrl str
 		--- AND
 		--- $6 = (SELECT user_id FROM playlists WHERE playlist_id=getPlaylistIdByUrl($2));
 	`
-	res, err := db.Db.Exec(query, newText, newCustomOrder, time.Now(), mediaUrl, playlistUrl, userId)
+	res, err := db.Db.Exec(query, newText, newCustomOrder, time.Now().UTC(), mediaUrl, playlistUrl, userId)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
@@ -192,7 +192,7 @@ func EditMediaFromPlaylist(newText string, newCustomOrder int64, playlistUrl str
 
 ////// DELETE
 
-// only creator of playlist should be able to add media to playlist
+// only creator of playlist should be able to remove media from playlist
 func RemoveMediaFromPlaylist(playlistUrl string, mediaUrl string, userId int64) error {
 	query := `
 	DELETE FROM playlist_medias 

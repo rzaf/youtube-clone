@@ -14,27 +14,9 @@ type Views struct {
 	CreatedAt *time.Time `json:"created_at"`
 }
 
-//// GetComment
-
-// func GetViewCountOfMedia(mediaId int64) int64 {
-// 	query := "SELECT COUNT(*) FROM views WHERE media_id=$1;"
-// 	res, err := db.Db.Exec(query, mediaId)
-// 	if err != nil {
-// 		log.Panicln(err)
-// 	}
-// 	r, err := res.LastInsertId()
-// 	if err != nil {
-// 		log.Panicln(err)
-// 	}
-// 	return r
-// }
-
-/// CreateComment
-
 func CreateView(ip string, userId int64) *Views {
-	query := "INSERT INTO views (ip,user_id,created_at) VALUES ($1,$2)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, ip, userId, t)
+	query := "INSERT INTO views (ip,user_id) VALUES ($1,$2)"
+	res, err := db.Db.Exec(query, ip, userId)
 	if err != nil {
 		// if mySqlErr, ok := err.(*pgz.MySQLError); ok {
 		// 	if mySqlErr.Number == 1062 {
@@ -48,13 +30,8 @@ func CreateView(ip string, userId int64) *Views {
 		log.Panicln(err.Error())
 	}
 	return &Views{
-		Id:        id,
-		Ip:        ip,
-		UserId:    userId,
-		CreatedAt: &t,
+		Id:     id,
+		Ip:     ip,
+		UserId: userId,
 	}
 }
-
-/// EditComment
-
-//// Unfollow

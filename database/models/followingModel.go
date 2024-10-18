@@ -60,9 +60,8 @@ type Following struct {
 
 func CreateFollowing(followerId int64, followingUsername string) error {
 	// query := "INSERT INTO followings (follower_id,following_id,created_at) VALUES ($1,COALESCE((SELECT id FROM users WHERE username=$2),0),$3)"
-	query := "INSERT INTO followings (follower_id,following_id,created_at) VALUES ($1,getUserIdByUsername($2),$3)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, followerId, followingUsername, t)
+	query := "INSERT INTO followings (follower_id,following_id) VALUES ($1,getUserIdByUsername($2))"
+	res, err := db.Db.Exec(query, followerId, followingUsername)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)

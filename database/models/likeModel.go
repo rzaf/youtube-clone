@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"log"
-	"time"
 	"youtube-clone/database/db"
 
 	"github.com/lib/pq"
@@ -30,27 +29,13 @@ func (l LikeState) String() string {
 	return ""
 }
 
-// func ConvertLikeToStr(l LikeState) string {
-// 	switch l {
-// 	case LIKE:
-// 		return "Liked"
-// 	case DISLIKE:
-// 		return "Disliked"
-// 	case NONE:
-// 		return "None"
-// 	}
-// 	log.Println("ConvertLikeToStr should not return empty !!!")
-// 	return ""
-// }
-
 ////////// MEDIA
 
 /// CreateLike
 
 func CreateMediaLike(userId int64, mediaUrl string, isLike bool) error {
-	query := "INSERT INTO likes (user_id,media_id,is_like,created_at) VALUES ($1,getMediaIdByUrl($2),$3,$4)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, userId, mediaUrl, isLike, t)
+	query := "INSERT INTO likes (user_id,media_id,is_like) VALUES ($1,getMediaIdByUrl($2),$3)"
+	res, err := db.Db.Exec(query, userId, mediaUrl, isLike)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
@@ -102,9 +87,8 @@ func DeleteMediaLike(userId int64, mediaUrl string) error {
 /// CreateLike
 
 func CreateCommentLike(userId int64, commentUrl string, isLike bool) error {
-	query := "INSERT INTO comments_likes (user_id,comment_id,is_like,created_at) VALUES ($1,getCommentIdByUrl($2),$3,$4)"
-	t := time.Now()
-	res, err := db.Db.Exec(query, userId, commentUrl, isLike, t)
+	query := "INSERT INTO comments_likes (user_id,comment_id,is_like) VALUES ($1,getCommentIdByUrl($2),$3)"
+	res, err := db.Db.Exec(query, userId, commentUrl, isLike)
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok {
 			log.Printf("%+v\n", *err)
