@@ -65,7 +65,7 @@ func AuthGetComment(commentUrl string, userId int64) (*Comment, error) {
 		(SELECT COUNT(*) FROM comments WHERE comment_id=c.id) AS replies_count,
 		(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=true) AS likes_count,
 		(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=false) AS dislikes_count,
-		getUserlikeOnComment(C.id,$1) AS is_liked,
+		getUserlikeOnComment($1,C.id) AS is_liked,
 		C.created_at,
 		C.updated_at
 	FROM
@@ -203,7 +203,7 @@ func AuthGetCommentsOfMedia(mediaUrl string, limit int, offset int, userId int64
 			(SELECT COUNT(*) FROM comments WHERE comment_id=c.id) AS replies_count,
 			(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=true) AS likes_count,
 			(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=false) AS dislikes_count,
-			getUserlikeOnComment(C.id,$1) AS is_liked,
+			getUserlikeOnComment($1,C.id) AS is_liked,
 			C.created_at,
 			C.updated_at
 		FROM 
@@ -435,7 +435,7 @@ func AuthGetRepliesOfComment(commentUrl string, limit int, offset int, userId in
         (SELECT COUNT(*) FROM comments WHERE comment_id=c.id) AS replies_count,
 		(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=true) AS likes_count,
 		(SELECT COUNT(*) FROM comments_likes WHERE comments_likes.comment_id=C.id AND comments_likes.is_like=false) AS dislikes_count,
-		getUserlikeOnComment(C.id,$1) AS is_liked,
+		getUserlikeOnComment($1,C.id) AS is_liked,
 		C.created_at,
 		C.updated_at
 	FROM 
@@ -587,7 +587,7 @@ func GetAllCommentsOfUser(userId int64, limit int, offset int, sortType helper.S
 			WHERE comments.id=C.comment_id 
 		) AS reply_username,
 		(SELECT COUNT(*) FROM comments WHERE comment_id=C.id) replies_count
-		getUserlikeOnComment(C.id,$1) AS is_liked,
+		getUserlikeOnComment($1,C.id) AS is_liked,
 	FROM 
 		comments C
 	JOIN medias M ON M.id = C.media_id

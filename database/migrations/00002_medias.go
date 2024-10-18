@@ -41,7 +41,7 @@ func (*Medias) up() []string {
                 RAISE EXCEPTION 'media not found'; 
             END IF; 
             IF mediatype!=3 AND t != mediaType THEN 
-                RAISE EXCEPTION 'ivalid media type'; 
+                RAISE EXCEPTION 'invalid media type'; 
             END IF; 
             RETURN i;
         END; 

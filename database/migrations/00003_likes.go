@@ -18,9 +18,9 @@ func (*Likes) up() []string {
         `, `
         CREATE OR REPLACE FUNCTION getUserlikeOnMedia(userId BIGINT,mediaId BIGINT) RETURNS INT 
         AS $$ 
-        DECLARE userLike INTEGER; 
+        DECLARE userLike INT; 
         BEGIN 
-            SELECT is_like INTO userLike FROM likes WHERE likes.media_id=mediaId AND likes.user_id=userId; 
+            SELECT is_like::INT INTO userLike FROM likes WHERE likes.media_id=mediaId AND likes.user_id=userId; 
             RETURN COALESCE(userLike,2); 
         END; 
         $$ LANGUAGE PLPGSQL;

@@ -11,8 +11,8 @@ import (
 type LikeState uint8
 
 const (
-	LIKE LikeState = iota
-	DISLIKE
+	DISLIKE LikeState = iota
+	LIKE
 	NONE
 )
 

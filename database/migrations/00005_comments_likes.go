@@ -16,9 +16,9 @@ func (*CommentsLikes) up() []string {
         );`, `
         CREATE OR REPLACE FUNCTION getUserlikeOnComment(userId BIGINT,commentId BIGINT) RETURNS INT 
         AS $$ 
-        DECLARE userLike INTEGER; 
+        DECLARE userLike INT; 
         BEGIN 
-            SELECT is_like INTO userLike FROM comments_likes WHERE comments_likes.comment_id=commentId AND comments_likes.user_id=userId; 
+            SELECT is_like::INT INTO userLike FROM comments_likes WHERE comments_likes.comment_id=commentId AND comments_likes.user_id=userId; 
             RETURN COALESCE(userLike,2); 
         END; 
         $$ LANGUAGE PLPGSQL;`,
