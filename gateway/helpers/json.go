@@ -2,8 +2,11 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -55,11 +58,58 @@ func WriteProtoJson(w http.ResponseWriter, data proto.Message, emitDefaultValues
 	}
 }
 
-func ReadJson(r *http.Request, data any) {
+func readJson(r *http.Request, data any) {
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		log.Println("JSON decoding failed. err:", err)
 		panic(ServerError{Status: 400, Message: "request body should be a valid JSON!"})
+	}
+}
+
+func ParseReq(r *http.Request, data map[string]any) {
+	if data == nil {
+		panic("`data` argument is not initialized")
+	}
+	contentType := r.Header.Get("Content-Type")
+	if r.Method == "GET" {
+		if contentType != "" {
+			panic(ServerError{Status: 400, Message: "request body not supported on GET reuqests"})
+		}
+		for k, v := range r.URL.Query() {
+			data[k] = v[0]
+		}
+		return
+	}
+	contentLength, _ := strconv.Atoi(r.Header.Get("Content-Length"))
+	if contentLength == 0 {
+		if contentType == "" {
+			return // giving empty body
+		}
+		panic(ServerError{Status: 400, Message: "empty request body"})
+	}
+	switch contentType {
+	case "application/json":
+		readJson(r, &data)
+	case "application/x-www-form-urlencoded":
+		r.ParseForm()
+		for k, v := range r.PostForm {
+			data[k] = v[0]
+		}
+		fmt.Printf("PostForm: %v\n", r.PostForm)
+	default:
+		if strings.Contains(contentType, "multipart/form-data") {
+			err := r.ParseMultipartForm(5000)
+			if err != nil {
+				panic(ServerError{Status: 400, Message: "failed to read request body"})
+			}
+			for k, v := range r.MultipartForm.Value {
+				data[k] = v[0]
+			}
+			fmt.Printf("MultipartForm.File : %v\n", r.MultipartForm.File)
+			fmt.Printf("MultipartForm.Value: %v\n", r.MultipartForm.Value)
+			break
+		}
+		panic(ServerError{Status: 400, Message: "invalid request content-ype"})
 	}
 }
 

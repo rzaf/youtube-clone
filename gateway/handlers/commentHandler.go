@@ -38,16 +38,13 @@ func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
 		userId = currentUser.Id
 	}
 	url := chi.URLParam(r, "url")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "perpage", "page", "sort")
 
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateCommentsSortTypes(sortTypeStr)
 
 	fmt.Println(perpage, page)
@@ -77,16 +74,13 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 	}
 	url := chi.URLParam(r, "url")
 	commentUrl := chi.URLParam(r, "commentUrl")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "perpage", "page", "sort")
 
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateCommentsSortTypes(sortTypeStr)
 
 	res, err := client.CommentService.GetRepliesOfComment(context.Background(), &comment.CommentReq{
@@ -139,12 +133,12 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url") /// media url
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "reply_url", "description")
 
 	text := helpers.ValidateRequiredStr(body["description"], "description")
-	commentUrl := helpers.ValidateStr(body["reply_url"], "reply_url") // could be empty
+	commentUrl := helpers.ValidateStr(body["reply_url"], "reply_url", "") // could be empty
 
 	res, err := client.CommentService.CreateComment(context.Background(), &comment.EditCommentData{
 		Text:          text,
@@ -170,8 +164,8 @@ func EditComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	commentUrl := chi.URLParam(r, "commentUrl")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "description")
 
 	text := helpers.ValidateRequiredStr(body["description"], "description")
@@ -196,8 +190,8 @@ func DeleteComment(w http.ResponseWriter, r *http.Request) {
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	commentUrl := chi.URLParam(r, "commentUrl")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "description")
 
 	text := helpers.ValidateRequiredStr(body["description"], "description")

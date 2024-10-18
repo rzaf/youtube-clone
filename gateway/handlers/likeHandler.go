@@ -21,8 +21,8 @@ func SetMediaLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "is_like")
 
 	isLike := helpers.ValidateBool(body["is_like"], "is_like")
@@ -68,8 +68,8 @@ func SetCommentLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "is_like")
 	isLike := helpers.ValidateBool(body["is_like"], "is_like")
 

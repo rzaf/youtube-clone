@@ -49,17 +49,13 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	if currentUser != nil {
 		currentUserId = currentUser.Id
 	}
-
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 
 	helpers.ValidateAllowedParams(body, "perpage", "page", "sort")
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 5)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateUsersSortTypes(sortTypeStr)
 
 	res, err := client.UserService.GetUsers(context.Background(), &user_pb.UserReq{
@@ -88,16 +84,13 @@ func SearchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	term := chi.URLParam(r, "term")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 
 	helpers.ValidateAllowedParams(body, "perpage", "page", "sort")
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateUsersSortTypes(sortTypeStr)
 
 	res, err := client.UserService.SearchUsers(context.Background(), &user_pb.UserReq{
@@ -120,8 +113,8 @@ func SearchUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "email", "username", "channelName", "password", "aboutMe")
 
 	email := helpers.ValidateRequiredStr(body["email"], "email")
@@ -129,7 +122,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	username := helpers.ValidateRequiredStr(body["username"], "username")
 	channelName := helpers.ValidateRequiredStr(body["channelName"], "channelName")
 	password := helpers.ValidateRequiredStr(body["password"], "password")
-	aboutMe := helpers.ValidateStr(body["aboutMe"], "aboutMe") //optional
+	aboutMe := helpers.ValidateStr(body["aboutMe"], "aboutMe", "") //optional
 
 	res, err := client.UserService.CreateUser(context.Background(), &user_pb.EditUserData{
 		Email:          email,
@@ -152,8 +145,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request) {
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "usernameOrEmail", "password")
 
 	username := helpers.ValidateRequiredStr(body["usernameOrEmail"], "usernameOrEmail")
@@ -224,8 +217,8 @@ func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "photo_url")
 	photoUrl := helpers.ValidateRequiredStr(body["photo_url"], "photo_url")
 
@@ -257,8 +250,8 @@ func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "photo_url")
 	photoUrl := helpers.ValidateRequiredStr(body["photo_url"], "photo_url")
 
@@ -293,8 +286,8 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "password", "new_password", "new_aboutMe", "new_username", "new_channelName", "new_email")
 	fmt.Println("request body:", body)
 	fmt.Printf("user:%v\n", currentUser)
@@ -305,11 +298,11 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		helpers.WriteJsonError(w, "Incorrect password", 400)
 		return
 	}
-	newPassword := helpers.ValidateStr(body["new_password"], "new_password")
-	aboutMe := helpers.ValidateStr(body["new_aboutMe"], "new_aboutMe")
-	username := helpers.ValidateStr(body["new_username"], "new_username")
-	channelName := helpers.ValidateStr(body["new_channelName"], "new_channelName")
-	email := helpers.ValidateStr(body["new_email"], "new_email")
+	newPassword := helpers.ValidateStr(body["new_password"], "new_password", "")
+	aboutMe := helpers.ValidateStr(body["new_aboutMe"], "new_aboutMe", "")
+	username := helpers.ValidateStr(body["new_username"], "new_username", "")
+	channelName := helpers.ValidateStr(body["new_channelName"], "new_channelName", "")
+	email := helpers.ValidateStr(body["new_email"], "new_email", "")
 
 	if newPassword == "" && aboutMe == "" && username == "" && channelName == "" && email == "" {
 		helpers.WriteJsonError(w, "No new field", 400)
@@ -360,9 +353,9 @@ func NewUserApiKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body map[string]any
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "password")
-	helpers.ReadJson(r, &body)
 	fmt.Printf("user:%v\n", currentUser)
 	password := helpers.ValidateRequiredStr(body["password"], "password")
 

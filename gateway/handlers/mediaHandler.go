@@ -56,18 +56,15 @@ func GetMediaByUrl(w http.ResponseWriter, r *http.Request) {
 
 func SearchMedias(w http.ResponseWriter, r *http.Request) {
 	term := chi.URLParam(r, "term")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	var body map[string]any = make(map[string]any)
+	helpers.ParseReq(r, body)
 
 	helpers.ValidateAllowedParams(body, "type", "username", "perpage", "page", "sort")
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	username := helpers.ValidateStr(body["username"], "username")
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	username := helpers.ValidateStr(body["username"], "username", "")
 	mediaType := helpers.ValidateAllMediaType(helpers.ValidateRequiredStr(body["type"], "type"))
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateMediasSortTypes(sortTypeStr)
 
 	res, err := client.MediaService.SearchMedias(context.Background(), &media.MediaReq{
@@ -91,18 +88,15 @@ func SearchMedias(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMedias(w http.ResponseWriter, r *http.Request) {
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 
 	helpers.ValidateAllowedParams(body, "type", "username", "perpage", "page", "sort")
 	mediaType := helpers.ValidateAllMediaType(helpers.ValidateRequiredStr(body["type"], "type"))
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	username := helpers.ValidateStr(body["username"], "username")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	username := helpers.ValidateStr(body["username"], "username", "")
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidateMediasSortTypes(sortTypeStr)
 
 	res, err := client.MediaService.GetMedias(context.Background(), &media.MediaReq{
@@ -127,13 +121,13 @@ func GetMedias(w http.ResponseWriter, r *http.Request) {
 func CreateMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "type", "title", "description", "url")
 	Type := helpers.ValidateMediaType(helpers.ValidateRequiredStr(body["type"], "type"))
 	title := helpers.ValidateRequiredStr(body["title"], "title")
 	url := helpers.ValidateRequiredStr(body["url"], "url")
-	text := helpers.ValidateStr(body["description"], "description") ///optional
+	text := helpers.ValidateStr(body["description"], "description", "") ///optional
 
 	res, err := client.MediaService.CreateMedia(context.Background(), &media.EidtMediaData{
 		TypeId:        Type,
@@ -157,8 +151,8 @@ func EditMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "title", "description")
 	title := helpers.ValidateRequiredStr(body["title"], "title")
 	text := helpers.ValidateRequiredStr(body["description"], "description")
@@ -248,11 +242,11 @@ func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
 func GetMediasOfPlaylist(w http.ResponseWriter, r *http.Request) {
 	playlistUrl := chi.URLParam(r, "url")
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "perpage", "page")
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
 
 	res, err := client.PlaylistService.GetPlaylistMedias(context.Background(), &playlist.PlaylistReq{
 		Page:        toPage(perpage, page),
@@ -276,11 +270,11 @@ func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
 	playlistUrl := chi.URLParam(r, "playlistUrl")
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "note", "order")
 	note := helpers.ValidateRequiredStr(body["note"], "note")
-	order := helpers.ValidatePositiveInt(body["order"], "order")
+	order := helpers.ValidateRequiredPositiveInt(body["order"], "order")
 
 	res, err := client.PlaylistService.AddMediaToPlaylist(context.Background(), &playlist.PlaylistMediaReq{
 		Note:        note,
@@ -305,11 +299,11 @@ func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
 	playlistUrl := chi.URLParam(r, "playlistUrl")
 
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "new_note", "new_order")
 	note := helpers.ValidateRequiredStr(body["new_note"], "new_note")
-	order := helpers.ValidatePositiveInt(body["new_order"], "new_order")
+	order := helpers.ValidateRequiredPositiveInt(body["new_order"], "new_order")
 
 	res, err := client.PlaylistService.EditMediaFromPlaylist(context.Background(), &playlist.PlaylistMediaReq{
 		Note:        note,

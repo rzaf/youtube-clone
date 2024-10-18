@@ -16,17 +16,14 @@ import (
 
 func SearchPlaylists(w http.ResponseWriter, r *http.Request) {
 	term := chi.URLParam(r, "term")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "sort", "username", "perpage", "page")
 
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	username := helpers.ValidateStr(body["username"], "username")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	username := helpers.ValidateStr(body["username"], "username", "")
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidatePlaylistsSortTypes(sortTypeStr)
 
 	res, err := client.PlaylistService.SearchPlaylists(context.Background(), &playlist.PlaylistReq{
@@ -49,17 +46,14 @@ func SearchPlaylists(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPlaylists(w http.ResponseWriter, r *http.Request) {
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "sort", "username", "perpage", "page")
 
-	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage")
-	page := helpers.ValidatePositiveInt(body["page"], "page")
-	username := helpers.ValidateStr(body["username"], "username")
-	sortTypeStr := helpers.ValidateStr(body["sort"], "sort")
-	if sortTypeStr == "" {
-		sortTypeStr = "newest"
-	}
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 10)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+	username := helpers.ValidateStr(body["username"], "username", "")
+	sortTypeStr := helpers.ValidateStr(body["sort"], "sort", "newest")
 	sortType := helpers.ValidatePlaylistsSortTypes(sortTypeStr)
 
 	res, err := client.PlaylistService.GetPlaylists(context.Background(), &playlist.PlaylistReq{
@@ -95,8 +89,8 @@ func GetPlaylist(w http.ResponseWriter, r *http.Request) {
 
 func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "name", "text", "type")
 
 	name := helpers.ValidateRequiredStr(body["name"], "name")
@@ -129,8 +123,8 @@ func EditPlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
-	var body map[string]any
-	helpers.ReadJson(r, &body)
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "name", "text")
 
 	name := helpers.ValidateRequiredStr(body["name"], "name")

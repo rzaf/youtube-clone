@@ -68,15 +68,16 @@ func ValidateAllowedParams(m map[string]any, allowedParams ...string) {
 	}
 }
 
-func ValidateStr(strInteface any, param string) string {
+func ValidateStr(strInteface any, param string, defaultValue string) string {
 	switch str := strInteface.(type) {
 	case string:
 		if str == "" {
 			panic(ValidationFieldError{param, "is empty"})
+			// return defaultValue
 		}
 		return str
 	case nil:
-		return ""
+		return defaultValue
 	}
 	panic(ValidationFieldError{param, "should be string"})
 }
@@ -95,7 +96,26 @@ func ValidateRequiredStr(strInteface any, param string) string {
 	panic(ValidationFieldError{param, "should be string"})
 }
 
-func ValidateInt(intInterface any, param string) int {
+func ValidateInt(intInterface any, param string, defaultValue int) int {
+	switch v := intInterface.(type) {
+	case string:
+		if v == "" {
+			panic(ValidationFieldError{param, "is empty"})
+			// return defaultValue
+		}
+		n, err := strconv.Atoi(v)
+		if err == nil {
+			return n
+		}
+	case float64:
+		return int(v)
+	case nil:
+		return defaultValue
+	}
+	panic(ValidationFieldError{param, "should be a integer"})
+}
+
+func ValidateRequiredInt(intInterface any, param string) int {
 	switch v := intInterface.(type) {
 	case string:
 		if v == "" {
@@ -113,7 +133,29 @@ func ValidateInt(intInterface any, param string) int {
 	panic(ValidationFieldError{param, "should be a integer"})
 }
 
-func ValidatePositiveInt(intInterface any, param string) int {
+func ValidatePositiveInt(intInterface any, param string, defaultValue int) int {
+	switch v := intInterface.(type) {
+	case string:
+		if v == "" {
+			panic(ValidationFieldError{param, "is empty"})
+			// return defaultValue
+		}
+		n, err := strconv.Atoi(v)
+		if err == nil && n > 0 {
+			return n
+		}
+	case float64:
+		n := int(v)
+		if n > 0 {
+			return n
+		}
+	case nil:
+		return defaultValue
+	}
+	panic(ValidationFieldError{param, "should be a positive integer"})
+}
+
+func ValidateRequiredPositiveInt(intInterface any, param string) int {
 	switch v := intInterface.(type) {
 	case string:
 		if v == "" {
