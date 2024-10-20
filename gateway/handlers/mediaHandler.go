@@ -35,6 +35,20 @@ func toPage(perPage int, pageNumber int) *helper.Paging {
 
 ///////// MEDIA
 
+// get media
+//
+//	@Summary		get media
+//	@Description	get media
+//	@Tags			medias
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			url				path		string	true	"url"
+//	@Param			X-API-KEY		header		string	false	"optional authentication"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/medias/{url}	[get]
 func GetMediaByUrl(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var currentUserId int64 = 0
@@ -54,6 +68,23 @@ func GetMediaByUrl(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetMedia(), true, 200)
 }
 
+// search media
+//
+//	@Summary		search medias
+//	@Description	search medias
+//	@Tags			medias
+//	@Produce		application/json
+//	@Param			term					path		string	true	"search term"
+//	@Param			page					query		int		false	"page number"	default(1)
+//	@Param			perpage					query		int		false	"items perpage"	default(10)
+//	@Param			username				query		string	false	"media creator"
+//	@Param			type					query		string	false	"media type"	default(video)	Enums(photo, video, music, any)
+//	@Param			sort					query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed)
+//	@Success		200						{string}	string	"ok"
+//	@Success		204						{string}	string	"no content"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/medias/search/{term}	[get]
 func SearchMedias(w http.ResponseWriter, r *http.Request) {
 	term := chi.URLParam(r, "term")
 	var body map[string]any = make(map[string]any)
@@ -87,6 +118,22 @@ func SearchMedias(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetMedias(), true, 200)
 }
 
+// get medias
+//
+//	@Summary		get medias
+//	@Description	get medias
+//	@Tags			medias
+//	@Produce		application/json
+//	@Param			page		query		int		false	"page number"	default(1)
+//	@Param			perpage		query		int		false	"items perpage"	default(10)
+//	@Param			username	query		string	false	"media creator"
+//	@Param			type		query		string	false	"media type"	default(video)	Enums(photo, video, music, any)
+//	@Param			sort		query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed)
+//	@Success		200			{string}	string	"ok"
+//	@Success		204			{string}	string	"no content"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/medias																																																																																																																																					[get]
 func GetMedias(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -118,6 +165,22 @@ func GetMedias(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetMedias(), true, 200)
 }
 
+// create media
+//
+//	@Summary		create media
+//	@Description	create media
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			type		formData	string	true	"type"	Enums(photo, video, music)
+//	@Param			title		formData	string	true	"title"
+//	@Param			url			formData	string	true	"url"
+//	@Param			description	formData	string	false	"description"
+//	@Success		200			{string}	string	"ok"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/medias																																																																																																																																					[post]
 func CreateMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 
@@ -147,6 +210,24 @@ func CreateMedia(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("CreateMedia should return empty or httpError!!!")
 }
 
+// edit media
+//
+//	@Summary		edit media
+//	@Description	edit media
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			title			formData	string	true	"title"
+//	@Param			description		formData	string	true	"description"
+//	@Param			url				path		string	true	"url"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		401				{string}	string	"not authenticated"
+//	@Failure		403				{string}	string	"not authorized"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/medias/{url}	[put]
 func EditMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -174,6 +255,22 @@ func EditMedia(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("EditMedia should return empty or httpError!!!")
 }
 
+// deleting media
+//
+//	@Summary		deleting media
+//	@Description	deleting media
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			url				path		string	true	"url"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		401				{string}	string	"not authenticated"
+//	@Failure		403				{string}	string	"not authorized"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/medias/{url}	[delete]
 func DeleteMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -195,6 +292,20 @@ func DeleteMedia(w http.ResponseWriter, r *http.Request) {
 
 ///////// TAG
 
+// add tag to media
+//
+//	@Summary		add tag to media
+//	@Description	add tag to media
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			url							path		string	true	"url"
+//	@Param			name						path		string	true	"name"
+//	@Success		200							{string}	string	"ok"
+//	@Failure		400							{string}	string	"request failed"
+//	@Failure		500							{string}	string	"server error"
+//	@Router			/medias/{url}/tag/{name}	[post]
 func AddTagToVideo(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -216,6 +327,20 @@ func AddTagToVideo(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("AddTagToMedia should return empty or httpError!!!")
 }
 
+// remove tag from media
+//
+//	@Summary		remove tag from media
+//	@Description	remove tag from media
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			url							path		string	true	"url"
+//	@Param			name						path		string	true	"name"
+//	@Success		200							{string}	string	"ok"
+//	@Failure		400							{string}	string	"request failed"
+//	@Failure		500							{string}	string	"server error"
+//	@Router			/medias/{url}/tag/{name}	[delete]
 func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -237,8 +362,22 @@ func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("RemoveTagFromMedia should return empty or httpError!!!")
 }
 
-///// videos of playlist
+///// playlist medias
 
+// get medias of playlist
+//
+//	@Summary		get medias of playlist
+//	@Description	get medias of playlist
+//	@Tags			medias
+//	@Produce		application/json
+//	@Param			url						path		string	true	"url"
+//	@Param			page					query		int		false	"page number"	default(1)
+//	@Param			perpage					query		int		false	"items perpage"	default(10)
+//	@Success		200						{string}	string	"ok"
+//	@Success		204						{string}	string	"no content"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/playlists/{url}/medias	[get]
 func GetMediasOfPlaylist(w http.ResponseWriter, r *http.Request) {
 	playlistUrl := chi.URLParam(r, "url")
 
@@ -265,6 +404,22 @@ func GetMediasOfPlaylist(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetMedias(), true, 200)
 }
 
+// add media to playlist
+//
+//	@Summary		add media to playlist
+//	@Description	add media to playlist
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			note									formData	string	true	"note"
+//	@Param			order									formData	int		true	"order"	default(1)
+//	@Param			url										path		string	true	"url"
+//	@Param			playlistUrl								path		string	true	"playlistUrl"
+//	@Success		200										{string}	string	"ok"
+//	@Failure		400										{string}	string	"request failed"
+//	@Failure		500										{string}	string	"server error"
+//	@Router			/medias/{url}/playlists/{playlistUrl}	[post]
 func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -294,6 +449,22 @@ func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("AddMediaToPlaylist should return empty or httpError!!!")
 }
 
+// edit media from playlist
+//
+//	@Summary		edit media from playlist
+//	@Description	edit media from playlist
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			new_note								formData	string	true	"new_note"
+//	@Param			new_note								formData	int		true	"new_note"	default(1)
+//	@Param			url										path		string	true	"url"
+//	@Param			playlistUrl								path		string	true	"playlistUrl"
+//	@Success		200										{string}	string	"ok"
+//	@Failure		400										{string}	string	"request failed"
+//	@Failure		500										{string}	string	"server error"
+//	@Router			/medias/{url}/playlists/{playlistUrl}	[put]
 func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
@@ -323,6 +494,20 @@ func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("EditMediaFromPlaylist should return empty or httpError!!!")
 }
 
+// delete media from playlist
+//
+//	@Summary		delete media from playlist
+//	@Description	delete media from playlist
+//	@Tags			medias
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			url										path		string	true	"url"
+//	@Param			playlistUrl								path		string	true	"playlistUrl"
+//	@Success		200										{string}	string	"ok"
+//	@Failure		400										{string}	string	"request failed"
+//	@Failure		500										{string}	string	"server error"
+//	@Router			/medias/{url}/playlists/{playlistUrl}	[delete]
 func DeleteMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")

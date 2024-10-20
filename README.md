@@ -16,7 +16,7 @@ main api of app for user related data (users,medias,comments,playlists,likes,tag
 
 ### file service
 
-- has an Rest api for recieving and uploading media files (photo,video,music)
+- has a Rest api for recieving and uploading media files (photo,video,music)
 - stores all media files and its meta data (other services communicate with file service to know media file url exist and belong to which user)
 - media files are stored in system files and meta data is stored in a mongodb database
 - handles video,music formating and compression (using ffmpeg)
@@ -119,13 +119,15 @@ protected routes require authentication with api key
 
 ```make build``` builds go files\
 ```make all``` builds go files and generate pb files\
-```make run``` builds everything and run docker container\
+```make build-run``` builds everything and run docker container\
+```make run``` run docker container\
 ```make remove``` stops and removes docker container
 
 ## features
 
-- video,music,photo sharing
+- video,music,photo storage and sharing
 - video and music streaming
+- swagger documentations (at `/docs`)
 - user subscribing (following)
 - comment and reply on medias
 - media and comment likes

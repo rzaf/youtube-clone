@@ -18,6 +18,20 @@ const (
 	MaxVideoUploadSize = 50 << 20
 )
 
+// upload video
+//
+//	@Summary		upload video
+//	@Description	upload video
+//	@Tags			videos
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Produce		application/json
+//	@Param			file			formData	file	true	"video file"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/videos/upload	[post]
 func UploadVideo(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	err := r.ParseMultipartForm(MaxVideoUploadSize)
@@ -56,6 +70,19 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 	}, 200)
 }
 
+// get video
+//
+//	@Summary		get video
+//	@Description	get video
+//	@Tags			videos
+//	@Produce		application/x-mpegURL
+//	@Param			url				path		string	true	"url"	1
+//	@Success		200				{string}	string	"ok"
+//	@Success		204				{string}	string	"no content"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/videos/{url}	[get]
 func GetVideo(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
 	helpers.ValidateVideoUrl(url)

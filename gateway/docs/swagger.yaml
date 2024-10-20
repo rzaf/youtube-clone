@@ -1,0 +1,1817 @@
+basePath: /api
+info:
+  contact:
+    name: rzaf
+    url: https://www.github.com/rzaf/youtube-clone
+  description: gateway microservice of youtube-clone app.
+  title: rest api of gateway service
+paths:
+  /comments/{commentUrl}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: delete comment
+      parameters:
+      - description: commentUrl
+        in: path
+        name: commentUrl
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete comment
+      tags:
+      - comments
+    get:
+      consumes:
+      - application/json
+      description: get comment
+      parameters:
+      - description: commentUrl
+        in: path
+        name: commentUrl
+        required: true
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get comment
+      tags:
+      - comments
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit comment
+      parameters:
+      - description: description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: commentUrl
+        in: path
+        name: commentUrl
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit comment
+      tags:
+      - comments
+  /comments/{commentUrl}/replies:
+    get:
+      description: get replies of comments
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-liked
+        - least-liked
+        - most-disliked
+        - least-disliked
+        - most-replied
+        - least-replied
+        in: query
+        name: sort
+        type: string
+      - description: commentUrl
+        in: path
+        name: commentUrl
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get replies of comments
+      tags:
+      - comments
+  /comments/{url}/likes:
+    delete:
+      description: remove like/dislike comment
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: remove like/dislike comment
+      tags:
+      - likes
+    post:
+      consumes:
+      - multipart/form-data
+      description: like/dislike comment
+      parameters:
+      - description: is_like
+        in: formData
+        name: is_like
+        required: true
+        type: boolean
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: like/dislike comment
+      tags:
+      - likes
+  /comments/medias/{url}:
+    get:
+      description: get comments of media
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-liked
+        - least-liked
+        - most-disliked
+        - least-disliked
+        - most-replied
+        - least-replied
+        in: query
+        name: sort
+        type: string
+      - description: url
+        in: path
+        name: url
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get comments of media
+      tags:
+      - comments
+    post:
+      consumes:
+      - multipart/form-data
+      description: create comment/reply
+      parameters:
+      - description: description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: reply_url
+        in: formData
+        name: reply_url
+        type: string
+      - description: media url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: create comment/reply
+      tags:
+      - comments
+  /follows/{username}:
+    delete:
+      description: unfollow user
+      parameters:
+      - description: url
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: unfollow user
+      tags:
+      - follows
+    post:
+      description: follow user
+      parameters:
+      - description: url
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: follow user
+      tags:
+      - follows
+  /medias:
+    get:
+      description: get medias
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - description: media creator
+        in: query
+        name: username
+        type: string
+      - default: video
+        description: media type
+        enum:
+        - photo
+        - video
+        - music
+        - any
+        in: query
+        name: type
+        type: string
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get medias
+      tags:
+      - medias
+    post:
+      consumes:
+      - multipart/form-data
+      description: create media
+      parameters:
+      - description: type
+        enum:
+        - photo
+        - video
+        - music
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: url
+        in: formData
+        name: url
+        required: true
+        type: string
+      - description: description
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: create media
+      tags:
+      - medias
+  /medias/{url}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: deleting media
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: deleting media
+      tags:
+      - medias
+    get:
+      consumes:
+      - application/json
+      description: get media
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get media
+      tags:
+      - medias
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit media
+      parameters:
+      - description: title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit media
+      tags:
+      - medias
+  /medias/{url}/likes:
+    delete:
+      description: remove like/dislike media
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: remove like/dislike media
+      tags:
+      - likes
+    post:
+      consumes:
+      - multipart/form-data
+      description: like/dislike media
+      parameters:
+      - description: is_like
+        in: formData
+        name: is_like
+        required: true
+        type: boolean
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: like/dislike media
+      tags:
+      - likes
+  /medias/{url}/playlists/{playlistUrl}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: delete media from playlist
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: playlistUrl
+        in: path
+        name: playlistUrl
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete media from playlist
+      tags:
+      - medias
+    post:
+      consumes:
+      - multipart/form-data
+      description: add media to playlist
+      parameters:
+      - description: note
+        in: formData
+        name: note
+        required: true
+        type: string
+      - default: 1
+        description: order
+        in: formData
+        name: order
+        required: true
+        type: integer
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: playlistUrl
+        in: path
+        name: playlistUrl
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: add media to playlist
+      tags:
+      - medias
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit media from playlist
+      parameters:
+      - description: new_note
+        in: formData
+        name: new_note
+        required: true
+        type: string
+      - default: 1
+        description: new_note
+        in: formData
+        name: new_note
+        required: true
+        type: integer
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: playlistUrl
+        in: path
+        name: playlistUrl
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit media from playlist
+      tags:
+      - medias
+  /medias/{url}/tag/{name}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: remove tag from media
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: remove tag from media
+      tags:
+      - medias
+    post:
+      consumes:
+      - multipart/form-data
+      description: add tag to media
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: add tag to media
+      tags:
+      - medias
+  /medias/search/{term}:
+    get:
+      description: search medias
+      parameters:
+      - description: search term
+        in: path
+        name: term
+        required: true
+        type: string
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - description: media creator
+        in: query
+        name: username
+        type: string
+      - default: video
+        description: media type
+        enum:
+        - photo
+        - video
+        - music
+        - any
+        in: query
+        name: type
+        type: string
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: search medias
+      tags:
+      - medias
+  /playlists:
+    post:
+      consumes:
+      - multipart/form-data
+      description: create a playlist
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: text
+        in: formData
+        name: text
+        required: true
+        type: string
+      - description: type
+        enum:
+        - photo
+        - video
+        - music
+        - any
+        in: formData
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: create a playlist
+      tags:
+      - playlists
+  /playlists/:
+    get:
+      consumes:
+      - application/json
+      description: get playlists
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - description: playlist creator
+        in: query
+        name: username
+        type: string
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get playlists
+      tags:
+      - playlists
+  /playlists/{url}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: delete playlist
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete playlist
+      tags:
+      - playlists
+    get:
+      consumes:
+      - application/json
+      description: get playlist
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get playlist
+      tags:
+      - playlists
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit playlist
+      parameters:
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: text
+        in: formData
+        name: text
+        required: true
+        type: string
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit playlist
+      tags:
+      - playlists
+  /playlists/{url}/medias:
+    get:
+      description: get medias of playlist
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get medias of playlist
+      tags:
+      - medias
+  /playlists/search/{term}:
+    get:
+      consumes:
+      - application/json
+      description: search playlists
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - description: playlist creator
+        in: query
+        name: username
+        type: string
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        in: query
+        name: sort
+        type: string
+      - description: search term
+        in: path
+        name: term
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: search playlists
+      tags:
+      - playlists
+  /users:
+    post:
+      consumes:
+      - multipart/form-data
+      description: creating a user
+      parameters:
+      - description: email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: channel name
+        in: formData
+        name: channelName
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: about me
+        in: formData
+        name: aboutMe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: sign up
+      tags:
+      - users
+  /users/:
+    get:
+      description: get users
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        - most-subbed
+        - least-subbed
+        in: query
+        name: sort
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get users
+      tags:
+      - users
+  /users/{username}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: deleting user
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: deleting user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: get user with specified username
+      parameters:
+      - description: username of user
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get specified user
+      tags:
+      - users
+  /users/{username}/:
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit user info
+      parameters:
+      - description: password
+        in: formData
+        name: password
+        type: string
+      - description: new_password
+        in: formData
+        name: new_password
+        type: string
+      - description: new_aboutMe
+        in: formData
+        name: new_aboutMe
+        type: string
+      - description: new_username
+        in: formData
+        name: new_username
+        type: string
+      - description: new_channelName
+        in: formData
+        name: new_channelName
+        type: string
+      - description: new_email
+        in: formData
+        name: new_email
+        type: string
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit user info
+      tags:
+      - users
+  /users/{username}/channel-photo:
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit user channel photo
+      parameters:
+      - description: photo_url
+        in: formData
+        name: photo_url
+        required: true
+        type: string
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit user channel photo
+      tags:
+      - users
+  /users/{username}/newApiKey:
+    put:
+      consumes:
+      - multipart/form-data
+      description: setting new user api key
+      parameters:
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: setting new user api key
+      tags:
+      - users
+  /users/{username}/profile-photo:
+    put:
+      consumes:
+      - multipart/form-data
+      description: edit user profile photo
+      parameters:
+      - description: photo_url
+        in: formData
+        name: photo_url
+        required: true
+        type: string
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "401":
+          description: not authenticated
+          schema:
+            type: string
+        "403":
+          description: not authorized
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: edit user profile photo
+      tags:
+      - users
+  /users/resend-email:
+    post:
+      consumes:
+      - multipart/form-data
+      description: resend verification email
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: resend verification email
+      tags:
+      - users
+  /users/search/{term}:
+    get:
+      description: search users
+      parameters:
+      - description: search term
+        in: path
+        name: term
+        required: true
+        type: string
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        - most-viewed
+        - least-viewed
+        - most-subbed
+        - least-subbed
+        in: query
+        name: sort
+        type: string
+      - description: optional authentication
+        in: header
+        name: X-API-KEY
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: search users
+      tags:
+      - users
+  /users/sign-in:
+    post:
+      consumes:
+      - multipart/form-data
+      description: getting user api token
+      parameters:
+      - description: usernmae or email
+        in: formData
+        name: usernameOrEmail
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: sign in
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: api key of user
+    in: header
+    name: X-API-KEY
+    type: apiKey
+swagger: "2.0"

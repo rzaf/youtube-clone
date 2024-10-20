@@ -11,12 +11,22 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// func GetUserLike(w http.ResponseWriter, r *http.Request) {
-
-// }
-
 ////// media likes
 
+// like/dislike media
+//
+//	@Summary		like/dislike media
+//	@Description	like/dislike media
+//	@Tags			likes
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			is_like				formData	bool	true	"is_like"
+//	@Param			url					path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/medias/{url}/likes	[post]
 func SetMediaLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -43,6 +53,18 @@ func SetMediaLike(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("LikeMedia should return empty or httpError!!!")
 }
 
+// remove like/dislike media
+//
+//	@Summary		remove like/dislike media
+//	@Description	remove like/dislike media
+//	@Tags			likes
+//	@Produce		application/json
+//	@Security		ApiKeyAuth
+//	@Param			url					path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/medias/{url}/likes	[delete]
 func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -64,6 +86,20 @@ func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
 
 ////// comments likes
 
+// like/dislike comment
+//
+//	@Summary		like/dislike comment
+//	@Description	like/dislike comment
+//	@Tags			likes
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			is_like					formData	bool	true	"is_like"
+//	@Param			url						path		string	true	"url"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/{url}/likes	[post]
 func SetCommentLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -89,6 +125,18 @@ func SetCommentLike(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("CreateLikeComment should return empty or httpError!!!")
 }
 
+// like/dislike comment
+//
+//	@Summary		remove like/dislike comment
+//	@Description	remove like/dislike comment
+//	@Tags			likes
+//	@Produce		application/json
+//	@Security		ApiKeyAuth
+//	@Param			url						path		string	true	"url"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/{url}/likes	[delete]
 func DeleteCommentLike(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)

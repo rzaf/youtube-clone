@@ -24,6 +24,20 @@ func ComparePassword(password string, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
+// get specified user
+//
+//	@Summary		get specified user
+//	@Description	get user with specified username
+//	@Tags			users
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			username			path		string	true	"username of user"
+//	@Param			X-API-KEY			header		string	false	"optional authentication"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/users/{username}	[get]
 func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var currentUserId int64 = 0
@@ -43,6 +57,21 @@ func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetUser(), true, 200)
 }
 
+// get users
+//
+//	@Summary		get users
+//	@Description	get users
+//	@Tags			users
+//	@Produce		application/json
+//	@Param			page		query		int		false	"page number"	default(1)
+//	@Param			perpage		query		int		false	"items perpage"	default(10)
+//	@Param			sort		query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed,most-subbed,least-subbed)
+//	@Param			X-API-KEY	header		string	false	"optional authentication"
+//	@Success		200			{string}	string	"ok"
+//	@Success		204			{string}	string	"no content"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/users/																																																																																																																																																	[get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var currentUserId int64 = 0
@@ -75,6 +104,22 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
 }
 
+// search users
+//
+//	@Summary		search users
+//	@Description	search users
+//	@Tags			users
+//	@Produce		application/json
+//	@Param			term					path		string	true	"search term"
+//	@Param			page					query		int		false	"page number"	default(1)
+//	@Param			perpage					query		int		false	"items perpage"	default(10)
+//	@Param			sort					query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed,most-subbed,least-subbed)
+//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Success		200						{string}	string	"ok"
+//	@Success		204						{string}	string	"no content"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/users/search/{term}	[get]
 func SearchUsers(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var currentUserId int64 = 0
@@ -110,6 +155,22 @@ func SearchUsers(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
 }
 
+// sign up
+//
+//	@Summary		sign up
+//	@Description	creating a user
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Param			email		formData	string	true	"email"
+//	@Param			username	formData	string	true	"username"
+//	@Param			channelName	formData	string	true	"channel name"
+//	@Param			password	formData	string	true	"password"
+//	@Param			aboutMe		formData	string	false	"about me"
+//	@Success		200			{string}	string	"ok"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/users																																																																																																																																																	[post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -142,6 +203,19 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}, 201)
 }
 
+// sign in
+//
+//	@Summary		sign in
+//	@Description	getting user api token
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Param			usernameOrEmail	formData	string	true	"usernmae or email"
+//	@Param			password		formData	string	true	"password"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/users/sign-in	[post]
 func SignIn(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -161,6 +235,18 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetSignedInUser(), true, 200)
 }
 
+// resend verification email
+//
+//	@Summary		resend verification email
+//	@Description	resend verification email
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/users/resend-email	[post]
 func ResendEmailVerfication(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	if currentUser == nil {
@@ -206,6 +292,23 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("VerifyUserEmail should return empty or httpError!!!")
 }
 
+// edit user profile photo
+//
+//	@Summary		edit user profile photo
+//	@Description	edit user profile photo
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			photo_url						formData	string	true	"photo_url"
+//	@Param			username						path		string	true	"username"
+//	@Success		200								{string}	string	"ok"
+//	@Failure		400								{string}	string	"request failed"
+//	@Failure		401								{string}	string	"not authenticated"
+//	@Failure		403								{string}	string	"not authorized"
+//	@Failure		404								{string}	string	"not found"
+//	@Failure		500								{string}	string	"server error"
+//	@Router			/users/{username}/profile-photo	[put]
 func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
@@ -239,6 +342,23 @@ func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("SetUserPhoto should return empty or httpError!!!")
 }
 
+// edit user channel photo
+//
+//	@Summary		edit user channel photo
+//	@Description	edit user channel photo
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			photo_url						formData	string	true	"photo_url"
+//	@Param			username						path		string	true	"username"
+//	@Success		200								{string}	string	"ok"
+//	@Failure		400								{string}	string	"request failed"
+//	@Failure		401								{string}	string	"not authenticated"
+//	@Failure		403								{string}	string	"not authorized"
+//	@Failure		404								{string}	string	"not found"
+//	@Failure		500								{string}	string	"server error"
+//	@Router			/users/{username}/channel-photo	[put]
 func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
@@ -273,6 +393,28 @@ func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("SetUserPhoto should return empty or httpError!!!")
 }
 
+// edit user info
+//
+//	@Summary		edit user info
+//	@Description	edit user info
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			password			formData	string	false	"password"
+//	@Param			new_password		formData	string	false	"new_password"
+//	@Param			new_aboutMe			formData	string	false	"new_aboutMe"
+//	@Param			new_username		formData	string	false	"new_username"
+//	@Param			new_channelName		formData	string	false	"new_channelName"
+//	@Param			new_email			formData	string	false	"new_email"
+//	@Param			username			path		string	true	"username"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		401					{string}	string	"not authenticated"
+//	@Failure		403					{string}	string	"not authorized"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/users/{username}/	[put]
 func EditUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
@@ -341,6 +483,23 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJsonMessage(w, fmt.Sprintf("user with username:`%s` edited", currentUser.Username), 200)
 }
 
+// setting new user api key
+//
+//	@Summary		setting new user api key
+//	@Description	setting new user api key
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			password					formData	string	true	"password"
+//	@Param			username					path		string	true	"username"
+//	@Success		200							{string}	string	"ok"
+//	@Failure		400							{string}	string	"request failed"
+//	@Failure		401							{string}	string	"not authenticated"
+//	@Failure		403							{string}	string	"not authorized"
+//	@Failure		404							{string}	string	"not found"
+//	@Failure		500							{string}	string	"server error"
+//	@Router			/users/{username}/newApiKey	[put]
 func NewUserApiKey(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
@@ -371,6 +530,22 @@ func NewUserApiKey(w http.ResponseWriter, r *http.Request) {
 	}, 200)
 }
 
+// deleting user
+//
+//	@Summary		deleting user
+//	@Description	deleting user
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			username			path		string	true	"username"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		401					{string}	string	"not authenticated"
+//	@Failure		403					{string}	string	"not authorized"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/users/{username}	[delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")

@@ -12,6 +12,18 @@ import (
 
 ////// follows
 
+// follow user
+//
+//	@Summary		follow user
+//	@Description	follow user
+//	@Tags			follows
+//	@Produce		application/json
+//	@Security		ApiKeyAuth
+//	@Param			username			path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/follows/{username}	[post]
 func AddFollowing(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -31,6 +43,18 @@ func AddFollowing(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("CreateFollow should return empty or httpError!!!")
 }
 
+// unfollow user
+//
+//	@Summary		unfollow user
+//	@Description	unfollow user
+//	@Tags			follows
+//	@Produce		application/json
+//	@Security		ApiKeyAuth
+//	@Param			username			path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/follows/{username}	[delete]
 func DeleteFollowing(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)

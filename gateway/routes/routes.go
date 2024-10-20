@@ -4,6 +4,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"youtube-clone/gateway/handlers"
+
+	"github.com/swaggo/http-swagger" // http-swagger middleware
+	_ "youtube-clone/gateway/docs"
 )
 
 func GetRoutes() *chi.Mux {
@@ -29,5 +32,6 @@ func GetRoutes() *chi.Mux {
 
 	baseRouter := chi.NewRouter()
 	baseRouter.Mount("/api", router)
+	baseRouter.Get("/docs/*", httpSwagger.Handler())
 	return baseRouter
 }

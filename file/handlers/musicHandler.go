@@ -18,6 +18,20 @@ const (
 	MaxMusicUploadSize = 10 << 20
 )
 
+// upload music
+//
+//	@Summary		upload music
+//	@Description	upload music
+//	@Tags			musics
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Produce		application/json
+//	@Param			file			formData	file	true	"music file"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/musics/upload	[post]
 func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	err := r.ParseMultipartForm(MaxMusicUploadSize)
@@ -58,6 +72,19 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	}, 200)
 }
 
+// get music
+//
+//	@Summary		get music
+//	@Description	get music
+//	@Tags			musics
+//	@Produce		application/x-mpegURL
+//	@Param			url				path		string	true	"url"	1
+//	@Success		200				{string}	string	"ok"
+//	@Success		204				{string}	string	"no content"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/musics/{url}	[get]
 func GetMusic(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
 	helpers.ValidateVideoUrl(url)

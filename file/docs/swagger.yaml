@@ -1,0 +1,225 @@
+basePath: /api
+info:
+  contact:
+    name: rzaf
+    url: https://www.github.com/rzaf/youtube-clone
+  description: file microservice of youtube-clone app.
+  title: rest api of file service
+paths:
+  /musics/{url}:
+    get:
+      description: get music
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/x-mpegURL
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get music
+      tags:
+      - musics
+  /musics/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: upload music
+      parameters:
+      - description: music file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: upload music
+      tags:
+      - musics
+  /photos/{url}:
+    get:
+      description: get photo
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get photo
+      tags:
+      - photos
+  /photos/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: upload photo
+      parameters:
+      - description: photo file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: upload photo
+      tags:
+      - photos
+  /videos/{url}:
+    get:
+      description: get video
+      parameters:
+      - description: url
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/x-mpegURL
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: get video
+      tags:
+      - videos
+  /videos/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: upload video
+      parameters:
+      - description: video file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: upload video
+      tags:
+      - videos
+securityDefinitions:
+  ApiKeyAuth:
+    description: api key of user
+    in: header
+    name: X-API-KEY
+    type: apiKey
+swagger: "2.0"

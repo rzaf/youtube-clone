@@ -12,6 +12,20 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// get comment
+//
+//	@Summary		get comment
+//	@Description	get comment
+//	@Tags			comments
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			commentUrl				path		string	true	"commentUrl"
+//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		404						{string}	string	"not found"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/{commentUrl}	[get]
 func GetComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var userId int64 = 0
@@ -31,6 +45,22 @@ func GetComment(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetFullComment(), true, 200)
 }
 
+// get comments of media
+//
+//	@Summary		get comments of media
+//	@Description	get comments of media
+//	@Tags			comments
+//	@Produce		application/json
+//	@Param			page					query		int		false	"page number"	default(1)
+//	@Param			perpage					query		int		false	"items perpage"	default(10)
+//	@Param			sort					query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-liked,least-liked,most-disliked,least-disliked,most-replied,least-replied)
+//	@Param			url						path		string	false	"url"
+//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Success		200						{string}	string	"ok"
+//	@Success		204						{string}	string	"no content"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/medias/{url}	[get]
 func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var userId int64 = 0
@@ -66,13 +96,28 @@ func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetComments(), true, 200)
 }
 
+// get replies of comments
+//
+//	@Summary		get replies of comments
+//	@Description	get replies of comments
+//	@Tags			comments
+//	@Produce		application/json
+//	@Param			page							query		int		false	"page number"	default(1)
+//	@Param			perpage							query		int		false	"items perpage"	default(10)
+//	@Param			sort							query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-liked,least-liked,most-disliked,least-disliked,most-replied,least-replied)
+//	@Param			commentUrl						path		string	false	"commentUrl"
+//	@Param			X-API-KEY						header		string	false	"optional authentication"
+//	@Success		200								{string}	string	"ok"
+//	@Success		204								{string}	string	"no content"
+//	@Failure		400								{string}	string	"request failed"
+//	@Failure		500								{string}	string	"server error"
+//	@Router			/comments/{commentUrl}/replies	[get]
 func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := getUserFromHeader(r)
 	var userId int64 = 0
 	if currentUser != nil {
 		userId = currentUser.Id
 	}
-	url := chi.URLParam(r, "url")
 	commentUrl := chi.URLParam(r, "commentUrl")
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -84,10 +129,10 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 	sortType := helpers.ValidateCommentsSortTypes(sortTypeStr)
 
 	res, err := client.CommentService.GetRepliesOfComment(context.Background(), &comment.CommentReq{
-		CommentUrl: commentUrl, MediaUrl: url,
-		UserId: userId,
-		Page:   toPage(perpage, page),
-		Sort:   sortType,
+		CommentUrl: commentUrl,
+		UserId:     userId,
+		Page:       toPage(perpage, page),
+		Sort:       sortType,
 	})
 	if err != nil {
 		helpers.LogPanic(err)
@@ -129,6 +174,21 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 // 	helpers.WriteJson(w, commentsData, 200)
 // }
 
+// create comment/reply
+//
+//	@Summary		create comment/reply
+//	@Description	create comment/reply
+//	@Tags			comments
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			description				formData	string	true	"description"
+//	@Param			reply_url				formData	string	false	"reply_url"
+//	@Param			url						path		string	true	"media url"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/medias/{url}	[post]
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -160,6 +220,23 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("CreateComment should return empty or CommentData!!!")
 }
 
+// edit comment
+//
+//	@Summary		edit comment
+//	@Description	edit comment
+//	@Tags			comments
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			description				formData	string	true	"description"
+//	@Param			commentUrl				path		string	true	"commentUrl"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		401						{string}	string	"not authenticated"
+//	@Failure		403						{string}	string	"not authorized"
+//	@Failure		404						{string}	string	"not found"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/{commentUrl}	[put]
 func EditComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -185,18 +262,28 @@ func EditComment(w http.ResponseWriter, r *http.Request) {
 	helpers.LogPanic("EditComment should return empty or httpError!!!")
 }
 
+// delete comment
+//
+//	@Summary		delete comment
+//	@Description	delete comment
+//	@Tags			comments
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			commentUrl				path		string	true	"commentUrl"
+//	@Success		200						{string}	string	"ok"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		401						{string}	string	"not authenticated"
+//	@Failure		403						{string}	string	"not authorized"
+//	@Failure		404						{string}	string	"not found"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/comments/{commentUrl}	[delete]
 func DeleteComment(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	commentUrl := chi.URLParam(r, "commentUrl")
-	body := make(map[string]any)
-	helpers.ParseReq(r, body)
-	helpers.ValidateAllowedParams(body, "description")
 
-	text := helpers.ValidateRequiredStr(body["description"], "description")
-	helpers.ValidateVar(text, "description", "required")
-	// helpers.ValidateVar(commentIdStr, "reply_id", "int")
 	res, err := client.CommentService.DeleteComment(context.Background(), &comment.EditCommentData{
 		MediaUrl:      url,
 		Url:           commentUrl,

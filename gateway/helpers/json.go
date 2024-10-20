@@ -40,7 +40,7 @@ func WriteJson(w http.ResponseWriter, data any, status int) {
 }
 
 func WriteEmpty(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(204)
 }
 

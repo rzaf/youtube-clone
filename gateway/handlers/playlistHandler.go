@@ -12,8 +12,24 @@ import (
 	"github.com/go-chi/chi"
 )
 
-////// playlist
-
+// search playlists
+//
+//	@Summary		search playlists
+//	@Description	search playlists
+//	@Tags			playlists
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			page						query		int		false	"page number"	default(1)
+//	@Param			perpage						query		int		false	"items perpage"	default(10)
+//	@Param			username					query		string	false	"playlist creator"
+//	@Param			sort						query		string	false	"sort type"	default(newest)	Enums(newest, oldest,most-viewed,least-viewed)
+//	@Param			term						path		string	true	"search term"
+//	@Success		200							{string}	string	"ok"
+//	@Success		204							{string}	string	"no content"
+//	@Failure		400							{string}	string	"request failed"
+//	@Failure		404							{string}	string	"not found"
+//	@Failure		500							{string}	string	"server error"
+//	@Router			/playlists/search/{term}	[get]
 func SearchPlaylists(w http.ResponseWriter, r *http.Request) {
 	term := chi.URLParam(r, "term")
 	body := make(map[string]any)
@@ -45,6 +61,22 @@ func SearchPlaylists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetPlaylists(), true, 200)
 }
 
+// get playlists
+//
+//	@Summary		get playlists
+//	@Description	get playlists
+//	@Tags			playlists
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			page		query		int		false	"page number"	default(1)
+//	@Param			perpage		query		int		false	"items perpage"	default(10)
+//	@Param			username	query		string	false	"playlist creator"
+//	@Param			sort		query		string	false	"sort type"	default(newest)	Enums(newest, oldest,most-viewed,least-viewed)
+//	@Success		200			{string}	string	"ok"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		404			{string}	string	"not found"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/playlists/	[get]
 func GetPlaylists(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -74,6 +106,19 @@ func GetPlaylists(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetPlaylists(), true, 200)
 }
 
+// get playlist
+//
+//	@Summary		get playlist
+//	@Description	get playlist
+//	@Tags			playlists
+//	@Accept			json
+//	@Produce		application/json
+//	@Param			url					path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/playlists/{url}	[get]
 func GetPlaylist(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
 	res, err := client.PlaylistService.GetPlaylist(context.Background(), &playlist.PlaylistReq{
@@ -87,6 +132,21 @@ func GetPlaylist(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetPlaylist(), true, 200)
 }
 
+// create a playlist
+//
+//	@Summary		create a playlist
+//	@Description	create a playlist
+//	@Tags			playlists
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			name		formData	string	true	"name"
+//	@Param			text		formData	string	true	"text"
+//	@Param			type		formData	string	true	"type"	Enums(photo, video, music, any)
+//	@Success		200			{string}	string	"ok"
+//	@Failure		400			{string}	string	"request failed"
+//	@Failure		500			{string}	string	"server error"
+//	@Router			/playlists	[post]
 func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	body := make(map[string]any)
@@ -119,6 +179,24 @@ func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 	}, 201)
 }
 
+// edit playlist
+//
+//	@Summary		edit playlist
+//	@Description	edit playlist
+//	@Tags			playlists
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			name				formData	string	true	"name"
+//	@Param			text				formData	string	true	"text"
+//	@Param			url					path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		401					{string}	string	"not authenticated"
+//	@Failure		403					{string}	string	"not authorized"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/playlists/{url}	[put]
 func EditPlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
@@ -148,6 +226,22 @@ func EditPlaylist(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// delete playlist
+//
+//	@Summary		delete playlist
+//	@Description	delete playlist
+//	@Tags			playlists
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			url					path		string	true	"url"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		401					{string}	string	"not authenticated"
+//	@Failure		403					{string}	string	"not authorized"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/playlists/{url}	[delete]
 func DeletePlaylist(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)

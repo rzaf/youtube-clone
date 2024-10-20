@@ -19,6 +19,20 @@ const (
 	MaxPhotoUploadSize = 10 << 20
 )
 
+// upload photo
+//
+//	@Summary		upload photo
+//	@Description	upload photo
+//	@Tags			photos
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Produce		application/json
+//	@Param			file			formData	file	true	"photo file"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/photos/upload	[post]
 func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
 	err := r.ParseMultipartForm(MaxPhotoUploadSize)
@@ -63,6 +77,19 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	}, 200)
 }
 
+// get photo
+//
+//	@Summary		get photo
+//	@Description	get photo
+//	@Tags			photos
+//	@Produce		octet-stream
+//	@Param			url				path		string	true	"url"	1
+//	@Success		200				{string}	string	"ok"
+//	@Success		204				{string}	string	"no content"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/photos/{url}	[get]
 func GetPhoto(w http.ResponseWriter, r *http.Request) {
 	str1, _ := os.Getwd()
 	str2, _ := os.Executable()

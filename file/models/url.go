@@ -120,7 +120,7 @@ func SetUrlState(url string, s MediaState) {
 
 func GetUserUploadSizeIn24(userId int64) (int64, error) {
 	matchStage := bson.D{{"$match", bson.D{
-		{"created_at", bson.D{{"$gt", time.Now().Add(-time.Hour * 24).UTC()}}},
+		{"created_at", bson.D{{"$gt", time.Now().UTC().Add(-time.Hour * 24)}}},
 		{"user_id", userId},
 	}}}
 	groupStage := bson.D{

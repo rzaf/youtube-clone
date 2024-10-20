@@ -1,12 +1,22 @@
 
-all: generatePbs build
-
+all: generatePbs swagger build
 
 generatePbs:
 	@echo "generating porotocol buffer files ...."
 	@cd .. && protoc youtube-clone/database/pbs/*.proto --go_out=. --go-grpc_out=.
 	@cd .. && protoc youtube-clone/file/pbs/*.proto --go_out=. --go-grpc_out=.
 	@cd .. && protoc youtube-clone/notification/pbs/*.proto --go_out=. --go-grpc_out=.
+
+swagger:
+	@echo "creating swagger docs of gateway service ...."
+	@cd gateway && swag init -g ./handlers/docs.go
+	@echo "creating swagger docs of file service ...."
+	@cd file && swag init -g ./handlers/docs.go
+
+swagger-fmt:
+	@echo "formatting swagger docs"
+	@cd gateway/handlers && swag fmt
+	@cd file/handlers && swag fmt
 
 build:
 	@echo "building go files:"
@@ -26,8 +36,12 @@ build:
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o notification/bin/notificationService notification/cmd/notificationService/main.go
 
 
-run: all
-	@echo "building and running docker ..."
+build-run: all
+	@echo "building and running docker-compose ..."
+	docker-compose up --build
+
+run:
+	@echo "running docker-compose ..."
 	docker-compose up --build
 
 
