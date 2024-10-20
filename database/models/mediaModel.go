@@ -3,12 +3,12 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/db"
+	"github.com/rzaf/youtube-clone/database/helpers"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
 	"log"
 	"math"
 	"time"
-	"youtube-clone/database/db"
-	"youtube-clone/database/helpers"
-	"youtube-clone/database/pbs/helper"
 
 	"github.com/lib/pq"
 )

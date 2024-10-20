@@ -1,4 +1,4 @@
-module youtube-clone/gateway
+module github.com/rzaf/youtube-clone/gateway
 
 go 1.22.0
 

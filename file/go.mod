@@ -1,4 +1,4 @@
-module youtube-clone/file
+module github.com/rzaf/youtube-clone/file
 
 go 1.21.5
 

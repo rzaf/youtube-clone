@@ -3,9 +3,9 @@ package handlers
 import (
 	"fmt"
 
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/gateway/helpers"
 	"net/http"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/gateway/helpers"
 )
 
 func RecoverServerPanics(next http.Handler) http.Handler {

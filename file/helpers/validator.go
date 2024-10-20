@@ -3,10 +3,10 @@ package helpers
 import (
 	"fmt"
 	"github.com/go-playground/validator"
+	"github.com/rzaf/youtube-clone/file/models"
 	"log"
 	"os"
 	"strconv"
-	"youtube-clone/file/models"
 )
 
 const (

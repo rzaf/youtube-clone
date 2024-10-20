@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
+	"github.com/rzaf/youtube-clone/database/db"
 	"log"
-	"youtube-clone/database/db"
 
 	"github.com/lib/pq"
 )

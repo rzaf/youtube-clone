@@ -2,9 +2,9 @@ package models
 
 import (
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/db"
 	"log"
 	"time"
-	"youtube-clone/database/db"
 
 	"github.com/lib/pq"
 )

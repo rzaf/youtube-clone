@@ -1,13 +1,13 @@
 package client
 
 import (
+	"github.com/rzaf/youtube-clone/database/pbs/comment"
+	"github.com/rzaf/youtube-clone/database/pbs/media"
+	"github.com/rzaf/youtube-clone/database/pbs/playlist"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	"github.com/rzaf/youtube-clone/gateway/helpers"
 	"log"
-	"youtube-clone/database/pbs/comment"
-	"youtube-clone/database/pbs/media"
-	"youtube-clone/database/pbs/playlist"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	"youtube-clone/gateway/helpers"
-	// "youtube-clone/notification/pbs/emailPb"
+	// "github.com/rzaf/youtube-clone/notification/pbs/emailPb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

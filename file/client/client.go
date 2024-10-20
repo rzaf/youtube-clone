@@ -1,9 +1,9 @@
 package client
 
 import (
+	"github.com/rzaf/youtube-clone/database/helpers"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"log"
-	"youtube-clone/database/helpers"
-	user_pb "youtube-clone/database/pbs/user-pb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

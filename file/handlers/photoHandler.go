@@ -2,14 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	"github.com/rzaf/youtube-clone/file/helpers"
+	"github.com/rzaf/youtube-clone/file/models"
+	"github.com/rzaf/youtube-clone/file/queue"
 	"io"
 	"net/http"
 	"os"
-	pbHelper "youtube-clone/database/pbs/helper"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	"youtube-clone/file/helpers"
-	"youtube-clone/file/models"
-	"youtube-clone/file/queue"
 
 	"github.com/go-chi/chi"
 	// "github.com/h2non/bimg"

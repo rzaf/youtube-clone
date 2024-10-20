@@ -1,7 +1,7 @@
 package services
 
 import (
-	"youtube-clone/notification/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/notification/pbs/emailPb"
 
 	"google.golang.org/grpc"
 )

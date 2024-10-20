@@ -2,8 +2,8 @@ package migrations
 
 import (
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/db"
 	"log"
-	"youtube-clone/database/db"
 )
 
 type Migration interface {

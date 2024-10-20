@@ -5,12 +5,12 @@ import (
 	"log"
 
 	"fmt"
-	"youtube-clone/database/client"
-	"youtube-clone/database/models"
-	"youtube-clone/database/pbs/helper"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	fileModels "youtube-clone/file/models"
-	filePb "youtube-clone/file/pbs/file"
+	"github.com/rzaf/youtube-clone/database/client"
+	"github.com/rzaf/youtube-clone/database/models"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	fileModels "github.com/rzaf/youtube-clone/file/models"
+	filePb "github.com/rzaf/youtube-clone/file/pbs/file"
 )
 
 type userServiceServer struct {

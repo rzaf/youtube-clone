@@ -3,10 +3,10 @@ package routes
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"youtube-clone/gateway/handlers"
+	"github.com/rzaf/youtube-clone/gateway/handlers"
 
+	_ "github.com/rzaf/youtube-clone/gateway/docs"
 	"github.com/swaggo/http-swagger" // http-swagger middleware
-	_ "youtube-clone/gateway/docs"
 )
 
 func GetRoutes() *chi.Mux {

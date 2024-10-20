@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"fmt"
-	"youtube-clone/database/models"
-	"youtube-clone/database/pbs/comment"
-	"youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/models"
+	"github.com/rzaf/youtube-clone/database/pbs/comment"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
 )
 
 type commentServiceServer struct {

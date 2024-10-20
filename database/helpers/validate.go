@@ -2,9 +2,9 @@ package helpers
 
 import (
 	"fmt"
+	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	"log"
 	"os"
-	pbHelper "youtube-clone/database/pbs/helper"
 )
 
 func FatalIfEmptyVar(key string) string {

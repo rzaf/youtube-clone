@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package emailPb;
-option go_package="youtube-clone/notification/pbs/emailPb";
+option go_package="github.com/rzaf/youtube-clone/notification/pbs/emailPb";
 
 message Empty{}
 

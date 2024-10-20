@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"context"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	"github.com/rzaf/youtube-clone/gateway/client"
+	"github.com/rzaf/youtube-clone/gateway/helpers"
 	"net/http"
-	"youtube-clone/database/pbs/helper"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	"youtube-clone/gateway/client"
-	"youtube-clone/gateway/helpers"
 
 	"github.com/go-chi/chi"
 )

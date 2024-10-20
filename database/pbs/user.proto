@@ -3,7 +3,7 @@ syntax = "proto3";
 import "youtube-clone/database/pbs/helper.proto";
 
 package user_pb;
-option go_package="youtube-clone/database/pbs/user-pb";
+option go_package="github.com/rzaf/youtube-clone/database/pbs/user-pb";
 
 message UserId{
     int64 id = 1;

@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"youtube-clone/database/helpers"
+	"github.com/rzaf/youtube-clone/database/helpers"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

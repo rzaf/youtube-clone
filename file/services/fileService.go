@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
-	"youtube-clone/file/models"
-	"youtube-clone/file/pbs/file"
+	"github.com/rzaf/youtube-clone/file/models"
+	"github.com/rzaf/youtube-clone/file/pbs/file"
 )
 
 type fileServiceServer struct {

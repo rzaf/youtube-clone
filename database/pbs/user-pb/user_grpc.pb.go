@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: youtube-clone/database/pbs/user.proto
+// source: github.com/rzaf/youtube-clone/database/pbs/user.proto
 
 package user_pb
 
@@ -571,5 +571,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "youtube-clone/database/pbs/user.proto",
+	Metadata: "github.com/rzaf/youtube-clone/database/pbs/user.proto",
 }

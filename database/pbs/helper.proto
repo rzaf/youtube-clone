@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package helper;
-option go_package="youtube-clone/database/pbs/helper";
+option go_package="github.com/rzaf/youtube-clone/database/pbs/helper";
 
 message Empty{}
 

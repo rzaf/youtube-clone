@@ -1,7 +1,7 @@
 package models
 
 import (
-	"youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
 )
 
 type ModelError struct {

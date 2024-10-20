@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/go-chi/chi"
-	"youtube-clone/gateway/handlers"
+	"github.com/rzaf/youtube-clone/gateway/handlers"
 )
 
 // func setLikesRoutes(router *chi.Mux) {

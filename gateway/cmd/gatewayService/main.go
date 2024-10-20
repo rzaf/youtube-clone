@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/rzaf/youtube-clone/gateway/client"
+	"github.com/rzaf/youtube-clone/gateway/server"
 	"log"
-	"youtube-clone/gateway/client"
-	"youtube-clone/gateway/server"
 )
 
 func main() {

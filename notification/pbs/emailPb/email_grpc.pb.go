@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: youtube-clone/notification/pbs/email.proto
+// source: github.com/rzaf/youtube-clone/notification/pbs/email.proto
 
 package emailPb
 
@@ -137,5 +137,5 @@ var EmailService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "youtube-clone/notification/pbs/email.proto",
+	Metadata: "github.com/rzaf/youtube-clone/notification/pbs/email.proto",
 }

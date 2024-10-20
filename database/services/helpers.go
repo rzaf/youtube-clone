@@ -2,10 +2,10 @@ package services
 
 import (
 	"context"
-	"youtube-clone/database/client"
-	"youtube-clone/database/models"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/notification/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/database/client"
+	"github.com/rzaf/youtube-clone/database/models"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/notification/pbs/emailPb"
 )
 
 func newPagesInfo(PageCount, CurrentPage int32) *helper.PagesInfo {

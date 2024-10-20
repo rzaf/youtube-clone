@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
+	"github.com/rzaf/youtube-clone/gateway/helpers"
+	"github.com/rzaf/youtube-clone/gateway/routes"
 	"log"
 	"net/http"
-	"youtube-clone/gateway/helpers"
-	"youtube-clone/gateway/routes"
 )
 
 func StartHttpServer() {

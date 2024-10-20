@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"youtube-clone/gateway/handlers"
+	"github.com/rzaf/youtube-clone/gateway/handlers"
 
 	"github.com/go-chi/chi"
 )

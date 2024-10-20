@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/helpers"
+	"github.com/rzaf/youtube-clone/database/services"
 	"log"
 	"net"
-	"youtube-clone/database/helpers"
-	"youtube-clone/database/services"
 
 	"google.golang.org/grpc"
 )

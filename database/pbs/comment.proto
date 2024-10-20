@@ -3,7 +3,7 @@ syntax = "proto3";
 import "youtube-clone/database/pbs/helper.proto";
 
 package comment;
-option go_package="youtube-clone/database/pbs/comment";
+option go_package="github.com/rzaf/youtube-clone/database/pbs/comment";
 
 message EditCommentData{
     string  Text=1;

@@ -3,10 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/models"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/pbs/playlist"
 	"log"
-	"youtube-clone/database/models"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/database/pbs/playlist"
 )
 
 type playlistServiceServer struct {

@@ -4,12 +4,12 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	"math"
 	"os"
-	pbHelper "youtube-clone/database/pbs/helper"
 
 	// "os"
-	"youtube-clone/file/models"
+	"github.com/rzaf/youtube-clone/file/models"
 )
 
 func generateSecureToken(length int) string {

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/rzaf/youtube-clone/database/db"
+	"github.com/rzaf/youtube-clone/database/migrations"
 	"log"
-	"youtube-clone/database/db"
-	"youtube-clone/database/migrations"
 
 	"github.com/joho/godotenv"
 )

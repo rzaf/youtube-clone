@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: youtube-clone/database/pbs/playlist.proto
+// source: github.com/rzaf/youtube-clone/database/pbs/playlist.proto
 
 package playlist
 
@@ -427,5 +427,5 @@ var PlaylistService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "youtube-clone/database/pbs/playlist.proto",
+	Metadata: "github.com/rzaf/youtube-clone/database/pbs/playlist.proto",
 }

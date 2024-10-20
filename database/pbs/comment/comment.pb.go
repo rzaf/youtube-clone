@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.21.12
-// source: youtube-clone/database/pbs/comment.proto
+// source: github.com/rzaf/youtube-clone/database/pbs/comment.proto
 
 package comment
 
@@ -11,7 +11,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
-	helper "youtube-clone/database/pbs/helper"
+	helper "github.com/rzaf/youtube-clone/database/pbs/helper"
 )
 
 const (

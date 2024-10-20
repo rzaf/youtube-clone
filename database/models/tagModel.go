@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
+	"github.com/rzaf/youtube-clone/database/db"
 	"time"
-	"youtube-clone/database/db"
 )
 
 type Tag struct {

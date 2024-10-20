@@ -3,10 +3,10 @@ package handlers
 import (
 	"context"
 	"fmt"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	"github.com/rzaf/youtube-clone/file/client"
+	"github.com/rzaf/youtube-clone/file/helpers"
 	"net/http"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	"youtube-clone/file/client"
-	"youtube-clone/file/helpers"
 )
 
 type authUser string

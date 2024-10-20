@@ -2,11 +2,11 @@ package queue
 
 import (
 	"fmt"
+	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/file/models"
 	"io"
 	"os"
 	"os/exec"
-	pbHelper "youtube-clone/database/pbs/helper"
-	"youtube-clone/file/models"
 	// "github.com/h2non/bimg"
 )
 

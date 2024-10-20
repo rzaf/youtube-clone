@@ -1,4 +1,4 @@
-module youtube-clone/database
+module github.com/rzaf/youtube-clone/database
 
 go 1.21.5
 

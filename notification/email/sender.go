@@ -2,9 +2,9 @@ package email
 
 import (
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/helpers"
 	"log"
 	"net/smtp"
-	"youtube-clone/database/helpers"
 )
 
 var (

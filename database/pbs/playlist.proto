@@ -3,7 +3,7 @@ syntax = "proto3";
 import "youtube-clone/database/pbs/helper.proto";
 
 package playlist;
-option go_package="youtube-clone/database/pbs/playlist";
+option go_package="github.com/rzaf/youtube-clone/database/pbs/playlist";
 
 
 message PlaylistShortData{

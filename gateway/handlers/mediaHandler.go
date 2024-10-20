@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/pbs/media"
+	"github.com/rzaf/youtube-clone/database/pbs/playlist"
+	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
+	"github.com/rzaf/youtube-clone/gateway/client"
+	"github.com/rzaf/youtube-clone/gateway/helpers"
 	"net/http"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/database/pbs/media"
-	"youtube-clone/database/pbs/playlist"
-	user_pb "youtube-clone/database/pbs/user-pb"
-	"youtube-clone/gateway/client"
-	"youtube-clone/gateway/helpers"
 )
 
 //0:video 1:music 2:photo

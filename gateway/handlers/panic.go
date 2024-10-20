@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
 )
 
 // func PanicError(e error) {

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/rzaf/youtube-clone/file/client"
+	"github.com/rzaf/youtube-clone/file/db"
+	"github.com/rzaf/youtube-clone/file/queue"
+	"github.com/rzaf/youtube-clone/file/server"
 	"log"
-	"youtube-clone/file/client"
-	"youtube-clone/file/db"
-	"youtube-clone/file/queue"
-	"youtube-clone/file/server"
 )
 
 func main() {

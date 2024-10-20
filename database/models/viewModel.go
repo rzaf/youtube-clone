@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/rzaf/youtube-clone/database/db"
 	"log"
 	"time"
-	"youtube-clone/database/db"
 )
 
 type Views struct {

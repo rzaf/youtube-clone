@@ -2,13 +2,13 @@ package services
 
 import (
 	"context"
+	"github.com/rzaf/youtube-clone/database/client"
+	"github.com/rzaf/youtube-clone/database/models"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/database/pbs/media"
+	fileModels "github.com/rzaf/youtube-clone/file/models"
+	filePb "github.com/rzaf/youtube-clone/file/pbs/file"
 	"log"
-	"youtube-clone/database/client"
-	"youtube-clone/database/models"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/database/pbs/media"
-	fileModels "youtube-clone/file/models"
-	filePb "youtube-clone/file/pbs/file"
 )
 
 type mediaServiceServer struct {

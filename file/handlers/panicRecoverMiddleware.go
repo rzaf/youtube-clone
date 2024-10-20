@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	// "log"
+	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/file/helpers"
 	"net/http"
-	"youtube-clone/database/pbs/helper"
-	"youtube-clone/file/helpers"
 )
 
 func RecoverServerPanics(next http.Handler) http.Handler {

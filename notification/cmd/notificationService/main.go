@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/rzaf/youtube-clone/notification/email"
+	"github.com/rzaf/youtube-clone/notification/server"
 	"log"
-	"youtube-clone/notification/email"
-	"youtube-clone/notification/server"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"youtube-clone/file/pbs/file"
-	// "youtube-clone/file/pbs/helper"
+	"github.com/rzaf/youtube-clone/file/pbs/file"
+	// "github.com/rzaf/youtube-clone/file/pbs/helper"
 
 	"google.golang.org/grpc"
 )

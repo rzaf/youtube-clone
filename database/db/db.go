@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/rzaf/youtube-clone/database/helpers"
 	"log"
 	"time"
-	"youtube-clone/database/helpers"
 
 	_ "github.com/lib/pq"
 )
