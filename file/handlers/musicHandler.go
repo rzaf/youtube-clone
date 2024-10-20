@@ -60,7 +60,7 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 
 func GetMusic(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
-	helpers.ValidateUrl(url)
+	helpers.ValidateVideoUrl(url)
 	urlM := models.GetUrl(url[:16])
 	if urlM == nil || urlM.State == models.Removed {
 		panic(helpers.NewServerError(fmt.Sprintf("url:'%s' not found", url), 404))
