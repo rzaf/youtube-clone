@@ -47,7 +47,7 @@ type Comment struct {
 func AuthGetComment(commentUrl string, userId int64) (*Comment, error) {
 	query := `
 	SELECT
-		C2.text AS reply_text,
+		COALESCE(C2.text,'') AS reply_text,
 		COALESCE(C2.url,'') AS reply_url,
 		COALESCE(U3.username,'') AS reply_username,
 		COALESCE(U3.profile_photo,'') AS reply_user_profile,
@@ -103,7 +103,7 @@ func GetComment(commentUrl string) (*Comment, error) {
 	fmt.Println(commentUrl)
 	query := `
 	SELECT
-		C2.text AS reply_text,
+		COALESCE(C2.text,'') AS reply_text,
 		COALESCE(C2.url,'') AS reply_url,
 		COALESCE(U3.username,'') AS reply_username,
 		COALESCE(U3.profile_photo,'') AS reply_user_profile,

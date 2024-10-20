@@ -89,8 +89,7 @@ func SearchUsers(limit int, offset int, search string, sortType helper.SortType)
 		U.created_at,
 		(SELECT COUNT(*) FROM views V JOIN medias M ON V.media_id=M.id WHERE V.user_id=U.id) AS views_count,
 		(SELECT COUNT(*) FROM followings WHERE followings.following_id=U.id) AS subscribers,
-		COALESCE(U.profile_photo,'') AS profile_photo,
-		EXISTS(SELECT id FROM followings WHERE follower_id=$1 AND following_id=U.id) AS is_subbed
+		COALESCE(U.profile_photo,'') AS profile_photo
 	FROM 
 		users AS U
 	WHERE  U.channel_name LIKE concat('%',$1::VARCHAR,'%') OR U.username LIKE concat('%',$1::VARCHAR,'%')
@@ -348,6 +347,12 @@ func GetUserByUsername(username string) (*User, error) {
 		U.channel_name,
 		U.username,
 		U.email,
+		U.created_at,
+		U.updated_at,
+		(SELECT COUNT(*) FROM views V JOIN medias M ON V.media_id=M.id WHERE V.user_id=U.id) AS views_count,
+		(SELECT COUNT(*) FROM medias WHERE user_id=U.id) AS upload_count,
+		(SELECT COUNT(*) FROM followings WHERE followings.following_id=U.id) AS subscribers,
+		(SELECT COUNT(*) FROM followings WHERE followings.follower_id=U.id) AS subscrings,
 		email_verification IS NULL,
 		COALESCE(U.profile_photo,'') AS profile_photo,
 		COALESCE(U.channel_photo,'') AS channel_photo,
@@ -363,7 +368,8 @@ func GetUserByUsername(username string) (*User, error) {
 		return nil, NewModelError(fmt.Sprintf("user with username:`%s` not found! ", username), 404)
 	}
 	var u User
-	err = rows.Scan(&u.ChannelName, &u.Username, &u.Email, &u.IsVerified, &u.ProfilePhoto, &u.ChannelPhoto, &u.AboutMe)
+	err = rows.Scan(&u.ChannelName, &u.Username, &u.Email, &u.Created_at, &u.Updated_at, &u.TotalViews,
+		&u.UploadCount, &u.Subscribers, &u.Subscribings, &u.IsVerified, &u.ProfilePhoto, &u.ChannelPhoto, &u.AboutMe)
 	if err != nil {
 		return nil, err
 	}
@@ -415,6 +421,7 @@ func GetUserByUsernameAndPassword(usernameOrEmail string, password string) (*Use
 			U.channel_name,
 			U.email,
 			U.username,
+			email_verification IS NULL,
 			U.api_key,
 			U.hashed_password,
 			U.created_at,
@@ -439,7 +446,7 @@ func GetUserByUsernameAndPassword(usernameOrEmail string, password string) (*Use
 		return nil, NewModelError("Invalid email/username or password", 400)
 	}
 	var u User
-	err = rows.Scan(&u.ChannelName, &u.Email, &u.Username, &u.ApiKey, &u.HashedPassword,
+	err = rows.Scan(&u.ChannelName, &u.Email, &u.Username, &u.IsVerified, &u.ApiKey, &u.HashedPassword,
 		&u.Created_at, &u.Updated_at, &u.TotalViews, &u.UploadCount, &u.Subscribers, &u.Subscribings,
 		&u.ProfilePhoto, &u.ChannelPhoto, &u.AboutMe)
 	if err != nil {
