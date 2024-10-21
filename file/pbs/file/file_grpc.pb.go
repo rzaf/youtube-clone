@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: github.com/rzaf/youtube-clone/file/pbs/file.proto
+// source: file.proto
 
 package file
 
@@ -209,5 +209,5 @@ var FileService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "github.com/rzaf/youtube-clone/file/pbs/file.proto",
+	Metadata: "file.proto",
 }

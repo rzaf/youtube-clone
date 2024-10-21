@@ -2,16 +2,16 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: github.com/rzaf/youtube-clone/database/pbs/media.proto
+// source: media.proto
 
 package media
 
 import (
 	context "context"
+	helper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	helper "github.com/rzaf/youtube-clone/database/pbs/helper"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -462,5 +462,5 @@ var MediaService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "github.com/rzaf/youtube-clone/database/pbs/media.proto",
+	Metadata: "media.proto",
 }

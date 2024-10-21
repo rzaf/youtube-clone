@@ -3,9 +3,23 @@ all: generatePbs swagger build
 
 generatePbs:
 	@echo "generating porotocol buffer files ...."
-	@cd .. && protoc youtube-clone/database/pbs/*.proto --go_out=. --go-grpc_out=.
-	@cd .. && protoc youtube-clone/file/pbs/*.proto --go_out=. --go-grpc_out=.
-	@cd .. && protoc youtube-clone/notification/pbs/*.proto --go_out=. --go-grpc_out=.
+
+	@mkdir -p ./database/pbs/helper/
+	@cd ./database/pbs && protoc helper.proto --go_out=./helper --go_opt=paths=source_relative --go-grpc_out=./helper --go-grpc_opt=paths=source_relative  
+	@mkdir -p ./database/pbs/comment/
+	@cd ./database/pbs && protoc comment.proto --go_out=./comment --go_opt=paths=source_relative --go-grpc_out=./comment --go-grpc_opt=paths=source_relative  
+	@mkdir -p ./database/pbs/media/
+	@cd ./database/pbs && protoc media.proto --go_out=./media --go_opt=paths=source_relative --go-grpc_out=./media --go-grpc_opt=paths=source_relative  
+	@mkdir -p ./database/pbs/playlist/
+	@cd ./database/pbs && protoc playlist.proto --go_out=./playlist --go_opt=paths=source_relative --go-grpc_out=./playlist --go-grpc_opt=paths=source_relative  
+	@mkdir -p ./database/pbs/user-pb/
+	@cd ./database/pbs && protoc user.proto --go_out=./user-pb --go_opt=paths=source_relative --go-grpc_out=./user-pb --go-grpc_opt=paths=source_relative 
+
+	@mkdir -p ./file/pbs/file/
+	@cd ./file/pbs && protoc file.proto --go_out=./file --go_opt=paths=source_relative --go-grpc_out=./file --go-grpc_opt=paths=source_relative 
+
+	@mkdir -p ./notification/pbs/emailPb/
+	@cd ./notification/pbs && protoc email.proto --go_out=./emailPb --go_opt=paths=source_relative --go-grpc_out=./emailPb --go-grpc_opt=paths=source_relative 
 
 swagger:
 	@echo "creating swagger docs of gateway service ...."

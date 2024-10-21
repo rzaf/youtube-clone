@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "youtube-clone/database/pbs/helper.proto";
+import "helper.proto";
 
 package user_pb;
 option go_package="github.com/rzaf/youtube-clone/database/pbs/user-pb";
