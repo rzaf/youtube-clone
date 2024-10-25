@@ -19,6 +19,7 @@ func setUserRoutes(router *chi.Mux) {
 }
 
 func setUserAuthRoutes(router chi.Router) {
+	router.Get("/users/{username}/followings", handlers.GetFollowings)
 
 	router.Put("/users/{username}/profile-photo", handlers.SetProfilePhoto)
 	router.Put("/users/{username}/channel-photo", handlers.SetChannelPhoto)

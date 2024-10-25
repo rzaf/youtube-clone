@@ -1596,6 +1596,51 @@ paths:
       summary: edit user channel photo
       tags:
       - users
+  /users/{username}/followings:
+    get:
+      consumes:
+      - multipart/form-data
+      description: get users followings
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: get users followings
+      tags:
+      - users
   /users/{username}/newApiKey:
     put:
       consumes:

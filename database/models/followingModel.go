@@ -2,11 +2,12 @@ package models
 
 import (
 	"fmt"
-	"github.com/rzaf/youtube-clone/database/db"
 	"log"
+	"math"
 	"time"
 
 	"github.com/lib/pq"
+	"github.com/rzaf/youtube-clone/database/db"
 )
 
 type Following struct {
@@ -125,6 +126,69 @@ func DeleteFollowing(followerId int64, followingUsername string) error {
 		return NewModelError("username:`"+followingUsername+"` is not followed", 400)
 	}
 	return nil
+}
+
+func GetUserFollowings(userId int64, limit int, offset int) (int64, []User, error) {
+	var totalPages int64
+	{
+		query := `
+		SELECT 
+			COUNT(*)
+		FROM 
+			followings F
+		WHERE
+			F.follower_id=$1;
+		`
+		rows, err := db.Db.Query(query, userId)
+		if err != nil {
+			return 0, nil, err
+		}
+		defer rows.Close()
+		if !rows.Next() {
+			return 0, nil, nil
+		}
+		err = rows.Scan(&totalPages)
+		if err != nil {
+			return 0, nil, err
+		}
+		totalPages = int64(math.Ceil(float64(totalPages) / float64(limit)))
+	}
+	query := `
+	SELECT 
+		U.channel_name,
+		U.username,
+		U.created_at,
+		(SELECT COUNT(*) FROM views V JOIN medias M ON V.media_id=M.id WHERE V.user_id=U.id) AS views_count,
+		(SELECT COUNT(*) FROM followings WHERE followings.following_id=U.id) AS subscribers,
+		COALESCE(U.profile_photo,'') AS profile_photo
+	FROM
+		followings F
+	JOIN
+		users U
+	ON
+		F.following_id = U.id
+	WHERE
+		F.follower_id=$1
+	ORDER BY F.created_at DESC
+	LIMIT $2 OFFSET $3;
+	`
+
+	rows, err := db.Db.Query(query, userId, limit, offset)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer rows.Close()
+	var users []User
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.ChannelName, &u.Username, &u.Created_at, &u.TotalViews, &u.Subscribers, &u.ProfilePhoto)
+		if err != nil {
+			return 0, nil, err
+		}
+		u.IsCurrentUserSubbed = true
+		users = append(users, u)
+	}
+	return totalPages, users, nil /// users will be nil if no user can be find
 }
 
 ///// helper functions

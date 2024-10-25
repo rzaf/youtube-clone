@@ -562,3 +562,50 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	PanicIfIsError(res.GetErr())
 	helpers.WriteJsonMessage(w, fmt.Sprintf("user with username:`%s` deleted", currentUser.Username), 200)
 }
+
+// get users followings
+//
+//	@Summary		get users followings
+//	@Description	get users followings
+//	@Tags			users
+//	@Produce		application/json
+//	@Accept			multipart/form-data
+//	@Security		ApiKeyAuth
+//	@Param			username					path		string	true	"username"
+//	@Param			page					query		int		false	"page number"	default(1)
+//	@Param			perpage					query		int		false	"items perpage"	default(10)
+//	@Success		200						{string}	string	"ok"
+//	@Success		204						{string}	string	"no content"
+//	@Failure		400						{string}	string	"request failed"
+//	@Failure		500						{string}	string	"server error"
+//	@Router			/users/{username}/followings	[get]
+func GetFollowings(w http.ResponseWriter, r *http.Request) {
+	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	userName := chi.URLParam(r, "username")
+	fmt.Printf("%v\n", currentUser)
+	if userName != currentUser.Username {
+		helpers.WriteJsonError(w, "Not allowed to get folllowings of user with username:`"+userName+"`", 403)
+		return
+	}
+	body := make(map[string]any)
+	helpers.ParseReq(r, body)
+
+	helpers.ValidateAllowedParams(body, "perpage", "page", "sort")
+	perpage := helpers.ValidatePositiveInt(body["perpage"], "perpage", 5)
+	page := helpers.ValidatePositiveInt(body["page"], "page", 1)
+
+	res, err := client.UserService.GetFollowings(context.Background(), &user_pb.UserReq{
+		Page:          toPage(perpage, page),
+		CurrentUserId: currentUser.Id,
+	})
+	if err != nil {
+		helpers.LogPanic(err)
+	}
+	PanicIfIsError(res.GetErr())
+	fmt.Println(res.GetUsers())
+	if res.GetEmpty() != nil {
+		helpers.WriteEmpty(w)
+		return
+	}
+	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
+}

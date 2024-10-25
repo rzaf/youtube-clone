@@ -390,3 +390,15 @@ func (s *userServiceServer) DeleteFollow(c context.Context, f *user_pb.FollowDat
 	}
 	return newUserResponseFromEmpty(), nil
 }
+
+func (s *userServiceServer) GetFollowings(c context.Context, f *user_pb.UserReq) (*user_pb.Response, error) {
+	PerPage, PageNumber := getPage(f.Page)
+	totalPages, users, err := models.GetUserFollowings(f.CurrentUserId, PerPage, PageNumber)
+	if err != nil {
+		if err2, ok := models.ConvertError(err); ok {
+			return newUserResponseFromError(err2.ToHttpError()), nil
+		}
+		return nil, err
+	}
+	return newResponseFromUsers(users, newPagesInfo(int32(totalPages), f.Page.PageNumber)), nil
+}

@@ -172,5 +172,7 @@ service UserService{
 
     rpc CreateFollow(FollowData) returns (Response){};
     rpc DeleteFollow(FollowData) returns (Response){};
+    
+    rpc GetFollowings(UserReq) returns (Response){};
 }
 

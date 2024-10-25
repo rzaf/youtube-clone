@@ -49,6 +49,7 @@ protected routes require authentication with api key
 | POST |`api/users/{username}/verify/{code}`|&cross;|
 | POST |`api/users/resend-email`            |&check;|
 | PUT  |`api/users/{username}/profile-photo`|&check;|
+| GET  |`/users/{username}/followings`      |&check;|
 | PUT  |`api/users/{username}/channel-photo`|&check;|
 | PUT  |`api/users/{username}/newApiKey`    |&check;|
 | PUT  |`api/users/{username}`              |&check;|

@@ -37,6 +37,7 @@ type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *EditUserData, opts ...grpc.CallOption) (*Response, error)
 	CreateFollow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*Response, error)
 	DeleteFollow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*Response, error)
+	GetFollowings(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*Response, error)
 }
 
 type userServiceClient struct {
@@ -173,6 +174,15 @@ func (c *userServiceClient) DeleteFollow(ctx context.Context, in *FollowData, op
 	return out, nil
 }
 
+func (c *userServiceClient) GetFollowings(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetFollowings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -192,6 +202,7 @@ type UserServiceServer interface {
 	CreateUser(context.Context, *EditUserData) (*Response, error)
 	CreateFollow(context.Context, *FollowData) (*Response, error)
 	DeleteFollow(context.Context, *FollowData) (*Response, error)
+	GetFollowings(context.Context, *UserReq) (*Response, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -240,6 +251,9 @@ func (UnimplementedUserServiceServer) CreateFollow(context.Context, *FollowData)
 }
 func (UnimplementedUserServiceServer) DeleteFollow(context.Context, *FollowData) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFollow not implemented")
+}
+func (UnimplementedUserServiceServer) GetFollowings(context.Context, *UserReq) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowings not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -506,6 +520,24 @@ func _UserService_DeleteFollow_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetFollowings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetFollowings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_pb.UserService/GetFollowings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetFollowings(ctx, req.(*UserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -568,6 +600,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteFollow",
 			Handler:    _UserService_DeleteFollow_Handler,
+		},
+		{
+			MethodName: "GetFollowings",
+			Handler:    _UserService_GetFollowings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
