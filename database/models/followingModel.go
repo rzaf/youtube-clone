@@ -18,6 +18,14 @@ type Following struct {
 	CreatedAt         *time.Time `json:"created_at"`
 }
 
+type FollowerInfo struct {
+	UserId      int64
+	Username    string
+	ChannelName string
+	Email       string
+	IsVerified  bool
+}
+
 //// Get
 
 // func GetFollowersOfUser(followingId int64) []Following {
@@ -117,4 +125,40 @@ func DeleteFollowing(followerId int64, followingUsername string) error {
 		return NewModelError("username:`"+followingUsername+"` is not followed", 400)
 	}
 	return nil
+}
+
+///// helper functions
+
+func Helper_FollowersById(followingId int64) ([]FollowerInfo, error) {
+	query := `
+		SELECT
+			U.id, 
+			U.username, 
+			U.email, 
+			U.channel_name,
+			(U.email_verification IS NULL) is_verified
+		FROM 
+			followings F 
+		JOIN
+			users U
+		ON
+			F.follower_id = U.id
+		WHERE 
+			F.following_id=$1;
+		`
+	rows, err := db.Db.Query(query, followingId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var followers []FollowerInfo
+	for rows.Next() {
+		var f FollowerInfo
+		err = rows.Scan(&f.UserId, &f.Username, &f.Email, &f.ChannelName, &f.IsVerified)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, f)
+	}
+	return followers, nil
 }

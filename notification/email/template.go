@@ -7,7 +7,7 @@ import (
 
 func buildHtml(templateName string, data map[string]any) (string, error) {
 	templatePath := "./templates/" + templateName + ".html.gohtml"
-	t, err := template.New("email-verification-html").ParseFiles(templatePath)
+	t, err := template.New("email-html").ParseFiles(templatePath)
 	if err != nil {
 		return "", err
 	}

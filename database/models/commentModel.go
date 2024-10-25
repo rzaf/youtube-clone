@@ -740,3 +740,54 @@ func DeleteComment(url string, userId int64) error {
 	}
 	return nil
 }
+
+///// helper functions
+
+type CommentInfo struct {
+	Url             string
+	Text            string
+	UserName        string
+	UserEmail       string
+	UserChannelName string
+	MediaUrl        string
+	MediaType       helper.MediaType
+	MediaTitle      string
+	ReplyId         int64 // if comment is a reply
+}
+
+func Helper_CommentByUrl(commentUrl string) (*CommentInfo, error) {
+	query := `
+	SELECT
+		C.url,
+		COALESCE(C.comment_id,0),
+		C.text,
+		M.url,
+		M.title,
+		M.media_type,
+		U.email,
+		U.username,
+		U.channel_name
+	FROM
+		comments C
+	JOIN users U
+		ON U.id = C.user_id
+	JOIN medias M
+		ON M.id = C.media_id
+	WHERE
+		C.url=$1;
+	`
+	rows, err := db.Db.Query(query, commentUrl)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil, NewModelError("comment with url:`"+commentUrl+"`not found", 404)
+	}
+	var c CommentInfo
+	err = rows.Scan(&c.Url, &c.ReplyId, &c.Text, &c.MediaUrl, &c.MediaTitle, &c.MediaType, &c.UserEmail, &c.UserName, &c.UserChannelName)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
+}

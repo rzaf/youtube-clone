@@ -28,8 +28,8 @@ main api of app for user related data (users,medias,comments,playlists,likes,tag
 
 ### notification service
 
-- recieves notificatoins from other services to send to user
-- send emails to users for verifications,events,...
+- recieves notifications from other services to send to user
+- send emails to users for verifications and notifications
 
 ## api endpoints
 
@@ -131,14 +131,19 @@ protected routes require authentication with api key
 - user subscribing (following)
 - comment and reply on medias
 - media and comment likes
-- search in users,medias,playlists
+- searching users,medias,playlists
 - multi media playlists
 - email verification
 - user upload limit
+- notifications:
+  - new media from following user (subscribing)
+  - new comment on users media
+  - new reply on users commnet
+  - new like on users media,comment,reply
+  - new follower (subscriber)
 
 ## todo
 
-- completing notifications
 - image compression
 - multiple video quality and bitrate
 - video subtitle

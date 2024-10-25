@@ -237,6 +237,7 @@ func (*mediaServiceServer) CreateMedia(c context.Context, m *media.EidtMediaData
 	if err != nil {
 		return nil, err
 	}
+	go newMediaNotification(m.CurrentUserId, m.Url, m.Title, mediaTypeToStr(m.TypeId), m.Text)
 	return newMediaResponseFromEmpty(), nil
 }
 
@@ -302,6 +303,7 @@ func (*mediaServiceServer) CreateLikeMedia(con context.Context, l *helper.LikeRe
 		}
 		return nil, err
 	}
+	go newMediaLikeNotification(l.UserId, l.Url, l.IsLike)
 	return newMediaResponseFromEmpty(), nil
 }
 

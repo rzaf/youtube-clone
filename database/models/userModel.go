@@ -310,35 +310,6 @@ func GetUserByApikey(Apikey string) (*User, error) {
 	return &u, nil
 }
 
-// func GetUserById(id int64) *User {
-// 	query := `
-// 	SELECT
-// 		id,
-// 		channel_name,
-// 		username,
-// 		created_at,
-// 		-- (SELECT COUNT(*) FROM views WHERE user_id=users.id)AS views_count,
-// 		(SELECT COUNT(*) FROM medias WHERE user_id=users.id) AS upload_count,
-// 		(SELECT COUNT(*) FROM followings WHERE followings.following_id=users.id) AS subscribers,
-// 		about_me
-// 	FROM users WHERE id=$1;
-// 	`
-// 	rows, err := db.Db.Query(query, id)
-// 	if err != nil {
-// 		log.Panicln(err)
-// 	}
-// 	defer rows.Close()
-// 	if !rows.Next() {
-// 		return nil
-// 	}
-// 	var u User
-// 	err = rows.Scan(&u.Id, &u.ChannelName, &u.Username, &u.Created_at, &u.UploadCount, &u.Subscribers, &u.AboutMe)
-// 	if err != nil {
-// 		log.Panicln(err.Error())
-// 	}
-// 	return &u
-// }
-
 //// GetUser
 
 func GetUserByUsername(username string) (*User, error) {
@@ -666,4 +637,60 @@ func DeleteUser(id int64) error {
 		return fmt.Errorf("authenticated user `id` was incorrect")
 	}
 	return nil
+}
+
+///// helper functions
+
+func Helper_UserById(id int64) (*User, error) {
+	query := `
+	SELECT
+		id,
+		email,
+		channel_name,
+		username,
+		(email_verification IS NULL) is_verified,
+		created_at
+	FROM users WHERE id=$1;
+	`
+	rows, err := db.Db.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil, nil
+	}
+	var u User
+	err = rows.Scan(&u.Id, &u.Email, &u.ChannelName, &u.Username, &u.IsVerified, &u.Created_at)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+func Helper_UserByUsername(username string) (*User, error) {
+	query := `
+	SELECT
+		id,
+		email,
+		channel_name,
+		username,
+		(email_verification IS NULL) is_verified,
+		created_at
+	FROM users WHERE username=$1;
+	`
+	rows, err := db.Db.Query(query, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil, nil
+	}
+	var u User
+	err = rows.Scan(&u.Id, &u.Email, &u.ChannelName, &u.Username, &u.IsVerified, &u.Created_at)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
 }

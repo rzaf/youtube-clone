@@ -376,8 +376,10 @@ func (s *userServiceServer) CreateFollow(c context.Context, f *user_pb.FollowDat
 		}
 		return nil, err
 	}
+	go followingNotification(f.FollowerId, f.FollowingUsername)
 	return newUserResponseFromEmpty(), nil
 }
+
 func (s *userServiceServer) DeleteFollow(c context.Context, f *user_pb.FollowData) (*user_pb.Response, error) {
 	err := models.DeleteFollowing(f.FollowerId, f.FollowingUsername)
 	if err != nil {

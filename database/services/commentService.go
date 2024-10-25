@@ -200,6 +200,11 @@ func (*commentServiceServer) CreateComment(con context.Context, c *comment.EditC
 		}
 		return nil, err
 	}
+	if c.ReplyUrl == "" {
+		go newCommentNotification(c.CurrentUserId, c.Text, c.MediaUrl)
+	} else {
+		go newReplyNotification(c.CurrentUserId, c.Text, c.MediaUrl, c.ReplyUrl)
+	}
 	return newResponseFromCommentData(&comment.CommentData{Url: createdComment.Url}), nil
 }
 
@@ -233,6 +238,7 @@ func (*commentServiceServer) CreateLikeComment(con context.Context, l *helper.Li
 		}
 		return nil, err
 	}
+	go newCommentLikeNotification(l.UserId, l.Url, l.IsLike)
 	return newCommentResponseFromEmpty(), nil
 }
 

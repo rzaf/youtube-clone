@@ -32,6 +32,10 @@ func (emailServiceServer) SendVerifcation(c context.Context, e *emailPb.UserVeri
 	return newEmailResponseFromEmpty(), nil
 }
 
-func (emailServiceServer) SendNotification(context.Context, *emailPb.NotificationData) (*emailPb.Response, error) {
+func (emailServiceServer) SendNotification(c context.Context, e *emailPb.NotificationData) (*emailPb.Response, error) {
+	err := email.SendNotificationEmail(e.UserEmail, e.Username, e.Title, e.Message)
+	if err != nil {
+		return newEmailResponseFromError(&emailPb.HttpError{Message: "failed to send email", StatusCode: 500}), nil
+	}
 	return newEmailResponseFromEmpty(), nil
 }

@@ -46,6 +46,7 @@ type Media struct {
 	UpdatedAt *time.Time       `json:"updated_at,omitempty"`
 	/// extra columns from other tables
 	UserName                     string    `json:"uploader_username"`
+	UserEmail                    string    `json:"uploader_user_email"`
 	UserProfile                  string    `json:"uploader_profile"`
 	Tags                         string    `json:"tags"` // seperated with comma
 	ChannelName                  string    `json:"uploader_name"`
@@ -592,4 +593,41 @@ func RemoveTagFromMedia(mediaUrl string, tagName string, userId int64) error {
 		return NewModelError("media or tag not found!", 400)
 	}
 	return nil
+}
+
+///// helper functions
+
+func Helper_MediaByUrl(url string) (*Media, error) {
+	query := `
+	SELECT
+		M.title,
+		COALESCE(M.text,''),
+		M.url,
+		M.media_type,
+		U.username,
+		U.email,
+		U.channel_name
+	FROM 
+		medias AS M
+	JOIN users AS U 
+		ON U.id = user_id
+	WHERE 
+		m.url=$1;
+	`
+	rows, err := db.Db.Query(query, url)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil, NewModelError("Media with url:`"+url+"` not found", 404)
+	}
+	var m Media
+	err = rows.Scan(&m.Title, &m.Text, &m.Url, &m.Type, &m.UserName, &m.UserEmail, &m.ChannelName)
+	m.CurrentUserLike = NONE
+
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
 }
