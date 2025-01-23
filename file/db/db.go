@@ -12,6 +12,8 @@ import (
 var Client *mongo.Client
 var FilesDb *mongo.Database
 var UrlsCollection *mongo.Collection
+var ProcessesQueueCollection *mongo.Collection
+var ProcessedQueueCollection *mongo.Collection
 
 func Connect() {
 	mongoAddr := helpers.FatalIfEmptyVar("MONGODB_ADDR")
@@ -38,6 +40,8 @@ func Connect() {
 	fmt.Println("connected to mongodb")
 	FilesDb = Client.Database("files")
 	UrlsCollection = FilesDb.Collection("urls")
+	ProcessesQueueCollection = FilesDb.Collection("processes_queue")
+	ProcessedQueueCollection = FilesDb.Collection("processed_queue")
 }
 
 func Disconnect() {

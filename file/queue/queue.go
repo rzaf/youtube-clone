@@ -1,21 +1,16 @@
 package queue
 
 import (
+	"fmt"
 	"sync"
+
+	"github.com/rzaf/youtube-clone/file/models"
 )
 
-// type MediaType uint8
-
-// const (
-//
-//	Video MediaType = iota
-//	Music
-//	Photo
-//
-// )
 type Element interface {
-	process()
-	remove()
+	process() error
+	name() string
+	url() string
 }
 
 var (
@@ -26,6 +21,8 @@ var (
 
 func Push(e Element) {
 	queueMutext.Lock()
+	err := models.CreateProcess(e.name(), e.url())
+	fmt.Printf("err: %v\n", err)
 	queue = append(queue, e)
 	size++
 	queueMutext.Unlock()

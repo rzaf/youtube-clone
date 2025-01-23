@@ -22,18 +22,35 @@ func NewFileFormat(url string, t pbHelper.MediaType) *FileFormat {
 	}
 }
 
-func (u *FileFormat) process() {
+func (u *FileFormat) process() error {
 	switch u.MediaType {
 	case pbHelper.MediaType_VIDEO:
-		u.processVideo()
+		return u.processVideo()
 	case pbHelper.MediaType_MUSIC:
-		u.processMusic()
+		return u.processMusic()
 	case pbHelper.MediaType_PHOTO:
-		u.processPhoto()
+		return u.processPhoto()
 	}
+	return nil
 }
 
-func (u *FileFormat) processVideo() {
+func (u *FileFormat) name() string {
+	switch u.MediaType {
+	case pbHelper.MediaType_VIDEO:
+		return "video_format"
+	case pbHelper.MediaType_MUSIC:
+		return "music_format"
+	case pbHelper.MediaType_PHOTO:
+		return "photo_format"
+	}
+	return ""
+}
+
+func (u *FileFormat) url() string {
+	return u.Url
+}
+
+func (u *FileFormat) processVideo() error {
 	url := u.Url
 	cmd := exec.Command("ffmpeg",
 		"-i", "storage/temp/"+url,
@@ -62,17 +79,19 @@ func (u *FileFormat) processVideo() {
 	cmd.Stdout = stdOut
 	err := cmd.Run()
 	if err != nil {
-		err2, _ := err.(*exec.ExitError)
-		if err2 != nil {
-			fmt.Println(err2.Stderr)
-			panic(err2)
-		}
-		panic(err)
+		// err2, _ := err.(*exec.ExitError)
+		// if err2 != nil {
+		// 	fmt.Println(err2.Stderr)
+		// 	return err2
+		// }
+		return err
 	}
 	models.SetUrlState(u.Url, models.Ready)
+	removeTemp(u.Url)
+	return nil
 }
 
-func (u *FileFormat) processMusic() {
+func (u *FileFormat) processMusic() error {
 	url := u.Url
 	cmd := exec.Command("ffmpeg",
 		"-i", "storage/temp/"+url,
@@ -104,44 +123,48 @@ func (u *FileFormat) processMusic() {
 	cmd.Stdout = stdOut
 	err := cmd.Run()
 	if err != nil {
-		err2, _ := err.(*exec.ExitError)
-		if err2 != nil {
-			fmt.Println(err2.Stderr)
-			panic(err2)
-		}
-		panic(err)
+		// err2, _ := err.(*exec.ExitError)
+		// if err2 != nil {
+		// 	fmt.Println(err2.Stderr)
+		// 	return err2
+		// }
+		return err
 	}
 	models.SetUrlState(u.Url, models.Ready)
+	removeTemp(u.Url)
+	return nil
 }
 
-func (u *FileFormat) processPhoto() {
+func (u *FileFormat) processPhoto() error {
 	file, err := os.Open("storage/temp/" + u.Url)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	c, err := io.ReadAll(file)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	// newContent, err := bimg.NewImage(c).Process(bimg.Options{Quality: 5})
 	// if err != nil {
-	// 	panic(err)
+	// return err
 	// }
 	newFile, err := os.Create("storage/photos/" + u.Url)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	_, err = newFile.Write(c)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	models.SetUrlState(u.Url, models.Ready)
+	removeTemp(u.Url)
+	return nil
 }
 
-func (u *FileFormat) remove() {
-	err := os.Remove("storage/temp/" + u.Url)
+func removeTemp(url string) {
+	err := os.Remove("storage/temp/" + url)
 	if err != nil {
-		panic(err)
+		fmt.Printf("error occured while removing queue element . err:%v \n", err)
 	}
 }
