@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/database/pbs/helper"
 	"github.com/rzaf/youtube-clone/database/pbs/media"
 	"github.com/rzaf/youtube-clone/database/pbs/playlist"
@@ -43,14 +44,14 @@ func toPage(perPage int, pageNumber int) *helper.Paging {
 //	@Accept			json
 //	@Produce		application/json
 //	@Param			url				path		string	true	"url"
-//	@Param			X-API-KEY		header		string	false	"optional authentication"
+//	@Param			Authorization	header		string	false	"optional authentication"
 //	@Success		200				{string}	string	"ok"
 //	@Failure		400				{string}	string	"request failed"
 //	@Failure		404				{string}	string	"not found"
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/medias/{url}	[get]
 func GetMediaByUrl(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var currentUserId int64 = 0
 	if currentUser != nil {
 		currentUserId = currentUser.Id
@@ -133,7 +134,7 @@ func SearchMedias(w http.ResponseWriter, r *http.Request) {
 //	@Success		204			{string}	string	"no content"
 //	@Failure		400			{string}	string	"request failed"
 //	@Failure		500			{string}	string	"server error"
-//	@Router			/medias																																																																																																																																					[get]
+//	@Router			/medias																																																																																																																																													[get]
 func GetMedias(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -180,9 +181,9 @@ func GetMedias(w http.ResponseWriter, r *http.Request) {
 //	@Success		200			{string}	string	"ok"
 //	@Failure		400			{string}	string	"request failed"
 //	@Failure		500			{string}	string	"server error"
-//	@Router			/medias																																																																																																																																					[post]
+//	@Router			/medias																																																																																																																																													[post]
 func CreateMedia(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -229,7 +230,7 @@ func CreateMedia(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/medias/{url}	[put]
 func EditMedia(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 
 	body := make(map[string]any)
@@ -272,7 +273,7 @@ func EditMedia(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/medias/{url}	[delete]
 func DeleteMedia(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 
 	res, err := client.MediaService.DeleteMedia(context.Background(), &media.EidtMediaData{
@@ -307,7 +308,7 @@ func DeleteMedia(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500							{string}	string	"server error"
 //	@Router			/medias/{url}/tag/{name}	[post]
 func AddTagToVideo(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 	tagName := chi.URLParam(r, "name")
 
@@ -342,7 +343,7 @@ func AddTagToVideo(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500							{string}	string	"server error"
 //	@Router			/medias/{url}/tag/{name}	[delete]
 func RemoveTagFromVideo(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 	tagName := chi.URLParam(r, "name")
 
@@ -421,7 +422,7 @@ func GetMediasOfPlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500										{string}	string	"server error"
 //	@Router			/medias/{url}/playlists/{playlistUrl}	[post]
 func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 	playlistUrl := chi.URLParam(r, "playlistUrl")
 
@@ -466,7 +467,7 @@ func AddMediaToPlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500										{string}	string	"server error"
 //	@Router			/medias/{url}/playlists/{playlistUrl}	[put]
 func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 	playlistUrl := chi.URLParam(r, "playlistUrl")
 
@@ -509,7 +510,7 @@ func EditMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500										{string}	string	"server error"
 //	@Router			/medias/{url}/playlists/{playlistUrl}	[delete]
 func DeleteMediaFromPlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	url := chi.URLParam(r, "url")
 	playlistUrl := chi.URLParam(r, "playlistUrl")
 

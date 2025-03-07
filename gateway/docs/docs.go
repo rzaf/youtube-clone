@@ -69,7 +69,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -185,7 +185,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -405,7 +405,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -902,7 +902,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -1971,77 +1971,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
-            "post": {
-                "description": "creating a user",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "sign up",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "email",
-                        "name": "email",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "username",
-                        "name": "username",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "channel name",
-                        "name": "channelName",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "about me",
-                        "name": "aboutMe",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "request failed",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/users/": {
             "get": {
                 "description": "get users",
@@ -2085,7 +2014,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -2207,7 +2136,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -2220,57 +2149,6 @@ const docTemplate = `{
                     },
                     "204": {
                         "description": "no content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "request failed",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/sign-in": {
-            "post": {
-                "description": "getting user api token",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "sign in",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "usernmae or email",
-                        "name": "usernameOrEmail",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
                         "schema": {
                             "type": "string"
                         }
@@ -2314,7 +2192,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "optional authentication",
-                        "name": "X-API-KEY",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
@@ -2657,80 +2535,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{username}/newApiKey": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "setting new user api key",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "setting new user api key",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "username",
-                        "name": "username",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "request failed",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "not authenticated",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "403": {
-                        "description": "not authorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/users/{username}/profile-photo": {
             "put": {
                 "security": [
@@ -2808,9 +2612,9 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
-            "description": "api key of user",
+            "description": "bearer token (add 'Bearer' before token in input)",
             "type": "apiKey",
-            "name": "X-API-KEY",
+            "name": "Authorization",
             "in": "header"
         }
     }

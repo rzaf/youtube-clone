@@ -10,5 +10,5 @@ package handlers
 
 //	@securityDefinitions.apikey	ApiKeyAuth
 //	@in							header
-//	@name						X-API-KEY
-//	@description				api key of user
+//	@name						Authorization
+//	@description				bearer token (add 'Bearer' before token in input)

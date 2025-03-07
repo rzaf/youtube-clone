@@ -9,3 +9,5 @@ use gateway/
 use database/
 
 use notification/
+
+use auth/

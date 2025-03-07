@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/file/helpers"
@@ -34,7 +35,7 @@ const (
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/photos/upload	[post]
 func UploadPhoto(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	err := r.ParseMultipartForm(MaxPhotoUploadSize)
 	if err != nil {
 		panic(err)

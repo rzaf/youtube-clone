@@ -24,6 +24,8 @@ generatePbs:
 swagger:
 	@echo "creating swagger docs of gateway service ...."
 	@cd gateway && swag init -g ./handlers/docs.go
+	@echo "creating swagger docs of auth service ...."
+	@cd auth && swag init -g ./handlers/docs.go
 	@echo "creating swagger docs of file service ...."
 	@cd file && swag init -g ./handlers/docs.go
 
@@ -49,19 +51,25 @@ build:
 	@echo "building notification service ..."
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o notification/bin/notificationService notification/cmd/notificationService/main.go
 
+	@echo "building authentication service ..."
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o auth/bin/authService auth/cmd/authService/main.go
+
 
 build-run: all
-	@echo "building and running docker-compose ..."
-	docker-compose up --build
+	@echo "building and running docker compose ..."
+	docker compose up --build
 
 run:
-	@echo "running docker-compose ..."
-	docker-compose up --build
+	@echo "running docker compose ..."
+	docker compose up --build
 
+test:
+	@echo "running tests ..."
+	@cd ./gateway/routes && go test -v .
 
 remove:
 	@echo "Stopping and removing containers ..."
-	docker-compose down
+	docker compose down
 	
 
 clean:
@@ -69,4 +77,4 @@ clean:
 	@rm -f notification/bin/*
 	@rm -f file/bin/*
 	@rm -f gateway/bin/*
-	@docker-compose down
+	@docker ompose down

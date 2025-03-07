@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/file/helpers"
@@ -33,7 +34,7 @@ const (
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/musics/upload	[post]
 func UploadMusic(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	err := r.ParseMultipartForm(MaxMusicUploadSize)
 	if err != nil {
 		panic(err)
@@ -59,7 +60,7 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	contentType := http.DetectContentType(content)
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateMusicType(contentType)
-	helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
+	// helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 	url := getUniqueFileUrl()
 
 	CreateAndWriteUrl(content, url, pbHelper.MediaType_MUSIC, headers.Size, currentUser.Id)

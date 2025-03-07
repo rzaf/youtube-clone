@@ -218,8 +218,8 @@ paths:
       - videos
 securityDefinitions:
   ApiKeyAuth:
-    description: api key of user
+    description: bearer token (add 'Bearer' before token in input)
     in: header
-    name: X-API-KEY
+    name: Authorization
     type: apiKey
 swagger: "2.0"

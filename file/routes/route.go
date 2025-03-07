@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	_ "github.com/rzaf/youtube-clone/file/docs"
 	"github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -19,7 +20,7 @@ func GetRoutes() *chi.Mux {
 	router.Get("/musics/{url}", handlers.GetMusic)
 
 	router.Group(func(r chi.Router) {
-		r.Use(handlers.AuthApiKeyMiddleware)
+		r.Use(authMiddleware.JwtAuthMiddleware)
 		r.Post("/photos/upload", handlers.UploadPhoto)
 		r.Post("/videos/upload", handlers.UploadVideo)
 		r.Post("/musics/upload", handlers.UploadMusic)

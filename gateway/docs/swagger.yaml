@@ -61,7 +61,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -166,7 +166,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -288,7 +288,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -571,7 +571,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -1302,54 +1302,6 @@ paths:
       summary: search playlists
       tags:
       - playlists
-  /users:
-    post:
-      consumes:
-      - multipart/form-data
-      description: creating a user
-      parameters:
-      - description: email
-        in: formData
-        name: email
-        required: true
-        type: string
-      - description: username
-        in: formData
-        name: username
-        required: true
-        type: string
-      - description: channel name
-        in: formData
-        name: channelName
-        required: true
-        type: string
-      - description: password
-        in: formData
-        name: password
-        required: true
-        type: string
-      - description: about me
-        in: formData
-        name: aboutMe
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-        "400":
-          description: request failed
-          schema:
-            type: string
-        "500":
-          description: server error
-          schema:
-            type: string
-      summary: sign up
-      tags:
-      - users
   /users/:
     get:
       description: get users
@@ -1378,7 +1330,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -1457,7 +1409,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -1641,54 +1593,6 @@ paths:
       summary: get users followings
       tags:
       - users
-  /users/{username}/newApiKey:
-    put:
-      consumes:
-      - multipart/form-data
-      description: setting new user api key
-      parameters:
-      - description: password
-        in: formData
-        name: password
-        required: true
-        type: string
-      - description: username
-        in: path
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-        "400":
-          description: request failed
-          schema:
-            type: string
-        "401":
-          description: not authenticated
-          schema:
-            type: string
-        "403":
-          description: not authorized
-          schema:
-            type: string
-        "404":
-          description: not found
-          schema:
-            type: string
-        "500":
-          description: server error
-          schema:
-            type: string
-      security:
-      - ApiKeyAuth: []
-      summary: setting new user api key
-      tags:
-      - users
   /users/{username}/profile-photo:
     put:
       consumes:
@@ -1795,7 +1699,7 @@ paths:
         type: string
       - description: optional authentication
         in: header
-        name: X-API-KEY
+        name: Authorization
         type: string
       produces:
       - application/json
@@ -1819,44 +1723,10 @@ paths:
       summary: search users
       tags:
       - users
-  /users/sign-in:
-    post:
-      consumes:
-      - multipart/form-data
-      description: getting user api token
-      parameters:
-      - description: usernmae or email
-        in: formData
-        name: usernameOrEmail
-        required: true
-        type: string
-      - description: password
-        in: formData
-        name: password
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-        "400":
-          description: request failed
-          schema:
-            type: string
-        "500":
-          description: server error
-          schema:
-            type: string
-      summary: sign in
-      tags:
-      - users
 securityDefinitions:
   ApiKeyAuth:
-    description: api key of user
+    description: bearer token (add 'Bearer' before token in input)
     in: header
-    name: X-API-KEY
+    name: Authorization
     type: apiKey
 swagger: "2.0"

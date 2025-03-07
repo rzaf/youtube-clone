@@ -3,6 +3,7 @@ module github.com/rzaf/youtube-clone/notification
 go 1.21.5
 
 require (
+	github.com/rzaf/youtube-clone/database v0.0.0-20241025162914-a23a89c0ef90
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.1
 )

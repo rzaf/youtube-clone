@@ -1,0 +1,120 @@
+basePath: /api
+info:
+  contact:
+    name: rzaf
+    url: https://www.github.com/rzaf/youtube-clone
+  description: auth microservice of youtube-clone app.
+  title: rest api of auth service
+paths:
+  /login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: getting a new token
+      parameters:
+      - description: usernmae or email
+        in: formData
+        name: usernameOrEmail
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: login
+      tags:
+      - users
+  /refresh:
+    post:
+      consumes:
+      - multipart/form-data
+      description: getting a new token using refresh token
+      parameters:
+      - description: refresh_token
+        in: formData
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: refresh token
+      tags:
+      - users
+  /register:
+    post:
+      consumes:
+      - multipart/form-data
+      description: creating a user
+      parameters:
+      - description: email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: channel name
+        in: formData
+        name: channelName
+        required: true
+        type: string
+      - description: password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: about me
+        in: formData
+        name: aboutMe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: Register
+      tags:
+      - users
+swagger: "2.0"

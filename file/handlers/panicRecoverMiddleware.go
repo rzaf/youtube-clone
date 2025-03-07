@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 
-	// "log"
+	authMiddlewares "github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/database/pbs/helper"
 	"github.com/rzaf/youtube-clone/file/helpers"
 	"net/http"
@@ -22,6 +22,11 @@ func RecoverServerPanics(next http.Handler) http.Handler {
 					} else {
 						helpers.WriteJsonError(w, "Something went wrong !!!", 500)
 					}
+
+				case authMiddlewares.AuthError:
+					helpers.WriteJsonError(w, err2.Message, err2.Status)
+				case *authMiddlewares.AuthError:
+					helpers.WriteJsonError(w, err2.Message, err2.Status)
 				case *helpers.ServerError:
 					helpers.WriteJson(w, err2.ErrorMessage(), err2.Status)
 				case helpers.ServerError:

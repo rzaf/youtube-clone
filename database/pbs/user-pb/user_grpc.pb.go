@@ -22,17 +22,16 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// rpc GetUserById(UserId) returns (Response){};
-	GetUserByUsername(ctx context.Context, in *UsernameAndId, opts ...grpc.CallOption) (*Response, error)
+	// auth requests
 	GetUserByNameAndPassword(ctx context.Context, in *UsernameAndPassword, opts ...grpc.CallOption) (*Response, error)
-	GetUserByApikey(ctx context.Context, in *UserApikey, opts ...grpc.CallOption) (*Response, error)
+	GetUserByRefreshToken(ctx context.Context, in *UserRefreshToken, opts ...grpc.CallOption) (*Response, error)
+	GetUserByUsername(ctx context.Context, in *UsernameAndId, opts ...grpc.CallOption) (*Response, error)
 	GetUsers(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*Response, error)
 	SearchUsers(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*Response, error)
 	EditUser(ctx context.Context, in *EditUserData, opts ...grpc.CallOption) (*Response, error)
 	VerifyUserEmail(ctx context.Context, in *EmailCode, opts ...grpc.CallOption) (*Response, error)
 	ResendEmailVerification(ctx context.Context, in *UsernameAndEmail, opts ...grpc.CallOption) (*Response, error)
 	SetUserPhoto(ctx context.Context, in *UserPhoto, opts ...grpc.CallOption) (*Response, error)
-	EditUserApiKey(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
 	DeleteUser(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error)
 	CreateUser(ctx context.Context, in *EditUserData, opts ...grpc.CallOption) (*Response, error)
 	CreateFollow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*Response, error)
@@ -48,15 +47,6 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) GetUserByUsername(ctx context.Context, in *UsernameAndId, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetUserByUsername", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) GetUserByNameAndPassword(ctx context.Context, in *UsernameAndPassword, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetUserByNameAndPassword", in, out, opts...)
@@ -66,9 +56,18 @@ func (c *userServiceClient) GetUserByNameAndPassword(ctx context.Context, in *Us
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserByApikey(ctx context.Context, in *UserApikey, opts ...grpc.CallOption) (*Response, error) {
+func (c *userServiceClient) GetUserByRefreshToken(ctx context.Context, in *UserRefreshToken, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetUserByApikey", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetUserByRefreshToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUserByUsername(ctx context.Context, in *UsernameAndId, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/user_pb.UserService/GetUserByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,15 +128,6 @@ func (c *userServiceClient) SetUserPhoto(ctx context.Context, in *UserPhoto, opt
 	return out, nil
 }
 
-func (c *userServiceClient) EditUserApiKey(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, "/user_pb.UserService/EditUserApiKey", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) DeleteUser(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/user_pb.UserService/DeleteUser", in, out, opts...)
@@ -187,17 +177,16 @@ func (c *userServiceClient) GetFollowings(ctx context.Context, in *UserReq, opts
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// rpc GetUserById(UserId) returns (Response){};
-	GetUserByUsername(context.Context, *UsernameAndId) (*Response, error)
+	// auth requests
 	GetUserByNameAndPassword(context.Context, *UsernameAndPassword) (*Response, error)
-	GetUserByApikey(context.Context, *UserApikey) (*Response, error)
+	GetUserByRefreshToken(context.Context, *UserRefreshToken) (*Response, error)
+	GetUserByUsername(context.Context, *UsernameAndId) (*Response, error)
 	GetUsers(context.Context, *UserReq) (*Response, error)
 	SearchUsers(context.Context, *UserReq) (*Response, error)
 	EditUser(context.Context, *EditUserData) (*Response, error)
 	VerifyUserEmail(context.Context, *EmailCode) (*Response, error)
 	ResendEmailVerification(context.Context, *UsernameAndEmail) (*Response, error)
 	SetUserPhoto(context.Context, *UserPhoto) (*Response, error)
-	EditUserApiKey(context.Context, *UserId) (*Response, error)
 	DeleteUser(context.Context, *UserId) (*Response, error)
 	CreateUser(context.Context, *EditUserData) (*Response, error)
 	CreateFollow(context.Context, *FollowData) (*Response, error)
@@ -210,14 +199,14 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) GetUserByUsername(context.Context, *UsernameAndId) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUsername not implemented")
-}
 func (UnimplementedUserServiceServer) GetUserByNameAndPassword(context.Context, *UsernameAndPassword) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByNameAndPassword not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserByApikey(context.Context, *UserApikey) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserByApikey not implemented")
+func (UnimplementedUserServiceServer) GetUserByRefreshToken(context.Context, *UserRefreshToken) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByRefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserByUsername(context.Context, *UsernameAndId) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUsername not implemented")
 }
 func (UnimplementedUserServiceServer) GetUsers(context.Context, *UserReq) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
@@ -236,9 +225,6 @@ func (UnimplementedUserServiceServer) ResendEmailVerification(context.Context, *
 }
 func (UnimplementedUserServiceServer) SetUserPhoto(context.Context, *UserPhoto) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserPhoto not implemented")
-}
-func (UnimplementedUserServiceServer) EditUserApiKey(context.Context, *UserId) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EditUserApiKey not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *UserId) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
@@ -268,24 +254,6 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UsernameAndId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserByUsername(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user_pb.UserService/GetUserByUsername",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserByUsername(ctx, req.(*UsernameAndId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_GetUserByNameAndPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UsernameAndPassword)
 	if err := dec(in); err != nil {
@@ -304,20 +272,38 @@ func _UserService_GetUserByNameAndPassword_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetUserByApikey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserApikey)
+func _UserService_GetUserByRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRefreshToken)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserByApikey(ctx, in)
+		return srv.(UserServiceServer).GetUserByRefreshToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user_pb.UserService/GetUserByApikey",
+		FullMethod: "/user_pb.UserService/GetUserByRefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserByApikey(ctx, req.(*UserApikey))
+		return srv.(UserServiceServer).GetUserByRefreshToken(ctx, req.(*UserRefreshToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UsernameAndId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_pb.UserService/GetUserByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserByUsername(ctx, req.(*UsernameAndId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -430,24 +416,6 @@ func _UserService_SetUserPhoto_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_EditUserApiKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).EditUserApiKey(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user_pb.UserService/EditUserApiKey",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).EditUserApiKey(ctx, req.(*UserId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserId)
 	if err := dec(in); err != nil {
@@ -546,16 +514,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetUserByUsername",
-			Handler:    _UserService_GetUserByUsername_Handler,
-		},
-		{
 			MethodName: "GetUserByNameAndPassword",
 			Handler:    _UserService_GetUserByNameAndPassword_Handler,
 		},
 		{
-			MethodName: "GetUserByApikey",
-			Handler:    _UserService_GetUserByApikey_Handler,
+			MethodName: "GetUserByRefreshToken",
+			Handler:    _UserService_GetUserByRefreshToken_Handler,
+		},
+		{
+			MethodName: "GetUserByUsername",
+			Handler:    _UserService_GetUserByUsername_Handler,
 		},
 		{
 			MethodName: "GetUsers",
@@ -580,10 +548,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetUserPhoto",
 			Handler:    _UserService_SetUserPhoto_Handler,
-		},
-		{
-			MethodName: "EditUserApiKey",
-			Handler:    _UserService_EditUserApiKey_Handler,
 		},
 		{
 			MethodName: "DeleteUser",

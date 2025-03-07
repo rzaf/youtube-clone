@@ -3,11 +3,13 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"net/http"
+
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/database/pbs/comment"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/gateway/client"
 	"github.com/rzaf/youtube-clone/gateway/helpers"
-	"net/http"
 
 	"github.com/go-chi/chi"
 )
@@ -20,14 +22,14 @@ import (
 //	@Accept			json
 //	@Produce		application/json
 //	@Param			commentUrl				path		string	true	"commentUrl"
-//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Param			Authorization			header		string	false	"optional authentication"
 //	@Success		200						{string}	string	"ok"
 //	@Failure		400						{string}	string	"request failed"
 //	@Failure		404						{string}	string	"not found"
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/{commentUrl}	[get]
 func GetComment(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var userId int64 = 0
 	if currentUser != nil {
 		userId = currentUser.Id
@@ -55,14 +57,14 @@ func GetComment(w http.ResponseWriter, r *http.Request) {
 //	@Param			perpage					query		int		false	"items perpage"	default(10)
 //	@Param			sort					query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-liked,least-liked,most-disliked,least-disliked,most-replied,least-replied)
 //	@Param			url						path		string	false	"url"
-//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Param			Authorization			header		string	false	"optional authentication"
 //	@Success		200						{string}	string	"ok"
 //	@Success		204						{string}	string	"no content"
 //	@Failure		400						{string}	string	"request failed"
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/medias/{url}	[get]
 func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var userId int64 = 0
 	if currentUser != nil {
 		userId = currentUser.Id
@@ -106,14 +108,14 @@ func GetCommentsOfMedia(w http.ResponseWriter, r *http.Request) {
 //	@Param			perpage							query		int		false	"items perpage"	default(10)
 //	@Param			sort							query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-liked,least-liked,most-disliked,least-disliked,most-replied,least-replied)
 //	@Param			commentUrl						path		string	false	"commentUrl"
-//	@Param			X-API-KEY						header		string	false	"optional authentication"
+//	@Param			Authorization					header		string	false	"optional authentication"
 //	@Success		200								{string}	string	"ok"
 //	@Success		204								{string}	string	"no content"
 //	@Failure		400								{string}	string	"request failed"
 //	@Failure		500								{string}	string	"server error"
 //	@Router			/comments/{commentUrl}/replies	[get]
 func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var userId int64 = 0
 	if currentUser != nil {
 		userId = currentUser.Id
@@ -147,7 +149,7 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 }
 
 // func GetAllCommentsOfUser(w http.ResponseWriter, r *http.Request) {
-// 	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+// 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 // 	// currentUser := GetAuthUser(r)
 // 	url := chi.URLParam(r, "url")
 // 	var body map[string]any
@@ -190,7 +192,7 @@ func GetRepliesOfComment(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/medias/{url}	[post]
 func CreateComment(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url") /// media url
 	body := make(map[string]any)
@@ -238,7 +240,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/{commentUrl}	[put]
 func EditComment(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	commentUrl := chi.URLParam(r, "commentUrl")
 	body := make(map[string]any)
@@ -279,7 +281,7 @@ func EditComment(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/{commentUrl}	[delete]
 func DeleteComment(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	commentUrl := chi.URLParam(r, "commentUrl")

@@ -345,9 +345,9 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
-            "description": "api key of user",
+            "description": "bearer token (add 'Bearer' before token in input)",
             "type": "apiKey",
-            "name": "X-API-KEY",
+            "name": "Authorization",
             "in": "header"
         }
     }

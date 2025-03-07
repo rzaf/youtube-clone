@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/gateway/client"
 	"github.com/rzaf/youtube-clone/gateway/helpers"
@@ -25,7 +26,7 @@ import (
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/follows/{username}	[post]
 func AddFollowing(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	username := chi.URLParam(r, "username")
 	res, err := client.UserService.CreateFollow(context.Background(), &user_pb.FollowData{
@@ -56,7 +57,7 @@ func AddFollowing(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/follows/{username}	[delete]
 func DeleteFollowing(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	username := chi.URLParam(r, "username")
 	res, err := client.UserService.DeleteFollow(context.Background(), &user_pb.FollowData{

@@ -44,7 +44,7 @@ func UpAll() {
 
 func DownAll() {
 	fmt.Println("Starting migrations down")
-	for i := len(migrations); i >= 0; i-- {
+	for i := len(migrations) - 1; i >= 0; i-- {
 		fmt.Print("migrating " + migrations[i].tableName() + " table .....")
 		queries := migrations[i].down()
 		for _, query := range queries {

@@ -21,8 +21,8 @@ message UsernameAndPassword{
     string UserName = 1;
     string Password = 2;
 }
-message UserApikey{
-    string Apikey=1;
+message UserRefreshToken{
+    string RefreshToken=1;
 }
 message EmailCode{
     string Code=1;
@@ -66,17 +66,6 @@ message UserData{
     bool    IsCurrentUserSubbed=13  [json_name="is_current_user_subbed"];
 }
 
-message SignInUserData{
-    string  Username=1          [json_name="username"];           
-    string  Email=2             [json_name="email"];                 
-    string  ChannelName=3       [json_name="channel_name"];           
-    string  AboutMe=4           [json_name="about_me"];               
-    bool    IsVerified=5        [json_name="is_verified"];            
-    string  ApiKey=6            [json_name="api_key"];            
-    string  ProfilePhoto=7      [json_name="profile_photo"];          
-    string  ChannelPhoto=8      [json_name="channel_photo"];          
-}
-
 message CurrentUserData{
     int64   Id=1;                    
     string  Username=2;              
@@ -84,9 +73,10 @@ message CurrentUserData{
     string  ChannelName=4;           
     string  AboutMe=5;               
     bool    IsVerified=6;            
-    string  HashedPassword=7;        
+    string  RefreshToken=7;        
     string  ProfilePhoto=8;          
     string  ChannelPhoto=9;          
+    int64   RefreshTokenExpire=10;
 }
 
 message EditUserData{
@@ -97,6 +87,7 @@ message EditUserData{
     string  HashedPassword=5;
     string  AboutMe=6;
 }
+
 message UsernameAndEmail{
     string  Username=1;
     string  Email=2;
@@ -141,21 +132,21 @@ message Response{
     oneof Res{
         UserData User = 1;
         CurrentUserData AuthUser = 2;
-        UserApikey UserApi=3;
-        helper.HttpError Err = 4;
-        helper.Empty empty = 5;
-        UsersData Users = 6;
-        SignInUserData SignedInUser=7;
+        helper.HttpError Err = 3;
+        helper.Empty empty = 4;
+        UsersData Users = 5;
     }
 }
 
 
 
 service UserService{
-    // rpc GetUserById(UserId) returns (Response){};
-    rpc GetUserByUsername(UsernameAndId) returns (Response){};
+
+    // auth requests
     rpc GetUserByNameAndPassword(UsernameAndPassword) returns (Response){};
-    rpc GetUserByApikey(UserApikey) returns (Response){};    
+    rpc GetUserByRefreshToken(UserRefreshToken) returns (Response){};    
+
+    rpc GetUserByUsername(UsernameAndId) returns (Response){};
 
     rpc GetUsers(UserReq) returns (Response){};
     rpc SearchUsers(UserReq) returns (Response){};
@@ -164,7 +155,6 @@ service UserService{
     rpc VerifyUserEmail(EmailCode) returns (Response){};
     rpc ResendEmailVerification(UsernameAndEmail) returns (Response){};
     rpc SetUserPhoto(UserPhoto) returns (Response){};
-    rpc EditUserApiKey(UserId) returns (Response){};
 
     rpc DeleteUser(UserId) returns (Response){};
     

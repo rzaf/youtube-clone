@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/database/pbs/playlist"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/gateway/client"
@@ -148,7 +149,7 @@ func GetPlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500			{string}	string	"server error"
 //	@Router			/playlists	[post]
 func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
 	helpers.ValidateAllowedParams(body, "name", "text", "type")
@@ -198,7 +199,7 @@ func CreatePlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/playlists/{url}	[put]
 func EditPlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	body := make(map[string]any)
@@ -243,7 +244,7 @@ func EditPlaylist(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/playlists/{url}	[delete]
 func DeletePlaylist(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 

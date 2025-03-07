@@ -5,6 +5,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/rzaf/youtube-clone/gateway/handlers"
 
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
+
 	_ "github.com/rzaf/youtube-clone/gateway/docs"
 	"github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -20,7 +22,7 @@ func GetRoutes() *chi.Mux {
 	setCommentRoutes(router)
 
 	router.Group(func(r chi.Router) {
-		r.Use(handlers.AuthApiKeyMiddleware)
+		r.Use(authMiddleware.JwtAuthMiddleware)
 
 		setUserAuthRoutes(r)
 		setMediaAuthRoutes(r)

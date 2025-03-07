@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
 	"github.com/rzaf/youtube-clone/gateway/client"
 	"github.com/rzaf/youtube-clone/gateway/helpers"
@@ -32,14 +33,14 @@ func ComparePassword(password string, hashedPassword string) error {
 //	@Accept			json
 //	@Produce		application/json
 //	@Param			username			path		string	true	"username of user"
-//	@Param			X-API-KEY			header		string	false	"optional authentication"
+//	@Param			Authorization		header		string	false	"optional authentication"
 //	@Success		200					{string}	string	"ok"
 //	@Failure		400					{string}	string	"request failed"
 //	@Failure		404					{string}	string	"not found"
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/users/{username}	[get]
 func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var currentUserId int64 = 0
 	if currentUser != nil {
 		currentUserId = currentUser.Id
@@ -63,17 +64,17 @@ func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 //	@Description	get users
 //	@Tags			users
 //	@Produce		application/json
-//	@Param			page		query		int		false	"page number"	default(1)
-//	@Param			perpage		query		int		false	"items perpage"	default(10)
-//	@Param			sort		query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed,most-subbed,least-subbed)
-//	@Param			X-API-KEY	header		string	false	"optional authentication"
-//	@Success		200			{string}	string	"ok"
-//	@Success		204			{string}	string	"no content"
-//	@Failure		400			{string}	string	"request failed"
-//	@Failure		500			{string}	string	"server error"
-//	@Router			/users/																																																																																																																																																	[get]
+//	@Param			page			query		int		false	"page number"	default(1)
+//	@Param			perpage			query		int		false	"items perpage"	default(10)
+//	@Param			sort			query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed,most-subbed,least-subbed)
+//	@Param			Authorization	header		string	false	"optional authentication"
+//	@Success		200				{string}	string	"ok"
+//	@Success		204				{string}	string	"no content"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		500				{string}	string	"server error"
+//	@Router			/users/																																																																																																																																																											[get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var currentUserId int64 = 0
 	if currentUser != nil {
 		currentUserId = currentUser.Id
@@ -114,14 +115,14 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 //	@Param			page					query		int		false	"page number"	default(1)
 //	@Param			perpage					query		int		false	"items perpage"	default(10)
 //	@Param			sort					query		string	false	"sort type"		default(newest)	Enums(newest, oldest,most-viewed,least-viewed,most-subbed,least-subbed)
-//	@Param			X-API-KEY				header		string	false	"optional authentication"
+//	@Param			Authorization			header		string	false	"optional authentication"
 //	@Success		200						{string}	string	"ok"
 //	@Success		204						{string}	string	"no content"
 //	@Failure		400						{string}	string	"request failed"
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/users/search/{term}	[get]
 func SearchUsers(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	var currentUserId int64 = 0
 	if currentUser != nil {
 		currentUserId = currentUser.Id
@@ -155,86 +156,6 @@ func SearchUsers(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteProtoJson(w, res.GetUsers(), true, 200)
 }
 
-// sign up
-//
-//	@Summary		sign up
-//	@Description	creating a user
-//	@Tags			users
-//	@Produce		application/json
-//	@Accept			multipart/form-data
-//	@Param			email		formData	string	true	"email"
-//	@Param			username	formData	string	true	"username"
-//	@Param			channelName	formData	string	true	"channel name"
-//	@Param			password	formData	string	true	"password"
-//	@Param			aboutMe		formData	string	false	"about me"
-//	@Success		200			{string}	string	"ok"
-//	@Failure		400			{string}	string	"request failed"
-//	@Failure		500			{string}	string	"server error"
-//	@Router			/users																																																																																																																																																	[post]
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	body := make(map[string]any)
-	helpers.ParseReq(r, body)
-	helpers.ValidateAllowedParams(body, "email", "username", "channelName", "password", "aboutMe")
-
-	email := helpers.ValidateRequiredStr(body["email"], "email")
-	helpers.ValidateVar(email, "email", "email")
-	username := helpers.ValidateRequiredStr(body["username"], "username")
-	channelName := helpers.ValidateRequiredStr(body["channelName"], "channelName")
-	password := helpers.ValidateRequiredStr(body["password"], "password")
-	aboutMe := helpers.ValidateStr(body["aboutMe"], "aboutMe", "") //optional
-
-	res, err := client.UserService.CreateUser(context.Background(), &user_pb.EditUserData{
-		Email:          email,
-		Username:       username,
-		HashedPassword: password,
-		ChannelName:    channelName,
-		AboutMe:        aboutMe,
-	})
-	fmt.Printf("error type:%T,error:%v \n", err, err)
-	if err != nil {
-		helpers.LogPanic(err)
-	}
-	PanicIfIsError(res.GetErr())
-	createdUser := res.GetUserApi()
-	helpers.WriteJson(w, map[string]any{
-		"Message":  "Validate your email to be able to use your api key",
-		"Username": username,
-		"ApiKey":   createdUser.Apikey,
-	}, 201)
-}
-
-// sign in
-//
-//	@Summary		sign in
-//	@Description	getting user api token
-//	@Tags			users
-//	@Produce		application/json
-//	@Accept			multipart/form-data
-//	@Param			usernameOrEmail	formData	string	true	"usernmae or email"
-//	@Param			password		formData	string	true	"password"
-//	@Success		200				{string}	string	"ok"
-//	@Failure		400				{string}	string	"request failed"
-//	@Failure		500				{string}	string	"server error"
-//	@Router			/users/sign-in	[post]
-func SignIn(w http.ResponseWriter, r *http.Request) {
-	body := make(map[string]any)
-	helpers.ParseReq(r, body)
-	helpers.ValidateAllowedParams(body, "usernameOrEmail", "password")
-
-	username := helpers.ValidateRequiredStr(body["usernameOrEmail"], "usernameOrEmail")
-	password := helpers.ValidateRequiredStr(body["password"], "password")
-
-	res, err := client.UserService.GetUserByNameAndPassword(context.Background(), &user_pb.UsernameAndPassword{
-		UserName: username,
-		Password: password,
-	})
-	if err != nil {
-		helpers.LogPanic(err)
-	}
-	PanicIfIsError(res.GetErr())
-	helpers.WriteProtoJson(w, res.GetSignedInUser(), true, 200)
-}
-
 // resend verification email
 //
 //	@Summary		resend verification email
@@ -248,11 +169,11 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/users/resend-email	[post]
 func ResendEmailVerfication(w http.ResponseWriter, r *http.Request) {
-	currentUser := getUserFromHeader(r)
+	currentUser := authMiddleware.GetUserFromHeader(r)
 	if currentUser == nil {
-		helpers.LogPanic(helpers.NewServerError("header X-API-KEY required", 401))
+		helpers.WriteJsonMessage(w, "Authorization header required!", 400)
+		return
 	}
-	fmt.Printf("%v\n", currentUser)
 	if currentUser.IsVerified {
 		helpers.WriteJsonMessage(w, "email already verified!", 400)
 		return
@@ -310,7 +231,7 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500								{string}	string	"server error"
 //	@Router			/users/{username}/profile-photo	[put]
 func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
 	fmt.Printf("%v\n", currentUser)
 	if userName != currentUser.Username {
@@ -360,7 +281,7 @@ func SetProfilePhoto(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500								{string}	string	"server error"
 //	@Router			/users/{username}/channel-photo	[put]
 func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
 	fmt.Printf("%v\n", currentUser)
 	if userName != currentUser.Username {
@@ -417,7 +338,7 @@ func SetChannelPhoto(w http.ResponseWriter, r *http.Request) {
 //	@Router			/users/{username}/	[put]
 func EditUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 
 	// currentUser := GetAuthUser(r)
 	fmt.Printf("%v\n", currentUser)
@@ -432,102 +353,55 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("request body:", body)
 	fmt.Printf("user:%v\n", currentUser)
 
-	password := helpers.ValidateRequiredStr(body["password"], "password")
-	if err := ComparePassword(password, currentUser.HashedPassword); err != nil {
-		fmt.Println("err:", err)
-		helpers.WriteJsonError(w, "Incorrect password", 400)
-		return
-	}
-	newPassword := helpers.ValidateStr(body["new_password"], "new_password", "")
-	aboutMe := helpers.ValidateStr(body["new_aboutMe"], "new_aboutMe", "")
-	username := helpers.ValidateStr(body["new_username"], "new_username", "")
-	channelName := helpers.ValidateStr(body["new_channelName"], "new_channelName", "")
-	email := helpers.ValidateStr(body["new_email"], "new_email", "")
+	// password := helpers.ValidateRequiredStr(body["password"], "password")
+	// if err := ComparePassword(password, currentUser.HashedPassword); err != nil {
+	// 	fmt.Println("err:", err)
+	// 	helpers.WriteJsonError(w, "Incorrect password", 400)
+	// 	return
+	// }
+	// newPassword := helpers.ValidateStr(body["new_password"], "new_password", "")
+	// aboutMe := helpers.ValidateStr(body["new_aboutMe"], "new_aboutMe", "")
+	// username := helpers.ValidateStr(body["new_username"], "new_username", "")
+	// channelName := helpers.ValidateStr(body["new_channelName"], "new_channelName", "")
+	// email := helpers.ValidateStr(body["new_email"], "new_email", "")
 
-	if newPassword == "" && aboutMe == "" && username == "" && channelName == "" && email == "" {
-		helpers.WriteJsonError(w, "No new field", 400)
-		return
-	}
+	// if newPassword == "" && aboutMe == "" && username == "" && channelName == "" && email == "" {
+	// 	helpers.WriteJsonError(w, "No new field", 400)
+	// 	return
+	// }
 
-	if newPassword != "" {
-		newPassword = HashPassword(newPassword)
-	} else {
-		newPassword = currentUser.HashedPassword
-	}
-	if aboutMe == "" {
-		aboutMe = currentUser.AboutMe
-	}
-	if username == "" {
-		username = currentUser.Username
-	}
-	if channelName == "" {
-		channelName = currentUser.ChannelName
-	}
-	if email == "" {
-		email = currentUser.Email
-	}
-	helpers.ValidateVar(email, "new_email", "email")
+	// if newPassword != "" {
+	// 	newPassword = HashPassword(newPassword)
+	// } else {
+	// 	newPassword = currentUser.HashedPassword
+	// }
+	// if aboutMe == "" {
+	// 	aboutMe = currentUser.AboutMe
+	// }
+	// if username == "" {
+	// 	username = currentUser.Username
+	// }
+	// if channelName == "" {
+	// 	channelName = currentUser.ChannelName
+	// }
+	// if email == "" {
+	// 	email = currentUser.Email
+	// }
+	// helpers.ValidateVar(email, "new_email", "email")
 
-	res, err := client.UserService.EditUser(context.Background(), &user_pb.EditUserData{
-		Id:             currentUser.Id,
-		Email:          email,
-		HashedPassword: newPassword,
-		AboutMe:        aboutMe,
-		Username:       username,
-		ChannelName:    channelName,
-	})
-	if err != nil {
-		helpers.LogPanic(err)
-	}
-	PanicIfIsError(res)
+	// res, err := client.UserService.EditUser(context.Background(), &user_pb.EditUserData{
+	// 	Id:             currentUser.Id,
+	// 	Email:          email,
+	// 	HashedPassword: newPassword,
+	// 	AboutMe:        aboutMe,
+	// 	Username:       username,
+	// 	ChannelName:    channelName,
+	// })
+	// if err != nil {
+	// 	helpers.LogPanic(err)
+	// }
+	// PanicIfIsError(res)
 	helpers.WriteJsonMessage(w, fmt.Sprintf("user with username:`%s` edited", currentUser.Username), 200)
-}
-
-// setting new user api key
-//
-//	@Summary		setting new user api key
-//	@Description	setting new user api key
-//	@Tags			users
-//	@Produce		application/json
-//	@Accept			multipart/form-data
-//	@Security		ApiKeyAuth
-//	@Param			password					formData	string	true	"password"
-//	@Param			username					path		string	true	"username"
-//	@Success		200							{string}	string	"ok"
-//	@Failure		400							{string}	string	"request failed"
-//	@Failure		401							{string}	string	"not authenticated"
-//	@Failure		403							{string}	string	"not authorized"
-//	@Failure		404							{string}	string	"not found"
-//	@Failure		500							{string}	string	"server error"
-//	@Router			/users/{username}/newApiKey	[put]
-func NewUserApiKey(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
-	userName := chi.URLParam(r, "username")
-	// currentUser := GetAuthUser(r)
-	fmt.Printf("%v\n", currentUser)
-	if userName != currentUser.Username {
-		helpers.WriteJsonError(w, "Not allowed to edit user with username:`"+userName+"`", 403)
-		return
-	}
-
-	body := make(map[string]any)
-	helpers.ParseReq(r, body)
-	helpers.ValidateAllowedParams(body, "password")
-	fmt.Printf("user:%v\n", currentUser)
-	password := helpers.ValidateRequiredStr(body["password"], "password")
-
-	if err := ComparePassword(password, currentUser.HashedPassword); err != nil {
-		fmt.Println("err:", err)
-		helpers.WriteJsonError(w, "Incorrect password", 400)
-		return
-	}
-	res, err := client.UserService.EditUserApiKey(context.Background(), &user_pb.UserId{Id: currentUser.Id})
-	PanicIfIsError(err)
-	apikey := res.GetUserApi()
-	helpers.WriteJson(w, map[string]any{
-		"message":     "New api key created",
-		"New Api Key": apikey.Apikey,
-	}, 200)
 }
 
 // deleting user
@@ -547,7 +421,7 @@ func NewUserApiKey(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/users/{username}	[delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
 	// currentUser := GetAuthUser(r)
 	fmt.Printf("%v\n", currentUser)
@@ -571,16 +445,16 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 //	@Produce		application/json
 //	@Accept			multipart/form-data
 //	@Security		ApiKeyAuth
-//	@Param			username					path		string	true	"username"
-//	@Param			page					query		int		false	"page number"	default(1)
-//	@Param			perpage					query		int		false	"items perpage"	default(10)
-//	@Success		200						{string}	string	"ok"
-//	@Success		204						{string}	string	"no content"
-//	@Failure		400						{string}	string	"request failed"
-//	@Failure		500						{string}	string	"server error"
+//	@Param			username						path		string	true	"username"
+//	@Param			page							query		int		false	"page number"	default(1)
+//	@Param			perpage							query		int		false	"items perpage"	default(10)
+//	@Success		200								{string}	string	"ok"
+//	@Success		204								{string}	string	"no content"
+//	@Failure		400								{string}	string	"request failed"
+//	@Failure		500								{string}	string	"server error"
 //	@Router			/users/{username}/followings	[get]
 func GetFollowings(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	userName := chi.URLParam(r, "username")
 	fmt.Printf("%v\n", currentUser)
 	if userName != currentUser.Username {

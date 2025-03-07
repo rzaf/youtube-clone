@@ -6,9 +6,11 @@ media storage and sharing api written in go using microservice architecture.
 - written in a request-response architecture
 - services communicate to each other using gRPC
 
-## services diagram
+## microservices
 
-![request-response](screenshots/request-response.jpeg)
+### auth service
+
+authentication microservice used for registering user and retrieving user JWT token and refreshing it
 
 ### gateway service
 
@@ -33,7 +35,15 @@ main api of app for user related data (users,medias,comments,playlists,likes,tag
 
 ## api endpoints
 
-protected routes require authentication with api key
+protected routes require authentication with bearer tokens
+
+### auth service routes
+
+| type |        url         |protected|
+|------|--------------------|-------|
+| GET  |`api/login`         |&cross;|
+| GET  |`api/register`      |&cross;|
+| GET  |`api/refresh`       |&cross;|
 
 ### gateway service routes
 
@@ -44,14 +54,11 @@ protected routes require authentication with api key
 | GET  |`api/users/{username}`              |&cross;|
 | GET  |`api/users`                         |&cross;|
 | GET  |`api/users/search/{term}`           |&cross;|
-| POST |`api/users/`                        |&cross;|
-| POST |`api/users/sign-in`                 |&cross;|
 | POST |`api/users/{username}/verify/{code}`|&cross;|
 | POST |`api/users/resend-email`            |&check;|
 | PUT  |`api/users/{username}/profile-photo`|&check;|
 | GET  |`/users/{username}/followings`      |&check;|
 | PUT  |`api/users/{username}/channel-photo`|&check;|
-| PUT  |`api/users/{username}/newApiKey`    |&check;|
 | PUT  |`api/users/{username}`              |&check;|
 |DELETE|`api/users/{username}`              |&check;|
 | POST |`api/follows/{username}`            |&check;|

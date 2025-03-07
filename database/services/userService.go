@@ -33,13 +33,13 @@ func newResponseFromCurrentUserData(u *user_pb.CurrentUserData) *user_pb.Respons
 	}
 }
 
-func newResponseFromSignedInUserData(u *user_pb.SignInUserData) *user_pb.Response {
-	return &user_pb.Response{
-		Res: &user_pb.Response_SignedInUser{
-			SignedInUser: u,
-		},
-	}
-}
+// func newResponseFromSignedInUserData(u *user_pb.SignInUserData) *user_pb.Response {
+// 	return &user_pb.Response{
+// 		Res: &user_pb.Response_SignedInUser{
+// 			SignedInUser: u,
+// 		},
+// 	}
+// }
 
 func newResponseFromUsers(users []models.User, pageInfo *helper.PagesInfo) *user_pb.Response {
 	if users == nil {
@@ -82,14 +82,6 @@ func newUserResponseFromError(e *helper.HttpError) *user_pb.Response {
 			Err: e,
 		},
 		// Res: &user_pb.Response_Empty{},
-	}
-}
-
-func newResponseFromApikey(a *user_pb.UserApikey) *user_pb.Response {
-	return &user_pb.Response{
-		Res: &user_pb.Response_UserApi{
-			UserApi: a,
-		},
 	}
 }
 
@@ -137,21 +129,22 @@ func (s *userServiceServer) GetUserByNameAndPassword(c context.Context, u *user_
 		}
 		return nil, err
 	}
-	return newResponseFromSignedInUserData(&user_pb.SignInUserData{
+	return newResponseFromCurrentUserData(&user_pb.CurrentUserData{
+		Id:           user.Id,
 		Username:     user.Username,
 		Email:        user.Email,
 		ChannelName:  user.ChannelName,
 		AboutMe:      user.AboutMe,
-		ApiKey:       user.ApiKey,
-		IsVerified:   user.IsVerified,
+		RefreshToken: user.RefreshToken,
 		ProfilePhoto: user.ProfilePhoto,
 		ChannelPhoto: user.ChannelPhoto,
+		IsVerified:   user.IsVerified,
 	}), nil
 }
 
 // should be called only in authentication middleware
-func (s *userServiceServer) GetUserByApikey(c context.Context, u *user_pb.UserApikey) (*user_pb.Response, error) {
-	user, err := models.GetUserByApikey(u.Apikey)
+func (s *userServiceServer) GetUserByRefreshToken(c context.Context, u *user_pb.UserRefreshToken) (*user_pb.Response, error) {
+	user, err := models.GetUserByRefreshToken(u.RefreshToken)
 	fmt.Println(user, err)
 	if err != nil {
 		if err2, ok := models.ConvertError(err); ok {
@@ -161,15 +154,16 @@ func (s *userServiceServer) GetUserByApikey(c context.Context, u *user_pb.UserAp
 	}
 	// fmt.Printf("%v\n", user)
 	return newResponseFromCurrentUserData(&user_pb.CurrentUserData{
-		Id:             user.Id,
-		Username:       user.Username,
-		Email:          user.Email,
-		ChannelName:    user.ChannelName,
-		AboutMe:        user.AboutMe,
-		HashedPassword: user.HashedPassword,
-		ProfilePhoto:   user.ProfilePhoto,
-		ChannelPhoto:   user.ChannelPhoto,
-		IsVerified:     user.IsVerified,
+		Id:                 user.Id,
+		Username:           user.Username,
+		Email:              user.Email,
+		ChannelName:        user.ChannelName,
+		AboutMe:            user.AboutMe,
+		RefreshToken:       user.RefreshToken,
+		RefreshTokenExpire: user.RefreshTokenExpire.Unix(),
+		ProfilePhoto:       user.ProfilePhoto,
+		ChannelPhoto:       user.ChannelPhoto,
+		IsVerified:         user.IsVerified,
 	}), nil
 }
 
@@ -331,16 +325,6 @@ func (s *userServiceServer) SetUserPhoto(c context.Context, u *user_pb.UserPhoto
 	return newUserResponseFromEmpty(), nil
 }
 
-func (s *userServiceServer) EditUserApiKey(c context.Context, u *user_pb.UserId) (*user_pb.Response, error) {
-	user, err := models.EditUserApikey(u.Id)
-	if err != nil {
-		if err2, ok := models.ConvertError(err); ok {
-			return newUserResponseFromError(err2.ToHttpError()), nil
-		}
-	}
-	return newResponseFromApikey(&user_pb.UserApikey{Apikey: user.ApiKey}), nil
-}
-
 func (s *userServiceServer) DeleteUser(c context.Context, u *user_pb.UserId) (*user_pb.Response, error) {
 	err := models.DeleteUser(u.Id)
 	if err != nil {
@@ -361,8 +345,17 @@ func (s *userServiceServer) CreateUser(c context.Context, u *user_pb.EditUserDat
 		return nil, err
 	}
 	go sendEmailVerificationNotification(user.Username, user.Email, user.EmailVerification)
-	return newResponseFromApikey(&user_pb.UserApikey{
-		Apikey: user.ApiKey,
+
+	return newResponseFromCurrentUserData(&user_pb.CurrentUserData{
+		Id:           user.Id,
+		Username:     user.Username,
+		Email:        user.Email,
+		ChannelName:  user.ChannelName,
+		AboutMe:      user.AboutMe,
+		RefreshToken: user.RefreshToken,
+		ProfilePhoto: user.ProfilePhoto,
+		ChannelPhoto: user.ChannelPhoto,
+		IsVerified:   user.IsVerified,
 	}), nil
 }
 

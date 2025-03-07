@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 )
 
 ////// media likes
@@ -28,7 +29,7 @@ import (
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/medias/{url}/likes	[post]
 func SetMediaLike(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	body := make(map[string]any)
@@ -66,7 +67,7 @@ func SetMediaLike(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500					{string}	string	"server error"
 //	@Router			/medias/{url}/likes	[delete]
 func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	res, err := client.MediaService.DeleteLikeMedia(context.Background(), &helper.LikeReq{
@@ -101,7 +102,7 @@ func DeleteMediaLike(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/{url}/likes	[post]
 func SetCommentLike(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	body := make(map[string]any)
@@ -138,7 +139,7 @@ func SetCommentLike(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500						{string}	string	"server error"
 //	@Router			/comments/{url}/likes	[delete]
 func DeleteCommentLike(w http.ResponseWriter, r *http.Request) {
-	currentUser := r.Context().Value(authUser("user")).(*user_pb.CurrentUserData)
+	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 	// currentUser := GetAuthUser(r)
 	url := chi.URLParam(r, "url")
 	res, err := client.CommentService.DeleteLikeComment(context.Background(), &helper.LikeReq{
