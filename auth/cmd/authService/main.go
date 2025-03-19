@@ -7,7 +7,6 @@ import (
 	"github.com/rzaf/youtube-clone/auth/handlers"
 	"github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/auth/server"
-	"github.com/rzaf/youtube-clone/database/helpers"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 	client.ConnectToDataBaseServer()
 	defer client.DisconnectFromServer()
 
-	handlers.SigningKey = []byte(helpers.FatalIfEmptyVar("JWT_SIGNING_KEY"))
-	middlewares.SigningKey = []byte(helpers.FatalIfEmptyVar("JWT_SIGNING_KEY"))
+	middlewares.SetSigningKey()
+	handlers.SigningKey = middlewares.GetSigningKey()
 	server.StartHttpServer()
 }

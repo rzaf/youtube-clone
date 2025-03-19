@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,7 +13,27 @@ import (
 	"net/http"
 )
 
-var SigningKey []byte
+var signingKey []byte
+
+func SetSigningKey() {
+	key := os.Getenv("JWT_SIGNING_KEY")
+	if key == "" {
+		keyFile := os.Getenv("JWT_SIGNING_KEY_FILE")
+		if keyFile == "" {
+			log.Fatalf("JWT_SIGNING_KEY_FILE is not set !\n")
+		}
+		data, err := os.ReadFile(keyFile)
+		if err != nil {
+			log.Fatalf("Failed to read JWT signing key file: %v", err)
+		}
+		key = string(data)
+	}
+	signingKey = []byte(key)
+}
+
+func GetSigningKey() []byte {
+	return signingKey
+}
 
 type AuthError struct {
 	Message string
@@ -67,7 +88,7 @@ func parseJwt(token string) (*AuthError, *user_pb.CurrentUserData) {
 	claims := jwt.MapClaims{}
 
 	jwtToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return SigningKey, nil
+		return signingKey, nil
 	})
 	if err != nil || !jwtToken.Valid {
 		log.Println(err)

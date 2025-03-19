@@ -71,10 +71,23 @@ remove:
 	@echo "Stopping and removing containers ..."
 	docker compose down
 	
+swarm:
+	@docker compose build
+	@if [ -z "$$(docker secret ls | grep jwt_signing_key)" ]; then \
+		echo "your-secret-key" | docker secret create jwt_signing_key -; \
+	else \
+		echo "Secret jwt_signing_key already exists"; \
+	fi
+	@if [ -z "$$(docker info --format '{{.Swarm.LocalNodeState}}' | grep active)" ]; then \
+		docker swarm init; \
+	else \
+		echo "Swarm is already active"; \
+	fi
+	@docker stack deploy -c docker-compose.yml youtube-clone
 
 clean:
 	@rm -f database/bin/*
 	@rm -f notification/bin/*
 	@rm -f file/bin/*
 	@rm -f gateway/bin/*
-	@docker ompose down
+	@docker compose down

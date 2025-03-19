@@ -42,16 +42,19 @@ services:
 
   
   auth-service:
+    image: youtube-clone-auth-service:latest
     build:
       context: ./auth/
       dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6090:6090"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
-      HTTP_HOST: auth-service
+      HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6090
       HTTP_URL: http://auth-service:6090
       
@@ -63,16 +66,19 @@ services:
       replicas: 1
 
   gateway-service:
+    image: youtube-clone-gateway-service:latest
     build:
       context: ./gateway/
       dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6070:6070"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
-      HTTP_HOST: gateway-service
+      HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6070
       HTTP_URL: http://127.0.0.1:6070
 
@@ -85,6 +91,7 @@ services:
 
 
   database-service:
+    image: youtube-clone-database-service:latest
     build:
       context: ./database/
       dockerfile: Dockerfile
@@ -93,7 +100,7 @@ services:
       - "6060:6060"
     environment:
       # servers
-      GRPC_HOST: database-service
+      GRPC_HOST: "0.0.0.0"
       GRPC_PORT: 6060
       
       # clients
@@ -115,6 +122,7 @@ services:
 
 
   notification-service:
+    image: youtube-clone-notification-service:latest
     build:
       context: ./notification/
       dockerfile: Dockerfile
@@ -123,7 +131,7 @@ services:
       - "6063:6063"
     environment:
       # servers
-      GRPC_HOST: notification-service
+      GRPC_HOST: "0.0.0.0"
       GRPC_PORT: 6063
       
       # clients
@@ -137,6 +145,7 @@ services:
 
 
   file-service:
+    image: youtube-clone-file-service:latest
     build:
       context: ./file/
       dockerfile: Dockerfile
@@ -144,13 +153,15 @@ services:
     ports:
       - "6080:6080"
       - "6061:6061"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
-      HTTP_HOST: file-service
+      HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6080
       HTTP_URL: http://file-service:6080
-      GRPC_HOST: file-service
+      GRPC_HOST: "0.0.0.0"
       GRPC_PORT: 6061
       
       # clients
@@ -167,3 +178,8 @@ services:
       - ./.app-data/storage/musics/:/app/storage/musics/
       - ./.app-data/storage/photos/:/app/storage/photos/
       - ./.app-data/storage/videos/:/app/storage/videos/
+
+
+secrets:
+  jwt_signing_key:
+    external: true
