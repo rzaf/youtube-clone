@@ -123,13 +123,56 @@ protected routes require authentication with bearer tokens
 | POST |`api/videos/upload` |&check;|
 | POST |`api/musics/upload` |&check;|
 
+## Prerequisites
+
+- ***Go*** (1.20)
+- ***docker*** and ***docker compose***
+- Protobuf compiler (`protoc`) & go plugins (optional):
+  - install protocol buffer compiler [link](https://grpc.io/docs/protoc-installation/)
+  - install protoc-gen-go and and protoc-gen-go-grpc by running `go install google.golang.org/protobuf/cmd/protoc-gen-go` and `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc`
+  - have protoc and GOPATH in your PATH env
+
 ## build
 
-```make build``` builds go files\
-```make all``` builds go files and generate pb files\
-```make build-run``` builds everything and run docker container\
-```make run``` run docker container\
-```make remove``` stops and removes docker container
+### docker
+
+1. Build Go Files and Docker Containers
+
+   To build the Go binaries and Docker containers, use:
+
+   ```bash
+   make build 
+   ```
+
+   If protoc and the Go plugins are installed, you can generate Protocol Buffer files and build Swagger docs files along with the Go binaries:
+
+   ```bash
+   make all 
+   ```
+
+2. Create .env file
+
+   ```bash
+   cp .env.example .env 
+   ```
+
+3. Run Docker containers
+
+   Start the Docker containers using:
+
+   ```bash
+   make run
+   ```
+
+   or simply run `docker compose up`
+
+### docker swarm
+
+Deploy using Docker Swarm
+
+```bash
+make swarm
+```
 
 ## features
 

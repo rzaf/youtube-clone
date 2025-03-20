@@ -49,8 +49,10 @@ services:
     restart: "always"
     ports:
       - "6090:6090"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
       HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6090
@@ -71,8 +73,10 @@ services:
     restart: "always"
     ports:
       - "6070:6070"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
       HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6070
@@ -149,8 +153,10 @@ services:
     ports:
       - "6080:6080"
       - "6061:6061"
+    secrets:
+      - jwt_signing_key
     environment:
-      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      JWT_SIGNING_KEY_FILE: /run/secrets/jwt_signing_key 
       # servers
       HTTP_HOST: "0.0.0.0"
       HTTP_PORT: 6080
@@ -173,3 +179,7 @@ services:
       - ./.app-data/storage/photos/:/app/storage/photos/
       - ./.app-data/storage/videos/:/app/storage/videos/
 
+
+secrets:
+  jwt_signing_key:
+    external: true

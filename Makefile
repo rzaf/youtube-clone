@@ -23,6 +23,7 @@ generatePbs:
 
 swagger:
 	@echo "creating swagger docs of gateway service ...."
+
 	@cd gateway && swag init -g ./handlers/docs.go
 	@echo "creating swagger docs of auth service ...."
 	@cd auth && swag init -g ./handlers/docs.go
@@ -34,7 +35,7 @@ swagger-fmt:
 	@cd gateway/handlers && swag fmt
 	@cd file/handlers && swag fmt
 
-build:
+build-go:
 	@echo "building go files:"
 	
 	@echo "building database service ..."
@@ -54,14 +55,15 @@ build:
 	@echo "building authentication service ..."
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o auth/bin/authService auth/cmd/authService/main.go
 
+build-docker:
+	@echo "building docker containers ..."
+	@docker compose build
 
-build-run: all
-	@echo "building and running docker compose ..."
-	docker compose up --build
+build: build-go build-docker
 
 run:
 	@echo "running docker compose ..."
-	docker compose up --build
+	docker compose up
 
 test:
 	@echo "running tests ..."
@@ -71,19 +73,23 @@ remove:
 	@echo "Stopping and removing containers ..."
 	docker compose down
 	
-swarm:
-	@docker compose build
+swarm: build-go
+	@echo "building docker containers ..."
+	@docker compose -f docker-compose.swarm.yml build
+
+	@if [ "$$(docker info --format '{{.Swarm.LocalNodeState}}')" != "active" ]; then \
+		echo "Initializing Docker Swarm..."; \
+		docker swarm init || { echo "Failed to initialize Docker Swarm"; exit 1; }; \
+	else \
+		echo "Swarm is already active"; \
+	fi
+
 	@if [ -z "$$(docker secret ls | grep jwt_signing_key)" ]; then \
 		echo "your-secret-key" | docker secret create jwt_signing_key -; \
 	else \
 		echo "Secret jwt_signing_key already exists"; \
 	fi
-	@if [ -z "$$(docker info --format '{{.Swarm.LocalNodeState}}' | grep active)" ]; then \
-		docker swarm init; \
-	else \
-		echo "Swarm is already active"; \
-	fi
-	@docker stack deploy -c docker-compose.yml youtube-clone
+	@docker stack deploy -c docker-compose.swarm.yml youtube-clone
 
 clean:
 	@rm -f database/bin/*
