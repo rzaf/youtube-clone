@@ -28,6 +28,11 @@ func GetRoutes() *chi.Mux {
 
 	baseRouter := chi.NewRouter()
 	baseRouter.Mount("/api", router)
-	baseRouter.Get("/docs/*", httpSwagger.Handler())
+	baseRouter.Get("/docs/*", httpSwagger.Handler(
+		httpSwagger.UIConfig(map[string]string{
+			"persistAuthorization": "true",
+			"docExpansion":         "\"none\"",
+		}),
+	))
 	return baseRouter
 }
