@@ -39,7 +39,6 @@ services:
     volumes:
       - ./.app-data/mailhog/:/maildir/
     restart: unless-stopped
-
   
   auth-service:
     image: youtube-clone-auth-service
@@ -85,7 +84,6 @@ services:
       mode: replicated 
       replicas: 1
 
-
   database-service:
     image: youtube-clone-database-service
     build:
@@ -116,7 +114,6 @@ services:
       mode: replicated 
       replicas: 1
 
-
   notification-service:
     image: youtube-clone-notification-service
     build:
@@ -138,7 +135,6 @@ services:
     deploy:
       mode: replicated 
       replicas: 1
-
 
   file-service:
     image: youtube-clone-file-service
@@ -173,3 +169,24 @@ services:
       - ./.app-data/storage/photos/:/app/storage/photos/
       - ./.app-data/storage/videos/:/app/storage/videos/
 
+  dbgate:
+    image: dbgate/dbgate:6.3.0-alpine
+    restart: always
+    ports:
+      - 80:3000
+    volumes:
+      - ./.app-data/dbgate/:/root/.dbgate
+    environment:
+      CONNECTIONS: con1,con2
+
+
+      LABEL_con1: Postgres
+      SERVER_con1: postgres
+      USER_con1: postgres
+      PASSWORD_con1: 1234
+      PORT_con1: 5432
+      ENGINE_con1: postgres@dbgate-plugin-postgres
+
+      LABEL_con2: MongoDB
+      URL_con2: mongodb://admin:1234@mongo:27017
+      ENGINE_con2: mongo@dbgate-plugin-mongo
