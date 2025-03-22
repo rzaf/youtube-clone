@@ -2,3 +2,4 @@
 bin
 .app-data
 *.sh
+!watch-and-run.sh

@@ -42,9 +42,9 @@ services:
   
   auth-service:
     image: youtube-clone-auth-service
-    build:
-      context: ./auth/
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./auth/
+    #   dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6090:6090"
@@ -58,15 +58,19 @@ services:
       # clients
       DATABASE_SERVICE_HOST: database-service
       DATABASE_SERVICE_PORT: 6060
+    volumes:
+      - ./auth/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
+    command: sh /app/watch-and-run.sh /app/authService
     deploy:
       mode: replicated 
       replicas: 1
 
   gateway-service:
     image: youtube-clone-gateway-service
-    build:
-      context: ./gateway/
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./gateway/
+    #   dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6070:6070"
@@ -80,6 +84,10 @@ services:
       # clients
       DATABASE_SERVICE_HOST: database-service
       DATABASE_SERVICE_PORT: 6060
+    volumes:
+      - ./gateway/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
+    command: sh /app/watch-and-run.sh /app/gatewayService
     deploy:
       mode: replicated 
       replicas: 1
@@ -110,15 +118,19 @@ services:
       
       NOTIFICATION_SERVICE_HOST: notification-service
       NOTIFICATION_SERVICE_PORT: 6063
+    volumes:
+      - ./database/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
+    command: sh /app/watch-and-run.sh /app/databaseService
     deploy:
       mode: replicated 
       replicas: 1
 
   notification-service:
     image: youtube-clone-notification-service
-    build:
-      context: ./notification/
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./notification/
+    #   dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6063:6063"
@@ -126,21 +138,27 @@ services:
       # servers
       GRPC_HOST: "0.0.0.0"
       GRPC_PORT: 6063
+      WS_HOST: "0.0.0.0"
+      WS_PORT: 8060
       
       # clients
       SMTP_HOST: mailhog
       SMTP_PORT: 1025
       SMTP_USERNAME: 1234
       SMTP_SECRET: 1234
+    volumes:
+      - ./notification/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
+    command: sh /app/watch-and-run.sh /app/notificationService
     deploy:
       mode: replicated 
       replicas: 1
 
   file-service:
-    image: youtube-clone-file-service
     build:
       context: ./file/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    image: youtube-clone-file-service
     restart: "always"
     ports:
       - "6080:6080"
@@ -164,6 +182,8 @@ services:
       mode: replicated 
       replicas: 1
     volumes:
+      - ./file/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
       - ./.app-data/storage/temp/:/app/storage/temp/
       - ./.app-data/storage/musics/:/app/storage/musics/
       - ./.app-data/storage/photos/:/app/storage/photos/

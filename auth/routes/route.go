@@ -21,16 +21,6 @@ func GetRoutes() *chi.Mux {
 
 	router.Post("/register", handlers.Register)
 
-	// router.Get("/videos/{url}", handlers.GetVideo)
-	// router.Get("/musics/{url}", handlers.GetMusic)
-
-	// router.Group(func(r chi.Router) {
-	// 	r.Use(handlers.AuthApiKeyMiddleware)
-	// 	r.Post("/photos/upload", handlers.UploadPhoto)
-	// 	r.Post("/videos/upload", handlers.UploadVideo)
-	// 	r.Post("/musics/upload", handlers.UploadMusic)
-	// })
-
 	baseRouter := chi.NewRouter()
 	baseRouter.Mount("/api", router)
 	baseRouter.Get("/docs/*", httpSwagger.Handler())
