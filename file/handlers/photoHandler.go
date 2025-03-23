@@ -92,10 +92,6 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500				{string}	string	"server error"
 //	@Router			/photos/{url}	[get]
 func GetPhoto(w http.ResponseWriter, r *http.Request) {
-	str1, _ := os.Getwd()
-	str2, _ := os.Executable()
-	fmt.Println(str1, str2)
-
 	url := chi.URLParam(r, "url")
 	helpers.ValidateUrl(url)
 	urlM := models.GetUrl(url[:16])

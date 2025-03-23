@@ -91,6 +91,25 @@ swarm: build-go
 	fi
 	@docker stack deploy -c docker-compose.swarm.yml youtube-clone
 
+watch:
+	@echo "Watching for changes in Go files across services..." && \
+	find ./gateway -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./gateway detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o gateway/bin/gatewayService gateway/cmd/gatewayService/main.go && echo "gateway/bin/gatewayService built successfully."' & \
+	find ./file -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./file detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o file/bin/fileService file/cmd/fileService/main.go && echo "file/bin/fileService built successfully."' & \
+	find ./notification -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./notification detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o notification/bin/notificationService notification/cmd/notificationService/main.go && echo "notification/bin/notificationService built successfully."' & \
+	find ./database -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./database detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o database/bin/databaseService database/cmd/databaseService/main.go && echo "database/bin/databaseService built successfully."' & \
+	find ./auth -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./auth detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o auth/bin/authService auth/cmd/authService/main.go && echo "auth/bin/authService built successfully."' & \
+	wait
+
 clean:
 	@rm -f database/bin/*
 	@rm -f notification/bin/*
