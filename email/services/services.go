@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/rzaf/youtube-clone/notification/pbs/notificationPb"
+	"github.com/rzaf/youtube-clone/email/pbs/emailPb"
 
 	"google.golang.org/grpc"
 )
@@ -13,7 +13,7 @@ var (
 func RegisterAllServices(server *grpc.Server) {
 	grpcServer = server
 
-	notificationPb.RegisterNotificationServiceServer(grpcServer, &notificationServiceServer{})
+	emailPb.RegisterEmailServiceServer(grpcServer, &emailServiceServer{})
 }
 
 // func newHttpError(m string, s int) *helper.HttpError {

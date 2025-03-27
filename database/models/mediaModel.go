@@ -604,6 +604,7 @@ func Helper_MediaByUrl(url string) (*Media, error) {
 		COALESCE(M.text,''),
 		M.url,
 		M.media_type,
+		U.id,
 		U.username,
 		U.email,
 		U.channel_name
@@ -623,7 +624,7 @@ func Helper_MediaByUrl(url string) (*Media, error) {
 		return nil, NewModelError("Media with url:`"+url+"` not found", 404)
 	}
 	var m Media
-	err = rows.Scan(&m.Title, &m.Text, &m.Url, &m.Type, &m.UserName, &m.UserEmail, &m.ChannelName)
+	err = rows.Scan(&m.Title, &m.Text, &m.Url, &m.Type, &m.UserId, &m.UserName, &m.UserEmail, &m.ChannelName)
 	m.CurrentUserLike = NONE
 
 	if err != nil {

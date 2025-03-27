@@ -1,4 +1,4 @@
-module github.com/rzaf/youtube-clone/notification
+module github.com/rzaf/youtube-clone/email
 
 go 1.21.5
 

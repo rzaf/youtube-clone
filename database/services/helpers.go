@@ -8,7 +8,8 @@ import (
 	"github.com/rzaf/youtube-clone/database/client"
 	"github.com/rzaf/youtube-clone/database/models"
 	"github.com/rzaf/youtube-clone/database/pbs/helper"
-	"github.com/rzaf/youtube-clone/notification/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/email/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/notification/pbs/notificationPb"
 )
 
 func newPagesInfo(PageCount, CurrentPage int32) *helper.PagesInfo {
@@ -49,10 +50,11 @@ func sendEmailVerificationNotification(username string, email string, code strin
 	return nil
 }
 
-func sendNotificationEmail(username string, email string, title string, message string) error {
+func sendNotification(userId int64, username string, email string, title string, message string) error {
 	retries := 3
 	for i := 0; i < retries; i++ {
-		r, err := client.EmailService.SendNotification(context.Background(), &emailPb.NotificationData{
+		r, err := client.NotificationService.SetNotification(context.Background(), &notificationPb.NotificationData{
+			UserId:    userId,
 			Username:  username,
 			UserEmail: email,
 			Title:     title,
@@ -87,7 +89,7 @@ func followingNotification(followerId int64, followingUsername string) error {
 	}
 	title := "Notification: New follower"
 	message := fmt.Sprintf("User with username:`%s` and channel_name:`%s` is now following you.", follower.Username, follower.ChannelName)
-	err := sendNotificationEmail(followingUsername, following.Email, title, message)
+	err := sendNotification(following.Id, followingUsername, following.Email, title, message)
 	if err != nil {
 		return err
 	}
@@ -110,7 +112,7 @@ func newMediaNotification(creatorId int64, mediaUrl string, mediaTitle string, m
 			mediaUrl,
 			mediaText,
 		)
-		sendNotificationEmail(followers[i].Username, followers[i].Email, title, message)
+		sendNotification(followers[i].UserId, followers[i].Username, followers[i].Email, title, message)
 	}
 	return nil
 }
@@ -132,7 +134,7 @@ func newCommentNotification(commenterId int64, commentText string, mediaUrl stri
 		mediaUrl,
 		media.Title,
 	)
-	err := sendNotificationEmail(media.UserName, media.UserEmail, title, message)
+	err := sendNotification(media.UserId, media.UserName, media.UserEmail, title, message)
 	if err != nil {
 		return err
 	}
@@ -177,7 +179,7 @@ func newReplyNotification(replierId int64, replyText string, mediaUrl string, co
 		)
 	}
 
-	err := sendNotificationEmail(repliedTo.UserName, repliedTo.UserEmail, title, message)
+	err := sendNotification(repliedTo.UserId, repliedTo.UserName, repliedTo.UserEmail, title, message)
 	if err != nil {
 		return err
 	}
@@ -207,7 +209,7 @@ func newMediaLikeNotification(likerId int64, mediaUrl string, isLike bool) error
 		mediaUrl,
 		media.Title,
 	)
-	err := sendNotificationEmail(media.UserName, media.UserEmail, title, message)
+	err := sendNotification(media.UserId, media.UserName, media.UserEmail, title, message)
 	if err != nil {
 		return err
 	}
@@ -245,7 +247,7 @@ func newCommentLikeNotification(likerId int64, commentUrl string, isLike bool) e
 		comment.MediaUrl,
 		comment.MediaTitle,
 	)
-	err := sendNotificationEmail(comment.UserName, comment.UserEmail, title, message)
+	err := sendNotification(comment.UserId, comment.UserName, comment.UserEmail, title, message)
 	if err != nil {
 		return err
 	}

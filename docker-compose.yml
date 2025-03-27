@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
   
   auth-service:
-    image: youtube-clone-auth-service
+    image: alpine:latest
     # build:
     #   context: ./auth/
     #   dockerfile: Dockerfile
@@ -67,7 +67,7 @@ services:
       replicas: 1
 
   gateway-service:
-    image: youtube-clone-gateway-service
+    image: alpine:latest
     # build:
     #   context: ./gateway/
     #   dockerfile: Dockerfile
@@ -93,10 +93,10 @@ services:
       replicas: 1
 
   database-service:
-    image: youtube-clone-database-service
-    build:
-      context: ./database/
-      dockerfile: Dockerfile
+    image: alpine:latest
+    # build:
+    #   context: ./database/
+    #   dockerfile: Dockerfile
     restart: "always"
     ports:
       - "6060:6060"
@@ -117,7 +117,10 @@ services:
       FILE_SERVICE_PORT: 6061
       
       NOTIFICATION_SERVICE_HOST: notification-service
-      NOTIFICATION_SERVICE_PORT: 6063
+      NOTIFICATION_SERVICE_PORT: 6064
+
+      EMAIL_SERVICE_HOST: email-service
+      EMAIL_SERVICE_PORT: 6063
     volumes:
       - ./database/bin/:/app/ 
       - ./watch-and-run.sh:/app/watch-and-run.sh
@@ -126,26 +129,67 @@ services:
       mode: replicated 
       replicas: 1
 
-  notification-service:
-    image: youtube-clone-notification-service
-    # build:
-    #   context: ./notification/
-    #   dockerfile: Dockerfile
+  email-service:
+    image: alpine:latest
     restart: "always"
     ports:
       - "6063:6063"
     environment:
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
       # servers
       GRPC_HOST: "0.0.0.0"
       GRPC_PORT: 6063
-      WS_HOST: "0.0.0.0"
-      WS_PORT: 8060
       
       # clients
       SMTP_HOST: mailhog
       SMTP_PORT: 1025
       SMTP_USERNAME: 1234
       SMTP_SECRET: 1234
+    volumes:
+      - ./email/bin/:/app/ 
+      - ./watch-and-run.sh:/app/watch-and-run.sh
+    command: sh /app/watch-and-run.sh /app/emailService
+    deploy:
+      mode: replicated 
+      replicas: 1
+
+  notification-postgres:
+    image: postgres:16.3-alpine3.20
+    ports:
+      - "5433:5433"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: notifications
+      POSTGRES_PORT: 5433
+    volumes:
+      - ./.app-data/postgresql-notification/:/var/lib/postgresql/data/
+  
+  notification-service:
+    image: alpine:latest
+    restart: "always"
+    ports:
+      - "6064:6064"
+      - "8060:8060"
+    environment:
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY}
+      # servers
+      GRPC_HOST: "0.0.0.0"
+      GRPC_PORT: 6064
+      WS_HOST: "0.0.0.0"
+      WS_PORT: 8060
+      
+      # clients
+      DB_HOST: notification-postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: "notifications"
+      DB_SSL_MODE: disable
     volumes:
       - ./notification/bin/:/app/ 
       - ./watch-and-run.sh:/app/watch-and-run.sh

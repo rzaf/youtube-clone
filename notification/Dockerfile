@@ -1,10 +1,8 @@
 FROM alpine:latest
 
-RUN mkdir /app
-RUN mkdir /app/templates
+RUN mkdir -p /app
 
 COPY bin/notificationService /app
-COPY email/templates /app/templates
 
 WORKDIR /app
 

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package notificationPb;
+option go_package="github.com/rzaf/youtube-clone/notification/pbs/notificationPb";
+
+message Empty{}
+
+message HttpError{
+    string Message = 1;
+    int32 StatusCode = 2;
+}
+
+message NotificationData{
+    int64  UserId=1;
+    string Username=2;
+    string UserEmail=3;
+    string Title=4;
+    string Message=5;
+}
+
+
+message Response{
+    oneof Res{
+        HttpError Err = 1;
+        Empty empty = 2;
+    }
+}
+
+
+
+service NotificationService{
+    rpc SetNotification(NotificationData) returns (Response){};
+}
+

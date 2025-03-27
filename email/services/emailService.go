@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"github.com/rzaf/youtube-clone/notification/email"
-	"github.com/rzaf/youtube-clone/notification/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/email/email"
+	"github.com/rzaf/youtube-clone/email/pbs/emailPb"
 )
 
 type emailServiceServer struct {

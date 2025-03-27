@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd /app
+
 BINARY_PATH="$1"
 SERVICE=$(basename "$BINARY_PATH")
 

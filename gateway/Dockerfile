@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN mkdir /app
+RUN mkdir -p /app
 
 COPY bin/gatewayService /app
 

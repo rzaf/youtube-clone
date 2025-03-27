@@ -746,6 +746,7 @@ func DeleteComment(url string, userId int64) error {
 type CommentInfo struct {
 	Url             string
 	Text            string
+	UserId          int64
 	UserName        string
 	UserEmail       string
 	UserChannelName string
@@ -764,6 +765,7 @@ func Helper_CommentByUrl(commentUrl string) (*CommentInfo, error) {
 		M.url,
 		M.title,
 		M.media_type,
+		U.id,
 		U.email,
 		U.username,
 		U.channel_name
@@ -785,7 +787,7 @@ func Helper_CommentByUrl(commentUrl string) (*CommentInfo, error) {
 		return nil, NewModelError("comment with url:`"+commentUrl+"`not found", 404)
 	}
 	var c CommentInfo
-	err = rows.Scan(&c.Url, &c.ReplyId, &c.Text, &c.MediaUrl, &c.MediaTitle, &c.MediaType, &c.UserEmail, &c.UserName, &c.UserChannelName)
+	err = rows.Scan(&c.Url, &c.ReplyId, &c.Text, &c.MediaUrl, &c.MediaTitle, &c.MediaType, &c.UserId, &c.UserEmail, &c.UserName, &c.UserChannelName)
 	if err != nil {
 		return nil, err
 	}

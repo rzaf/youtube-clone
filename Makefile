@@ -18,8 +18,11 @@ generatePbs:
 	@mkdir -p ./file/pbs/file/
 	@cd ./file/pbs && protoc file.proto --go_out=./file --go_opt=paths=source_relative --go-grpc_out=./file --go-grpc_opt=paths=source_relative 
 
-	@mkdir -p ./notification/pbs/emailPb/
-	@cd ./notification/pbs && protoc email.proto --go_out=./emailPb --go_opt=paths=source_relative --go-grpc_out=./emailPb --go-grpc_opt=paths=source_relative 
+	@mkdir -p ./notification/pbs/notificationPb/
+	@cd ./notification/pbs && protoc notification.proto --go_out=./notificationPb --go_opt=paths=source_relative --go-grpc_out=./notificationPb --go-grpc_opt=paths=source_relative 
+
+	@mkdir -p ./email/pbs/emailPb/
+	@cd ./email/pbs && protoc email.proto --go_out=./emailPb --go_opt=paths=source_relative --go-grpc_out=./emailPb --go-grpc_opt=paths=source_relative 
 
 swagger:
 	@echo "creating swagger docs of gateway service ...."
@@ -48,6 +51,10 @@ build-go:
 
 	@echo "building gateway service ..."
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o gateway/bin/gatewayService gateway/cmd/gatewayService/main.go
+
+	@echo "building email service ..."
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o email/bin/emailService email/cmd/emailService/main.go
+	@cp -r email/email/templates email/bin
 
 	@echo "building notification service ..."
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o notification/bin/notificationService notification/cmd/notificationService/main.go

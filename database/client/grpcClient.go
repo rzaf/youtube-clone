@@ -2,8 +2,9 @@ package client
 
 import (
 	"github.com/rzaf/youtube-clone/database/helpers"
+	"github.com/rzaf/youtube-clone/email/pbs/emailPb"
 	"github.com/rzaf/youtube-clone/file/pbs/file"
-	"github.com/rzaf/youtube-clone/notification/pbs/emailPb"
+	"github.com/rzaf/youtube-clone/notification/pbs/notificationPb"
 	"log"
 
 	"google.golang.org/grpc"
@@ -12,10 +13,12 @@ import (
 
 var (
 	FileServiceGrpcClient         *grpc.ClientConn
+	EmailServiceGrpcClient        *grpc.ClientConn
 	NotificationServiceGrpcClient *grpc.ClientConn
 
-	FileService  file.FileServiceClient
-	EmailService emailPb.EmailServiceClient
+	FileService         file.FileServiceClient
+	EmailService        emailPb.EmailServiceClient
+	NotificationService notificationPb.NotificationServiceClient
 )
 
 func ConnectToFileServer() {
@@ -34,6 +37,20 @@ func ConnectToFileServer() {
 
 }
 
+func ConnectToEmailServer() {
+	host := helpers.FatalIfEmptyVar("EMAIL_SERVICE_HOST")
+	port := helpers.FatalIfEmptyVar("EMAIL_SERVICE_PORT")
+	emailServerAddress := host + ":" + port
+	var err error
+
+	log.Println("connecting to EmailService:" + emailServerAddress)
+	EmailServiceGrpcClient, err = grpc.NewClient(emailServerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalln("connection failed:", err)
+	}
+	EmailService = emailPb.NewEmailServiceClient(EmailServiceGrpcClient)
+}
+
 func ConnectToNotificationServer() {
 	host := helpers.FatalIfEmptyVar("NOTIFICATION_SERVICE_HOST")
 	port := helpers.FatalIfEmptyVar("NOTIFICATION_SERVICE_PORT")
@@ -45,11 +62,15 @@ func ConnectToNotificationServer() {
 	if err != nil {
 		log.Fatalln("connection failed:", err)
 	}
-	EmailService = emailPb.NewEmailServiceClient(NotificationServiceGrpcClient)
+	NotificationService = notificationPb.NewNotificationServiceClient(NotificationServiceGrpcClient)
 }
 
 func DisconnectFromFileServer() {
 	FileServiceGrpcClient.Close()
+}
+
+func DisconnectFromEmailServer() {
+	EmailServiceGrpcClient.Close()
 }
 
 func DisconnectFromNotificationServer() {
