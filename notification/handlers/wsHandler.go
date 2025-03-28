@@ -103,13 +103,14 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 	reader(c)
 }
 
-func SendWsMessage(userId int64, title, message string) {
+func SendWsMessage(id string, userId int64, title, message string) {
 	userChannelsMutex.Lock()
 	userChannel, exists := userChannels[userId]
 	userChannelsMutex.Unlock()
 
 	if exists {
 		jsonMessage, err := json.Marshal(map[string]string{
+			"id":      id,
 			"title":   title,
 			"message": message,
 		})

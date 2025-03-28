@@ -1,14 +1,10 @@
 syntax = "proto3";
 
+import "notificationHelper.proto";
+
 package notificationPb;
 option go_package="github.com/rzaf/youtube-clone/notification/pbs/notificationPb";
 
-message Empty{}
-
-message HttpError{
-    string Message = 1;
-    int32 StatusCode = 2;
-}
 
 message NotificationData{
     int64  UserId=1;
@@ -16,19 +12,38 @@ message NotificationData{
     string UserEmail=3;
     string Title=4;
     string Message=5;
+    string Id=6;
 }
 
 
+message NotificationsData{
+    repeated NotificationData Notification=1     [json_name="notification"];
+    notificationHelper.PagesInfo PagesInfo=2        [json_name="pages_info"];
+}
+
 message Response{
     oneof Res{
-        HttpError Err = 1;
-        Empty empty = 2;
+        notificationHelper.HttpError Err = 1;
+        notificationHelper.Empty empty = 2;
+        NotificationData Notification = 3;
+        NotificationsData Notifications = 4;
     }
 }
 
 
 
+message NotificationReqData{
+    int64  UserId=1;
+    string Id=2;
+}
+
+
 service NotificationService{
     rpc SetNotification(NotificationData) returns (Response){};
+
+    // rpc GetNotification(NotificationReqData) returns (Response){};
+    // rpc GetAllNotification(NotificationReqData) returns (Response){};
+    // rpc SetNotificationAsSeen(NotificationReqData) returns (Response){};
+    // rpc SetAllNotificationAsSeen(NotificationReqData) returns (Response){};
 }
 

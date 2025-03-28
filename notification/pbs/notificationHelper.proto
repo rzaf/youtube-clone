@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package notificationHelper;
+option go_package="github.com/rzaf/youtube-clone/notification/pbs/notificationHelperPb";
+
+message Empty{}
+
+message HttpError{
+    string Message = 1;
+    int32 StatusCode = 2;
+}
+
+message Paging{
+    int32 PerPage=1;   ///limit
+    int32 pageNumber=2;  ///offset
+}
+
+message PagesInfo{
+    int32 CurrentPage=1;   
+    int32 TotalPages=2;
+}
+
+enum SortType {
+    Newest=0;
+    Oldest=1;
+} 
+
+enum SeenType {
+    Any=0;
+    Seen=1;
+    NotSeen=2;
+} 

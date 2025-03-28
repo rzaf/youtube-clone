@@ -165,7 +165,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: notifications
-      POSTGRES_PORT: 5433
+      PGPORT: 5433
     volumes:
       - ./.app-data/postgresql-notification/:/var/lib/postgresql/data/
   
@@ -185,7 +185,7 @@ services:
       
       # clients
       DB_HOST: notification-postgres
-      DB_PORT: 5432
+      DB_PORT: 5433
       DB_USER: postgres
       DB_PASS: 1234
       DB_NAME: "notifications"
@@ -251,6 +251,13 @@ services:
       PORT_con1: 5432
       ENGINE_con1: postgres@dbgate-plugin-postgres
 
-      LABEL_con2: MongoDB
-      URL_con2: mongodb://admin:1234@mongo:27017
-      ENGINE_con2: mongo@dbgate-plugin-mongo
+      LABEL_con2: notificationPostgres
+      SERVER_con2: notification-postgres
+      USER_con2: postgres
+      PASSWORD_con2: 1234
+      PORT_con2: 5433
+      ENGINE_con2: postgres@dbgate-plugin-postgres
+
+      LABEL_con3: MongoDB
+      URL_con3: mongodb://admin:1234@mongo:27017
+      ENGINE_con3: mongo@dbgate-plugin-mongo

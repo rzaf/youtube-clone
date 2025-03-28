@@ -1,0 +1,163 @@
+basePath: /api
+info:
+  contact:
+    name: rzaf
+    url: https://www.github.com/rzaf/youtube-clone
+  description: notification microservice of youtube-clone app.
+  title: rest api of notification service
+paths:
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: get all notifications of current user
+      parameters:
+      - default: 1
+        description: page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: items perpage
+        in: query
+        name: perpage
+        type: integer
+      - default: newest
+        description: sort type
+        enum:
+        - newest
+        - oldest
+        in: query
+        name: sort
+        type: string
+      - default: any
+        description: seen type
+        enum:
+        - any
+        - seen
+        - not-seen
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: get all notifications of current user
+      tags:
+      - notifications
+  /notifications/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get notification
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: get notification
+      tags:
+      - notifications
+  /notifications/{id}/seen:
+    post:
+      consumes:
+      - multipart/form-data
+      description: set specified notification as seen
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: set specified notification as seen
+      tags:
+      - notifications
+  /notifications/seen:
+    post:
+      consumes:
+      - multipart/form-data
+      description: set all notification of current user as seen
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: request failed
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: set all notification of current user as seen
+      tags:
+      - notifications
+securityDefinitions:
+  ApiKeyAuth:
+    description: bearer token (add 'Bearer' before token in input)
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

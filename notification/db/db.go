@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/rzaf/youtube-clone/database/helpers"
+	"github.com/rzaf/youtube-clone/notification/helpers"
 	"log"
 	"time"
 

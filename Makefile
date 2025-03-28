@@ -18,6 +18,8 @@ generatePbs:
 	@mkdir -p ./file/pbs/file/
 	@cd ./file/pbs && protoc file.proto --go_out=./file --go_opt=paths=source_relative --go-grpc_out=./file --go-grpc_opt=paths=source_relative 
 
+	@mkdir -p ./notification/pbs/notificationHelperPb/
+	@cd ./notification/pbs && protoc notificationHelper.proto --go_out=./notificationHelperPb --go_opt=paths=source_relative --go-grpc_out=./notificationHelperPb --go-grpc_opt=paths=source_relative  
 	@mkdir -p ./notification/pbs/notificationPb/
 	@cd ./notification/pbs && protoc notification.proto --go_out=./notificationPb --go_opt=paths=source_relative --go-grpc_out=./notificationPb --go-grpc_opt=paths=source_relative 
 
@@ -32,11 +34,14 @@ swagger:
 	@cd auth && swag init -g ./handlers/docs.go
 	@echo "creating swagger docs of file service ...."
 	@cd file && swag init -g ./handlers/docs.go
+	@echo "creating swagger docs of notification service ...."
+	@cd notification && swag init -g ./handlers/docs.go
 
 swagger-fmt:
 	@echo "formatting swagger docs"
 	@cd gateway/handlers && swag fmt
 	@cd file/handlers && swag fmt
+	@cd notification/handlers && swag fmt
 
 build-go:
 	@echo "building go files:"
@@ -115,6 +120,9 @@ watch:
 	find ./auth -name "*.go" | entr -r sh -c ' \
 		echo "Changes in ./auth detected, building..."; \
 		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o auth/bin/authService auth/cmd/authService/main.go && echo "auth/bin/authService built successfully."' & \
+	find ./notification -name "*.go" | entr -r sh -c ' \
+		echo "Changes in ./notification detected, building..."; \
+		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o notification/bin/notificationService notification/cmd/notificationService/main.go && echo "notification/bin/notificationService built successfully."' & \
 	wait
 
 clean:

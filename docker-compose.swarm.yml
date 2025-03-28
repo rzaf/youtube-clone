@@ -159,7 +159,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: notifications
-      POSTGRES_PORT: 5433
+      PGPORT: 5433
     volumes:
       - ./.app-data/postgresql-notification/:/var/lib/postgresql/data/
   
@@ -184,7 +184,7 @@ services:
       
       # clients
       DB_HOST: notification-postgres
-      DB_PORT: 5432
+      DB_PORT: 5433
       DB_USER: postgres
       DB_PASS: 1234
       DB_NAME: "notifications"

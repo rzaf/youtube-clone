@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/rzaf/youtube-clone/database/pbs/helper"
+	"github.com/rzaf/youtube-clone/notification/pbs/notificationHelperPb"
 	"log"
 	"os"
 	"strconv"
@@ -201,99 +201,26 @@ func ValidateBool(boolInterface any, param string) bool {
 	panic(ValidationFieldError{param, `should be boolean (1,0,true,false,"1","0","true","false")`})
 }
 
-func ValidateUsersSortTypes(t string) helper.SortType {
+func ValidateNotificationSortTypes(t string) notificationHelperPb.SortType {
 	switch t {
 	case "newest":
-		return helper.SortType(helper.SortType_Newest)
+		return notificationHelperPb.SortType(notificationHelperPb.SortType_Newest)
 	case "oldest":
-		return helper.SortType(helper.SortType_Oldest)
-	case "most-viewed":
-		return helper.SortType(helper.SortType_MostViewed)
-	case "least-viewed":
-		return helper.SortType(helper.SortType_LeastViewed)
-	case "most-subbed":
-		return helper.SortType(helper.SortType_MostSubscribers)
-	case "least-subbed":
-		return helper.SortType(helper.SortType_LeastSubscribers)
+		return notificationHelperPb.SortType(notificationHelperPb.SortType_Oldest)
 	}
 	panic(ValidationFieldError{"type", "incorrect sort type:`" + t + "`"})
 }
 
-func ValidateMediasSortTypes(t string) helper.SortType {
+func ValidateNotificationSeenTypes(t string) notificationHelperPb.SeenType {
 	switch t {
-	case "newest":
-		return helper.SortType(helper.SortType_Newest)
-	case "oldest":
-		return helper.SortType(helper.SortType_Oldest)
-	case "most-viewed":
-		return helper.SortType(helper.SortType_MostViewed)
-	case "least-viewed":
-		return helper.SortType(helper.SortType_LeastViewed)
+	case "any":
+		return notificationHelperPb.SeenType(notificationHelperPb.SeenType_Any)
+	case "seen":
+		return notificationHelperPb.SeenType(notificationHelperPb.SeenType_Seen)
+	case "not-seen":
+		return notificationHelperPb.SeenType(notificationHelperPb.SeenType_NotSeen)
 	}
-	panic(ValidationFieldError{"type", "incorrect sort type:`" + t + "`"})
-}
-
-func ValidateCommentsSortTypes(t string) helper.SortType {
-	switch t {
-	case "newest":
-		return helper.SortType(helper.SortType_Newest)
-	case "oldest":
-		return helper.SortType(helper.SortType_Oldest)
-	case "most-liked":
-		return helper.SortType(helper.SortType_MostLiked)
-	case "least-liked":
-		return helper.SortType(helper.SortType_LeastLiked)
-	case "most-disliked":
-		return helper.SortType(helper.SortType_MostDisiked)
-	case "least-disliked":
-		return helper.SortType(helper.SortType_LeastDisliked)
-	case "most-replied":
-		return helper.SortType(helper.SortType_MostReplied)
-	case "least-replied":
-		return helper.SortType(helper.SortType_LeastReplied)
-	}
-	panic(ValidationFieldError{"type", "incorrect sort type:`" + t + "`"})
-}
-
-func ValidatePlaylistsSortTypes(t string) helper.SortType {
-	switch t {
-	case "newest":
-		return helper.SortType(helper.SortType_Newest)
-	case "oldest":
-		return helper.SortType(helper.SortType_Oldest)
-	case "most-viewed":
-		return helper.SortType(helper.SortType_MostViewed)
-	case "least-viewed":
-		return helper.SortType(helper.SortType_LeastViewed)
-	}
-	panic(ValidationFieldError{"type", "incorrect sort type:`" + t + "`"})
-}
-
-func ValidateMediaType(t string) helper.MediaType {
-	switch t {
-	case "video":
-		return helper.MediaType(helper.MediaType_VIDEO)
-	case "music":
-		return helper.MediaType(helper.MediaType_MUSIC)
-	case "photo":
-		return helper.MediaType(helper.MediaType_PHOTO)
-	}
-	panic(ValidationFieldError{"type", "incorrect media type:`" + t + "`"})
-}
-
-// only in queries that accept all media types
-func ValidateAllMediaType(t string) helper.MediaType {
-	switch t {
-	case "video":
-		return helper.MediaType(helper.MediaType_VIDEO)
-	case "music":
-		return helper.MediaType(helper.MediaType_MUSIC)
-	case "photo":
-		return helper.MediaType(helper.MediaType_PHOTO)
-	case "all", "any":
-		return helper.MediaType(helper.MediaType_ALL)
-	}
-	panic(ValidationFieldError{"type", "incorrect media type:`" + t + "`"})
+	panic(ValidationFieldError{"type", "incorrect notification type:`" + t + "`"})
 }
 
 func FatalIfEmptyVar(key string) string {

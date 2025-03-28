@@ -8,6 +8,7 @@ import (
 	authMiddlewares "github.com/rzaf/youtube-clone/auth/middlewares"
 	"github.com/rzaf/youtube-clone/database/pbs/helper"
 	"github.com/rzaf/youtube-clone/gateway/helpers"
+	"github.com/rzaf/youtube-clone/notification/models"
 )
 
 func RecoverServerPanics(next http.Handler) http.Handler {
@@ -27,6 +28,10 @@ func RecoverServerPanics(next http.Handler) http.Handler {
 					helpers.WriteJson(w, err2.ErrorMessage(), err2.Status)
 				case helpers.ServerError:
 					helpers.WriteJson(w, err2.ErrorMessage(), err2.Status)
+				case *models.ModelError:
+					helpers.WriteJsonError(w, err2.Message, err2.Status)
+				case models.ModelError:
+					helpers.WriteJsonError(w, err2.Message, err2.Status)
 
 				case authMiddlewares.AuthError:
 					helpers.WriteJsonError(w, err2.Message, err2.Status)

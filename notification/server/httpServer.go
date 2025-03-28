@@ -7,8 +7,10 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
-	"github.com/rzaf/youtube-clone/database/helpers"
+	_ "github.com/rzaf/youtube-clone/notification/docs"
 	"github.com/rzaf/youtube-clone/notification/handlers"
+	"github.com/rzaf/youtube-clone/notification/helpers"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func GetRoutes() *chi.Mux {
@@ -19,8 +21,19 @@ func GetRoutes() *chi.Mux {
 	router.Group(func(r chi.Router) {
 		r.Use(authMiddleware.JwtAuthMiddleware)
 		r.HandleFunc("/ws", handlers.WsHandler)
+
+		r.HandleFunc("/api/notifications", handlers.GetNotifications)
+		r.HandleFunc("/api/notifications/{id}", handlers.GetNotification)
+		r.HandleFunc("/api/notifications/seen", handlers.ReadAllNotifications)
+		r.HandleFunc("/api/notifications/{id}/seen", handlers.ReadNotification)
 	})
 
+	router.Get("/docs/*", httpSwagger.Handler(
+		httpSwagger.UIConfig(map[string]string{
+			"persistAuthorization": "true",
+			"docExpansion":         "\"none\"",
+		}),
+	))
 	return router
 }
 
