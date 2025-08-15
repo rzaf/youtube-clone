@@ -23,6 +23,8 @@ func GetRoutes() *chi.Mux {
 
 	baseRouter := chi.NewRouter()
 	baseRouter.Mount("/api", router)
-	baseRouter.Get("/docs/*", httpSwagger.Handler())
+	baseRouter.Get("/docs/*", httpSwagger.Handler(
+		httpSwagger.AfterScript(`document.title = "Auth Service";`),
+	))
 	return baseRouter
 }

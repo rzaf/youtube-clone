@@ -241,7 +241,7 @@ services:
     volumes:
       - ./.app-data/dbgate/:/root/.dbgate
     environment:
-      CONNECTIONS: con1,con2
+      CONNECTIONS: con1,con2,con3
 
 
       LABEL_con1: Postgres
@@ -258,6 +258,6 @@ services:
       PORT_con2: 5433
       ENGINE_con2: postgres@dbgate-plugin-postgres
 
-      LABEL_con3: MongoDB
+      LABEL_con3: files service mongo
       URL_con3: mongodb://admin:1234@mongo:27017
       ENGINE_con3: mongo@dbgate-plugin-mongo

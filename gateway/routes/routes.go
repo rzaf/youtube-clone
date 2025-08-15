@@ -39,6 +39,7 @@ func GetRoutes() *chi.Mux {
 			"persistAuthorization": "true",
 			"docExpansion":         "\"none\"",
 		}),
+		httpSwagger.AfterScript(`document.title = "Gateway Service";`),
 	))
 	return baseRouter
 }

@@ -33,6 +33,7 @@ func GetRoutes() *chi.Mux {
 			"persistAuthorization": "true",
 			"docExpansion":         "\"none\"",
 		}),
+		httpSwagger.AfterScript(`document.title = "Notification Service";`),
 	))
 	return router
 }
