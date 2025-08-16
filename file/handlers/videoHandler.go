@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/go-chi/chi"
 	authMiddleware "github.com/rzaf/youtube-clone/auth/middlewares"
 	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 	user_pb "github.com/rzaf/youtube-clone/database/pbs/user-pb"
@@ -11,8 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
-
-	"github.com/go-chi/chi"
+	"strings"
 )
 
 const (
@@ -86,6 +86,7 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 //	@Router			/videos/{url}	[get]
 func GetVideo(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
+	url = strings.TrimRight(url, ".m3u8")
 	helpers.ValidateVideoUrl(url)
 	urlM := models.GetUrl(url[:16])
 	if urlM == nil || urlM.State == models.Removed {
@@ -109,6 +110,9 @@ func GetVideo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	w.Header().Add("Content-Type", "application/x-mpegURL")
+
+	w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+	w.Header().Set("Content-Disposition", `inline; filename="`+url+`.m3u8"`)
+
 	w.Write(content)
 }

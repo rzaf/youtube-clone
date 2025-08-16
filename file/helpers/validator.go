@@ -11,7 +11,7 @@ import (
 
 const (
 	OneMB               = 1000000
-	UserMaxUploadIn24MB = 10
+	UserMaxUploadIn24MB = 100
 	UserMaxUploadIn24B  = UserMaxUploadIn24MB * OneMB
 )
 
