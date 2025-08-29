@@ -134,7 +134,7 @@ func SearchMedias(w http.ResponseWriter, r *http.Request) {
 //	@Success		204			{string}	string	"no content"
 //	@Failure		400			{string}	string	"request failed"
 //	@Failure		500			{string}	string	"server error"
-//	@Router			/medias																																																																																																																																													[get]
+//	@Router			/medias   	[get]
 func GetMedias(w http.ResponseWriter, r *http.Request) {
 	body := make(map[string]any)
 	helpers.ParseReq(r, body)
@@ -181,7 +181,7 @@ func GetMedias(w http.ResponseWriter, r *http.Request) {
 //	@Success		200			{string}	string	"ok"
 //	@Failure		400			{string}	string	"request failed"
 //	@Failure		500			{string}	string	"server error"
-//	@Router			/medias																																																																																																																																													[post]
+//	@Router			/medias 	[post]
 func CreateMedia(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 

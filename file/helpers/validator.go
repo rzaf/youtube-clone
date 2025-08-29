@@ -120,20 +120,9 @@ func ValidateUrl(url string) {
 }
 
 func ValidateVideoUrl(url string) {
-	if url == "" {
+	if url == "" || len(url) < 16 {
 		panic(NewServerError("Invalid Url", 400))
 	}
-	urlLen := len(url)
-	if urlLen == 16 {
-		return
-	}
-	if urlLen == 23 {
-		if url[urlLen-3:] != ".ts" {
-			panic(NewServerError("Invalid Segment Url", 400))
-		}
-		return
-	}
-	panic(NewServerError("Invalid Url", 400))
 }
 
 func CheckUserUploadBandwidth(size int64, userId int64) {

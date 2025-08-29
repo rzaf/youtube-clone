@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/go-chi/chi"
 )
@@ -41,7 +42,6 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	}
 	mf := r.MultipartForm
 	fmt.Printf("%+v\n", mf.Value)
-	// file := mf.File["file"][0]
 	uploadedFile, headers, err := r.FormFile("file")
 	if err != nil {
 		panic(err)
@@ -51,19 +51,18 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Header:%v\n", headers.Header)
 	fmt.Printf("Size:%v\n", headers.Size)
 
-	var content []byte
-	content, err = io.ReadAll(uploadedFile)
-	if err != nil {
+	buf := make([]byte, 512)
+	n, _ := uploadedFile.Read(buf)
+	if _, err := uploadedFile.Seek(0, io.SeekStart); err != nil {
 		panic(err)
 	}
-
-	contentType := http.DetectContentType(content)
+	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateMusicType(contentType)
 	// helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 	url := getUniqueFileUrl()
 
-	CreateAndWriteUrl(content, url, pbHelper.MediaType_MUSIC, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_MUSIC, headers.Size, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_MUSIC))
 	fmt.Println(url)
 	helpers.WriteJson(w, map[string]any{
@@ -88,7 +87,9 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 //	@Router			/musics/{url}	[get]
 func GetMusic(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
+	println("url:", url)
 	helpers.ValidateVideoUrl(url)
+	url = strings.TrimSuffix(url, ".m3u8")
 	urlM := models.GetUrl(url[:16])
 	if urlM == nil || urlM.State == models.Removed {
 		panic(helpers.NewServerError(fmt.Sprintf("url:'%s' not found", url), 404))
@@ -106,12 +107,16 @@ func GetMusic(w http.ResponseWriter, r *http.Request) {
 		}
 		panic(err)
 	}
-	fmt.Println(url)
-	content, err := io.ReadAll(file)
+	defer file.Close()
+
+	if strings.HasSuffix(url, ".ts") {
+		w.Header().Set("Content-Type", "video/MP2T")
+	} else {
+		w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+		w.Header().Set("Content-Disposition", `inline; filename="`+url+`.m3u8"`)
+	}
+	_, err = io.Copy(w, file)
 	if err != nil {
 		panic(err)
 	}
-	// w.Header().Add("Content-Type", "audio/mp3")
-	w.Header().Add("Content-Type", "application/x-mpegURL")
-	w.Write(content)
 }

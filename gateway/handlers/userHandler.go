@@ -72,7 +72,7 @@ func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 //	@Success		204				{string}	string	"no content"
 //	@Failure		400				{string}	string	"request failed"
 //	@Failure		500				{string}	string	"server error"
-//	@Router			/users/																																																																																																																																																											[get]
+//	@Router			/users/																																	[get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	currentUser := authMiddleware.GetUserFromHeader(r)
 	var currentUserId int64 = 0

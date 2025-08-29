@@ -196,7 +196,6 @@ make swarm
 ## todo
 
 - image compression
-- multiple video quality and bitrate
 - video subtitle
 - video thumbnail from video
 - adding image to musics

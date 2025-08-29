@@ -54,31 +54,45 @@ func (u *FileFormat) processVideo() error {
 	url := u.Url
 	cmd := exec.Command("ffmpeg",
 		"-i", "storage/temp/"+url,
-		// "-c:v", "h264",
-		"-c:v", "libx264",
-		"-preset:v", "medium",
-		// "-b:v", "500k",
-		"-maxrate", "2500k",
-		"-bufsize", "5000k",
-		"-b:a", "128k",
-		"-crf", "23",
+
+		"-filter_complex",
+		"[0:v]split=4[v1][v2][v3][v4];"+
+			"[v1]scale=-2:144[v1out];"+
+			"[v2]scale=-2:360[v2out];"+
+			"[v3]scale=-2:480[v3out];"+
+			"[v4]scale=-2:720[v4out]",
+
+		// 144p
+		"-map", "[v1out]", "-map", "a:0", "-c:v:0", "libx264", "-b:v:0", "95k", "-maxrate:v:0", "110k", "-bufsize:v:0", "200k", "-c:a:0", "aac", "-b:a:0", "48k",
+
+		// 360p
+		"-map", "[v2out]", "-map", "a:0", "-c:v:1", "libx264", "-b:v:1", "800k", "-maxrate:v:1", "856k", "-bufsize:v:1", "1200k", "-c:a:1", "aac", "-b:a:1", "96k",
+
+		// 480p
+		"-map", "[v3out]", "-map", "a:0", "-c:v:2", "libx264", "-b:v:2", "1400k", "-maxrate:v:2", "1500k", "-bufsize:v:2", "2100k", "-c:a:2", "aac", "-b:a:2", "128k",
+
+		// 720p
+		"-map", "[v4out]", "-map", "a:0", "-c:v:3", "libx264", "-b:v:3", "2800k", "-maxrate:v:3", "2996k", "-bufsize:v:3", "4200k", "-c:a:3", "aac", "-b:a:3", "128k",
+
 		"-f", "hls",
+		"-hls_time", "6",
+		"-hls_flags", "temp_file",
 		"-hls_playlist_type", "vod",
-		"-hls_allow_cache", "1",
-		"-hls_time", "15",
-		"-g", "30",
-		"-hls_flags", "independent_segments",
-		"-hls_segment_type", "mpegts",
-		"-hls_segment_filename", "storage/videos/"+url+"_%03d.ts",
+
+		"-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3",
+		"-master_pl_name", url,
+		"-hls_segment_filename", "storage/videos/"+url+".%v.%03d.ts",
 		"-hls_base_url", os.Getenv("URL")+"/api/videos/",
-		"storage/videos/"+url,
+		"storage/videos/"+url+".%v",
 	)
+
 	fmt.Println("command:", cmd.String())
 	stdErr := os.Stderr
 	stdOut := os.Stdout
 	cmd.Stderr = stdErr
 	cmd.Stdout = stdOut
 	err := cmd.Run()
+	println(err)
 	if err != nil {
 		// err2, _ := err.(*exec.ExitError)
 		// if err2 != nil {

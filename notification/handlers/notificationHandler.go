@@ -18,11 +18,11 @@ import (
 //	@Accept			json
 //	@Produce		application/json
 //	@Security		ApiKeyAuth
-//	@Param			id						path		string	true	"id"
-//	@Success		200						{string}	string	"ok"
-//	@Failure		400						{string}	string	"request failed"
-//	@Failure		404						{string}	string	"not found"
-//	@Failure		500						{string}	string	"server error"
+//	@Param			id					path		string	true	"id"
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		404					{string}	string	"not found"
+//	@Failure		500					{string}	string	"server error"
 //	@Router			/notifications/{id}	[get]
 func GetNotification(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
@@ -41,17 +41,17 @@ func GetNotification(w http.ResponseWriter, r *http.Request) {
 //	@Summary		get all notifications of current user
 //	@Description	get all notifications of current user
 //	@Tags			notifications
-//	@Param			page					query		int		false	"page number"	default(1)
-//	@Param			perpage					query		int		false	"items perpage"	default(10)
-//	@Param			sort					query		string	false	"sort type"	default(newest)	Enums(newest, oldest)
-//	@Param			type					query		string	false	"seen type"	default(any)	Enums(any, seen, not-seen)
+//	@Param			page	query	int		false	"page number"	default(1)
+//	@Param			perpage	query	int		false	"items perpage"	default(10)
+//	@Param			sort	query	string	false	"sort type"		default(newest)	Enums(newest, oldest)
+//	@Param			type	query	string	false	"seen type"		default(any)	Enums(any, seen, not-seen)
 //	@Accept			json
 //	@Produce		application/json
 //	@Security		ApiKeyAuth
-//	@Success		200						{string}	string	"ok"
-//	@Failure		400						{string}	string	"request failed"
-//	@Failure		404						{string}	string	"not found"
-//	@Failure		500						{string}	string	"server error"
+//	@Success		200				{string}	string	"ok"
+//	@Failure		400				{string}	string	"request failed"
+//	@Failure		404				{string}	string	"not found"
+//	@Failure		500				{string}	string	"server error"
 //	@Router			/notifications	[get]
 func GetNotifications(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
@@ -86,11 +86,11 @@ func GetNotifications(w http.ResponseWriter, r *http.Request) {
 //	@Tags			notifications
 //	@Produce		application/json
 //	@Accept			multipart/form-data
-//	@Param			id						path		string	true	"id"
+//	@Param			id	path	string	true	"id"
 //	@Security		ApiKeyAuth
-//	@Success		200						{string}	string	"ok"
-//	@Failure		400						{string}	string	"request failed"
-//	@Failure		500						{string}	string	"server error"
+//	@Success		200							{string}	string	"ok"
+//	@Failure		400							{string}	string	"request failed"
+//	@Failure		500							{string}	string	"server error"
 //	@Router			/notifications/{id}/seen	[post]
 func ReadNotification(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
@@ -111,10 +111,10 @@ func ReadNotification(w http.ResponseWriter, r *http.Request) {
 //	@Produce		application/json
 //	@Accept			multipart/form-data
 //	@Security		ApiKeyAuth
-//	@Success		200						{string}	string	"ok"
-//	@Failure		400						{string}	string	"request failed"
-//	@Failure		500						{string}	string	"server error"
-//	@Router			/notifications/seen		[post]
+//	@Success		200					{string}	string	"ok"
+//	@Failure		400					{string}	string	"request failed"
+//	@Failure		500					{string}	string	"server error"
+//	@Router			/notifications/seen																						[post]
 func ReadAllNotifications(w http.ResponseWriter, r *http.Request) {
 	currentUser := r.Context().Value(authMiddleware.AuthUser("user")).(*user_pb.CurrentUserData)
 

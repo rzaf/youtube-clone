@@ -45,24 +45,24 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+	defer uploadedFile.Close()
 
 	fmt.Printf("filename:%v\n", headers.Filename)
 	fmt.Printf("Header:%v\n", headers.Header)
 	fmt.Printf("Size:%v\n", headers.Size)
 
-	var content []byte
-	content, err = io.ReadAll(uploadedFile)
-	if err != nil {
+	buf := make([]byte, 512)
+	n, _ := uploadedFile.Read(buf)
+	if _, err := uploadedFile.Seek(0, io.SeekStart); err != nil {
 		panic(err)
 	}
-
-	contentType := http.DetectContentType(content)
+	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateVideoType(contentType)
 	helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 
 	url := getUniqueFileUrl()
-	CreateAndWriteUrl(content, url, pbHelper.MediaType_VIDEO, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_VIDEO, headers.Size, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_VIDEO))
 	helpers.WriteJson(w, map[string]any{
 		"Message": "Video uploaded. Will be ready after a while.",
@@ -76,7 +76,8 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 //	@Summary		get video
 //	@Description	get video
 //	@Tags			videos
-//	@Produce		application/x-mpegURL
+//	@Produce		application/vnd.apple.mpegurl
+//	@Produce		video/MP2T
 //	@Param			url				path		string	true	"url"	1
 //	@Success		200				{string}	string	"ok"
 //	@Success		204				{string}	string	"no content"
@@ -86,8 +87,9 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 //	@Router			/videos/{url}	[get]
 func GetVideo(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
-	url = strings.TrimRight(url, ".m3u8")
+	println("url:", url)
 	helpers.ValidateVideoUrl(url)
+	url = strings.TrimSuffix(url, ".m3u8")
 	urlM := models.GetUrl(url[:16])
 	if urlM == nil || urlM.State == models.Removed {
 		panic(helpers.NewServerError(fmt.Sprintf("url:'%s' not found", url), 404))
@@ -96,7 +98,7 @@ func GetVideo(w http.ResponseWriter, r *http.Request) {
 		panic(helpers.NewServerError(fmt.Sprintf("url:'%s' is not video", url), 400))
 	}
 	if urlM.State == models.Pinned {
-		panic(helpers.NewServerError("video is not ready yet", 500))
+		panic(helpers.NewServerError("video is not ready yet", 400))
 	}
 	file, err := os.Open("storage/videos/" + url)
 	if err != nil {
@@ -105,14 +107,17 @@ func GetVideo(w http.ResponseWriter, r *http.Request) {
 		}
 		panic(err)
 	}
-	fmt.Println(url)
-	content, err := io.ReadAll(file)
+	defer file.Close()
+
+	if strings.HasSuffix(url, ".ts") {
+		w.Header().Set("Content-Type", "video/MP2T")
+	} else {
+		w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
+		w.Header().Set("Content-Disposition", `inline; filename="`+url+`.m3u8"`)
+	}
+
+	_, err = io.Copy(w, file)
 	if err != nil {
 		panic(err)
 	}
-
-	w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
-	w.Header().Set("Content-Disposition", `inline; filename="`+url+`.m3u8"`)
-
-	w.Write(content)
 }

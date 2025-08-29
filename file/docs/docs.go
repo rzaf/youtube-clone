@@ -293,7 +293,8 @@ const docTemplate = `{
             "get": {
                 "description": "get video",
                 "produces": [
-                    "application/x-mpegURL"
+                    "application/vnd.apple.mpegurl",
+                    "video/MP2T"
                 ],
                 "tags": [
                     "videos"

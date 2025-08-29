@@ -156,7 +156,8 @@ paths:
         required: true
         type: string
       produces:
-      - application/x-mpegURL
+      - application/vnd.apple.mpegurl
+      - video/MP2T
       responses:
         "200":
           description: ok

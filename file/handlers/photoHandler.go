@@ -42,7 +42,6 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	}
 	mf := r.MultipartForm
 	fmt.Printf("%+v\n", mf.Value)
-	// file := mf.File["file"][0]
 	uploadedFile, headers, err := r.FormFile("file")
 	if err != nil {
 		panic(err)
@@ -53,15 +52,15 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Header:%v\n", headers.Header)
 	fmt.Printf("Size:%v\n", headers.Size)
 
-	var content []byte
-	content, err = io.ReadAll(uploadedFile)
-	if err != nil {
+	buf := make([]byte, 512)
+	n, _ := uploadedFile.Read(buf)
+	if _, err := uploadedFile.Seek(0, io.SeekStart); err != nil {
 		panic(err)
 	}
-
-	contentType := http.DetectContentType(content)
+	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateImageType(contentType)
+	// helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 
 	// newContent, err := bimg.NewImage(content).Process(bimg.Options{Quality: 5})
 	// if err != nil {
@@ -69,7 +68,7 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	url := getUniqueFileUrl()
-	CreateAndWriteUrl(content, url, pbHelper.MediaType_PHOTO, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_PHOTO, headers.Size, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_PHOTO))
 	helpers.WriteJson(w, map[string]any{
 		"Message": "Image uploaded",
@@ -93,6 +92,7 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 //	@Router			/photos/{url}	[get]
 func GetPhoto(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "url")
+	println("url:", url)
 	helpers.ValidateUrl(url)
 	urlM := models.GetUrl(url[:16])
 	if urlM == nil || urlM.State == models.Removed {
@@ -111,11 +111,9 @@ func GetPhoto(w http.ResponseWriter, r *http.Request) {
 		}
 		panic(err)
 	}
-	fmt.Println(url)
-	content, err := io.ReadAll(file)
+	defer file.Close()
+	_, err = io.Copy(w, file)
 	if err != nil {
 		panic(err)
 	}
-	// w.Header().Add("Content-Type", "image/jpeg")
-	w.Write(content)
 }

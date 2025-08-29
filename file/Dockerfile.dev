@@ -1,4 +1,4 @@
-FROM jrottenberg/ffmpeg:4.1-alpine
+FROM jrottenberg/ffmpeg:5.1-alpine
 
 RUN mkdir /app
 RUN mkdir /app/storage

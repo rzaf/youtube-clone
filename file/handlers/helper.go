@@ -4,9 +4,11 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
+	"io"
 	"math"
 	"os"
+
+	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 
 	// "os"
 	"github.com/rzaf/youtube-clone/file/models"
@@ -35,14 +37,14 @@ func getUniqueFileUrl() string {
 	panic("unable to create unique url !!!")
 }
 
-func CreateAndWriteUrl(b []byte, url string, t pbHelper.MediaType, size int64, userId int64) {
+func CreateAndWriteUrl(src io.Reader, url string, t pbHelper.MediaType, size int64, userId int64) {
 	fmt.Printf("createing file with url:%s and size:%d", url, size)
 	newFile, err := os.Create("storage/temp/" + url)
 	if err != nil {
 		panic(err)
 	}
-	_, err = newFile.Write(b)
-	if err != nil {
+	defer newFile.Close()
+	if _, err := io.Copy(newFile, src); err != nil {
 		panic(err)
 	}
 	models.CreateUrl(url, size, t, userId)
