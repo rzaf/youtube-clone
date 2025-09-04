@@ -2,15 +2,20 @@ package handlers
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"math"
 	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 
 	pbHelper "github.com/rzaf/youtube-clone/database/pbs/helper"
 
 	// "os"
+	"github.com/rzaf/youtube-clone/file/helpers"
 	"github.com/rzaf/youtube-clone/file/models"
 )
 
@@ -37,17 +42,43 @@ func getUniqueFileUrl() string {
 	panic("unable to create unique url !!!")
 }
 
-func CreateAndWriteUrl(src io.Reader, url string, t pbHelper.MediaType, size int64, userId int64) {
-	fmt.Printf("createing file with url:%s and size:%d", url, size)
+func sanitizeFileName(name string) string {
+	ext := filepath.Ext(name)
+	name = strings.TrimSuffix(name, ext)
+
+	re := regexp.MustCompile(`[^a-zA-Z0-9_.\s-]`)
+	name = re.ReplaceAllString(name, "")
+
+	if len(name) > 128 {
+		name = name[:128]
+	}
+
+	return name
+}
+
+func CreateAndWriteUrl(src io.Reader, url string, t pbHelper.MediaType, contentType string, originalName string, userId int64) {
+	originalName = sanitizeFileName(originalName)
+	fmt.Printf("creating file with url:%s and name:%d", url, originalName)
 	newFile, err := os.Create("storage/temp/" + url)
 	if err != nil {
 		panic(err)
 	}
 	defer newFile.Close()
-	if _, err := io.Copy(newFile, src); err != nil {
+
+	hasher := sha256.New()
+	multiWriter := io.MultiWriter(newFile, hasher)
+	var size int64
+	if size, err = io.Copy(multiWriter, src); err != nil {
 		panic(err)
 	}
-	models.CreateUrl(url, size, t, userId)
+	checksum := hex.EncodeToString(hasher.Sum(nil))
+	err2 := helpers.CheckUserUploadBandwidth(size, userId)
+	if err2 != nil {
+		os.Remove("storage/temp/" + url)
+		panic(err2)
+	}
+
+	models.CreateUrl(url, size, t, contentType, originalName, checksum, userId)
 }
 
 // func getStoragePath() string {

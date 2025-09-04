@@ -125,7 +125,7 @@ func ValidateVideoUrl(url string) {
 	}
 }
 
-func CheckUserUploadBandwidth(size int64, userId int64) {
+func CheckUserUploadBandwidth(size int64, userId int64) *ServerError {
 	res, err := models.GetUserUploadSizeIn24(userId)
 	if err != nil {
 		panic(err)
@@ -133,9 +133,11 @@ func CheckUserUploadBandwidth(size int64, userId int64) {
 	fmt.Println("user total upload size:", res)
 	fmt.Println(res+size, UserMaxUploadIn24B, UserMaxUploadIn24MB)
 	if res+size > UserMaxUploadIn24B {
-		panic(NewServerError("You reached maximum upload size of "+strconv.Itoa(UserMaxUploadIn24MB)+"MB in 24h", 400))
+		return NewServerError("You reached maximum upload size of "+strconv.Itoa(UserMaxUploadIn24MB)+"MB in 24h", 400)
 	}
+	return nil
 }
+
 func FatalIfEmptyVar(key string) string {
 	v := os.Getenv(key)
 	if v == "" {

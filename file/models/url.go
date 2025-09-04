@@ -42,14 +42,17 @@ const (
 )
 
 type UrlEntry struct {
-	Id        string             `bson:"_id,omitempty"`
-	Url       string             `bson:"url"`
-	Size      int64              `bson:"size"` /// byte
-	Type      pbHelper.MediaType `bson:"media_type"`
-	State     MediaState         `bson:"media_state"`
-	Owner     MediaOwner         `bson:"media_owner"`
-	UserId    int64              `bson:"user_id"`
-	CreatedAt time.Time          `bson:"created_at"`
+	Id           string             `bson:"_id,omitempty"`
+	Url          string             `bson:"url"`
+	Size         int64              `bson:"size"` /// byte
+	Type         pbHelper.MediaType `bson:"media_type"`
+	State        MediaState         `bson:"media_state"`
+	Owner        MediaOwner         `bson:"media_owner"`
+	UserId       int64              `bson:"user_id"`
+	ContentType  string             `bson:"ContentType"`
+	OriginalName string             `bson:"OriginalName"`
+	Checksum     string             `bson:"Checksum"`
+	CreatedAt    time.Time          `bson:"created_at"`
 }
 
 func ExistsUrl(url string) bool {
@@ -75,15 +78,18 @@ func GetUrl(url string) *UrlEntry {
 	return nil
 }
 
-func CreateUrl(url string, size int64, t pbHelper.MediaType, userId int64) error {
+func CreateUrl(url string, size int64, t pbHelper.MediaType, contentType string, originalName string, checksum string, userId int64) error {
 	_, err := db.UrlsCollection.InsertOne(context.Background(), UrlEntry{
-		Url:       url,
-		Size:      size,
-		Type:      t,
-		State:     Pinned,
-		Owner:     None,
-		UserId:    userId,
-		CreatedAt: time.Now().UTC(),
+		Url:          url,
+		Size:         size,
+		Type:         t,
+		State:        Pinned,
+		Owner:        None,
+		UserId:       userId,
+		ContentType:  contentType,
+		OriginalName: originalName,
+		Checksum:     checksum,
+		CreatedAt:    time.Now().UTC(),
 	})
 	if err != nil {
 		fmt.Println("createUrl failed")

@@ -40,17 +40,10 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	mf := r.MultipartForm
-	fmt.Printf("%+v\n", mf.Value)
 	uploadedFile, headers, err := r.FormFile("file")
 	if err != nil {
 		panic(err)
 	}
-	helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
-
-	fmt.Printf("filename:%v\n", headers.Filename)
-	fmt.Printf("Header:%v\n", headers.Header)
-	fmt.Printf("Size:%v\n", headers.Size)
 
 	buf := make([]byte, 512)
 	n, _ := uploadedFile.Read(buf)
@@ -60,15 +53,9 @@ func UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateImageType(contentType)
-	// helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
-
-	// newContent, err := bimg.NewImage(content).Process(bimg.Options{Quality: 5})
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	url := getUniqueFileUrl()
-	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_PHOTO, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_PHOTO, contentType, headers.Filename, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_PHOTO))
 	helpers.WriteJson(w, map[string]any{
 		"Message": "Image uploaded",

@@ -179,6 +179,6 @@ func (u *FileFormat) processPhoto() error {
 func removeTemp(url string) {
 	err := os.Remove("storage/temp/" + url)
 	if err != nil {
-		fmt.Printf("error occured while removing queue element . err:%v \n", err)
+		fmt.Printf("error occurred while removing queue element . err:%v \n", err)
 	}
 }

@@ -40,16 +40,10 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	mf := r.MultipartForm
-	fmt.Printf("%+v\n", mf.Value)
 	uploadedFile, headers, err := r.FormFile("file")
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Printf("filename:%v\n", headers.Filename)
-	fmt.Printf("Header:%v\n", headers.Header)
-	fmt.Printf("Size:%v\n", headers.Size)
 
 	buf := make([]byte, 512)
 	n, _ := uploadedFile.Read(buf)
@@ -59,10 +53,9 @@ func UploadMusic(w http.ResponseWriter, r *http.Request) {
 	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateMusicType(contentType)
-	// helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 	url := getUniqueFileUrl()
 
-	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_MUSIC, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_MUSIC, contentType, headers.Filename, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_MUSIC))
 	fmt.Println(url)
 	helpers.WriteJson(w, map[string]any{

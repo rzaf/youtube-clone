@@ -39,17 +39,11 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	mf := r.MultipartForm
-	fmt.Printf("%+v\n", mf.Value)
 	uploadedFile, headers, err := r.FormFile("file")
 	if err != nil {
 		panic(err)
 	}
 	defer uploadedFile.Close()
-
-	fmt.Printf("filename:%v\n", headers.Filename)
-	fmt.Printf("Header:%v\n", headers.Header)
-	fmt.Printf("Size:%v\n", headers.Size)
 
 	buf := make([]byte, 512)
 	n, _ := uploadedFile.Read(buf)
@@ -59,10 +53,9 @@ func UploadVideo(w http.ResponseWriter, r *http.Request) {
 	contentType := http.DetectContentType(buf[:n])
 	fmt.Printf("Type:%v\n", contentType)
 	helpers.ValidateVideoType(contentType)
-	helpers.CheckUserUploadBandwidth(headers.Size, currentUser.Id)
 
 	url := getUniqueFileUrl()
-	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_VIDEO, headers.Size, currentUser.Id)
+	CreateAndWriteUrl(uploadedFile, url, pbHelper.MediaType_VIDEO, contentType, headers.Filename, currentUser.Id)
 	queue.Push(queue.NewFileFormat(url, pbHelper.MediaType_VIDEO))
 	helpers.WriteJson(w, map[string]any{
 		"Message": "Video uploaded. Will be ready after a while.",
